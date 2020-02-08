@@ -1,4 +1,3 @@
-  
 import 'package:flutter/material.dart';
 
 ///the same as [FlexibleSpaceBar]
@@ -17,7 +16,7 @@ class FlexibleDetailBar extends StatelessWidget {
 
   static double percentage(BuildContext context) {
     _FlexibleDetail value =
-    context.inheritFromWidgetOfExactType(_FlexibleDetail);
+        context.inheritFromWidgetOfExactType(_FlexibleDetail);
     assert(value != null, 'ooh , can not find');
     return value.t;
   }
@@ -34,7 +33,7 @@ class FlexibleDetailBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final FlexibleSpaceBarSettings settings =
-    context.inheritFromWidgetOfExactType(FlexibleSpaceBarSettings);
+        context.inheritFromWidgetOfExactType(FlexibleSpaceBarSettings);
 
     final List<Widget> children = <Widget>[];
 
@@ -42,8 +41,8 @@ class FlexibleDetailBar extends StatelessWidget {
     // 0.0 -> Expanded
     // 1.0 -> Collapsed to toolbar
     final double t =
-    (1.0 - (settings.currentExtent - settings.minExtent) / deltaExtent)
-        .clamp(0.0, 1.0);
+        (1.0 - (settings.currentExtent - settings.minExtent) / deltaExtent)
+            .clamp(0.0, 1.0);
 
     //背景添加视差滚动效果
     children.add(Positioned(

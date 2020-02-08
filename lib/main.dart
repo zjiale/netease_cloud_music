@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:wangyiyun/screens/home/home_screen.dart';
 import 'package:wangyiyun/screens/login/login_screen.dart';
 import 'package:wangyiyun/screens/playlist/play_list_screen.dart';
+import 'package:wangyiyun/screens/user_center/user_center_screen.dart';
 
 void main() {
   debugPaintSizeEnabled = false;

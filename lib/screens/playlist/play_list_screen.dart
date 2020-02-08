@@ -8,6 +8,13 @@ import 'package:wangyiyun/utils/config.dart';
 import 'package:wangyiyun/widgets/flexible_detail_bar.dart';
 
 class PlayListScreen extends StatefulWidget {
+  // final PreferredSizeWidget musicHeader;
+  // final double expandedHeight;
+  // final Widget content;
+
+  // PlayListScreen(this.expandedHeight, this.content,
+  //     {this.musicHeader = PlayListBottom()});
+
   @override
   _PlayListScreenState createState() => _PlayListScreenState();
 }

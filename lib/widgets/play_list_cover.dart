@@ -45,7 +45,7 @@ class PlayListCoverWidget extends StatelessWidget {
                         )
                       ],
                     ),
-                  )
+                  ),
           ],
         ),
       ),
