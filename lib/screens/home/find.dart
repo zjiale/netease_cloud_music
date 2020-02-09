@@ -113,7 +113,7 @@ class _FindState extends State<Find> {
         scrollDirection: Axis.vertical,
         padding: EdgeInsets.all(10.0),
         children: <Widget>[
-          SizedBox(height: ScreenUtil().setHeight(20.0)),
+          SizedBox(height: ScreenUtil().setHeight(80.0)),
           HomeBanner(),
           SizedBox(height: ScreenUtil().setHeight(20.0)),
           // 发现页面类型

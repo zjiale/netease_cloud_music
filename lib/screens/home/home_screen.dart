@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wangyiyun/screens/home/find.dart';
 import 'package:wangyiyun/screens/home/tab_title.dart';
 import 'package:wangyiyun/screens/user_center/user_center_screen.dart';
@@ -32,6 +33,9 @@ class _HomeScreenState extends State<HomeScreen>
 
   void _pageChage(int pos) {
     if (pageCall != null) {
+      setState(() {
+        _currentIndex = pos;
+      });
       pageCall(pos);
     }
   }
@@ -47,27 +51,46 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
+    ScreenUtil.init(context, width: 750, height: 1334);
     return SafeArea(
         child: Scaffold(
             // drawer: Drawer(),
-            appBar: AppBar(
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              //因为tittle准备放置一个listview，设置这个属性title横向填满
-              titleSpacing: 0.0,
-              centerTitle: true,
-              title: TabTitle(
-                _title,
-                setCall: _pageChagedCall,
-                itemClick: _tittleItemClickCall,
-              ),
-            ),
+            // appBar: AppBar(
+            //   backgroundColor: Colors.transparent,
+            //   elevation: 0,
+            //   //因为tittle准备放置一个listview，设置这个属性title横向填满
+            //   titleSpacing: 0.0,
+            //   centerTitle: true,
+            //   title: TabTitle(
+            //     _title,
+            //     setCall: _pageChagedCall,
+            //     itemClick: _tittleItemClickCall,
+            //   ),
+            // ),
             body: PageView.builder(
                 controller: _pageController,
                 itemCount: _title.length,
                 onPageChanged: _pageChage,
                 itemBuilder: (context, pos) {
-                  return _pages[pos];
+                  return Stack(children: <Widget>[
+                    _pages[pos],
+                    Container(
+                      height: ScreenUtil().setHeight(80.0),
+                      width: double.infinity,
+                      child: AppBar(
+                        backgroundColor: Colors.transparent,
+                        elevation: 0,
+                        //因为tittle准备放置一个listview，设置这个属性title横向填满
+                        titleSpacing: 0.0,
+                        centerTitle: true,
+                        title: TabTitle(
+                          _title,
+                          setCall: _pageChagedCall,
+                          itemClick: _tittleItemClickCall,
+                        ),
+                      ),
+                    ),
+                  ]);
                 })));
   }
 }

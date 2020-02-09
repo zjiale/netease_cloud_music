@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:wangyiyun/screens/user_center/networking_page_header.dart';
 import 'package:wangyiyun/utils/config.dart';
 import 'package:wangyiyun/widgets/flexible_detail_bar.dart';
 import 'package:wangyiyun/widgets/space_bar.dart';
@@ -14,8 +13,8 @@ class UserCenterScreen extends StatefulWidget {
 }
 
 class _UserCenterScreenState extends State<UserCenterScreen> {
-  List _button = Config.centerBtn;
   int _selectIndex = 0;
+  List _button = Config.centerBtn;
 
   Widget centerButton() {
     return Row(
@@ -99,12 +98,81 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
 
     return CustomScrollView(
       slivers: <Widget>[
-        SliverPersistentHeader(
-          pinned: true,
-          delegate: NetworkingPageHeader(
-              maxExtent: ScreenUtil().setHeight(380),
-              minExtent: ScreenUtil().setHeight(40)),
-        ),
+        SliverAppBar(
+            pinned: true,
+            elevation: 0,
+            expandedHeight: ScreenUtil().setHeight(380.0),
+            brightness: Brightness.dark,
+            iconTheme: IconThemeData(color: Colors.white),
+            flexibleSpace: FlexibleDetailBar(
+                content: SafeArea(
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      left: ScreenUtil().setWidth(35),
+                      right: ScreenUtil().setWidth(35),
+                      top: ScreenUtil().setWidth(130),
+                    ),
+                    child: Column(children: <Widget>[
+                      Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            ClipOval(
+                                child: Container(
+                                    width: ScreenUtil().setWidth(100),
+                                    height: ScreenUtil().setWidth(100),
+                                    color: Colors.orange)),
+                            SizedBox(width: ScreenUtil().setWidth(15.0)),
+                            Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text('吉川福浪',
+                                      style: TextStyle(
+                                          fontSize: ScreenUtil().setSp(25.0),
+                                          fontWeight: FontWeight.bold)),
+                                  SizedBox(
+                                      height: ScreenUtil().setHeight(10.0)),
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.all(
+                                        Radius.circular(
+                                            ScreenUtil().setWidth(30.0))),
+                                    child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 8.0, vertical: 3.0),
+                                        color: Colors.black38,
+                                        child: Text('Lv.7',
+                                            style: TextStyle(
+                                                fontSize:
+                                                    ScreenUtil().setSp(20.0),
+                                                color: Colors.white))),
+                                  )
+                                ])
+                          ]),
+                      SizedBox(height: ScreenUtil().setHeight(30.0)),
+                      centerButton()
+                    ]),
+                  ),
+                ),
+                background: Stack(
+                  children: <Widget>[
+                    Image.asset('assets/timg.jpg',
+                        width: MediaQuery.of(context).size.width,
+                        fit: BoxFit.cover,
+                        colorBlendMode: BlendMode.srcOver,
+                        color: Colors.black26),
+                    BackdropFilter(
+                        filter: ImageFilter.blur(
+                          sigmaY: 5,
+                          sigmaX: 5,
+                        ),
+                        child: Container(
+                          color: Colors.black38,
+                          width: double.infinity,
+                          height: double.infinity,
+                        ))
+                  ],
+                )),
+            bottom: SpaceBar()),
         SliverToBoxAdapter(
             child: Container(
                 height: ScreenUtil().setHeight(50.0),
@@ -116,8 +184,7 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                         fontWeight: FontWeight.bold)),
                 decoration: BoxDecoration(
                     color: Colors.white,
-                    border: Border(
-                        top: BorderSide(color: Colors.white, width: 0.0))))),
+                    border: Border.all(width: 0, color: Colors.white)))),
         SliverPadding(
             padding: EdgeInsets.only(left: 20.0),
             sliver: SliverToBoxAdapter(

@@ -4,16 +4,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class SpaceBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.vertical(
-          top: Radius.circular(ScreenUtil().setWidth(30))),
-      child: Container(
-        height: ScreenUtil().setWidth(40),
-        decoration: BoxDecoration(
-            color: Colors.white,
-            border:
-                Border(bottom: BorderSide(color: Colors.white, width: 0.0))),
-      ),
+    return Container(
+      height: ScreenUtil().setWidth(40),
+      decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(
+              top: Radius.circular(ScreenUtil().setWidth(30))),
+          border: Border.all(width: 0.0, color: Colors.white)),
     );
   }
 
