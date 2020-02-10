@@ -1,13 +1,18 @@
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 
 class HomeBanner extends StatelessWidget {
+  final List bannerList;
+
+  HomeBanner(this.bannerList);
+
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.only(left: 10.0),
-      height: ScreenUtil().setHeight(300.0),
+      height: ScreenUtil().setHeight(230.0),
       child: Swiper(
           autoplay: true,
           itemBuilder: (BuildContext context, int index) {
@@ -15,15 +20,17 @@ class HomeBanner extends StatelessWidget {
               padding: EdgeInsets.only(right: 10.0),
               child: ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                child: new Image.network(
-                  "https://uploads.5068.com/allimg/151109/48-151109110K6-50.jpg",
-                  fit: BoxFit.fill,
-                ),
+                child: new ExtendedImage.network(bannerList[index].pic,
+                    fit: BoxFit.fill),
               ),
             );
           },
-          itemCount: 8,
-          pagination: SwiperPagination()),
+          itemCount: bannerList.length,
+          pagination: SwiperPagination(
+              builder: DotSwiperPaginationBuilder(
+                  color: Color(0xffcdcdcd),
+                  size: ScreenUtil().setHeight(10.0),
+                  activeSize: ScreenUtil().setHeight(10.0)))),
     );
   }
 }

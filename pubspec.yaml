@@ -35,7 +35,7 @@ dependencies:
   # 轮播图
   flutter_swiper: 1.1.6
   # 网络图片加载
-  extended_image: 0.6.9
+  extended_image: 0.7.1
   # 跑马灯
   marquee_flutter: 0.1.4
 

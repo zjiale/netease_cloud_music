@@ -1,12 +1,17 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:wangyiyun/model/banner_model.dart';
+import 'package:wangyiyun/model/recommend_list_model.dart';
 import 'package:wangyiyun/screens/home/title_header.dart';
-import 'package:wangyiyun/screens/playlist/play_list_screen.dart';
+import 'package:wangyiyun/widgets/play_list_cover.dart';
 import 'package:wangyiyun/utils/config.dart';
 import 'package:wangyiyun/utils/custom_scroll_physic.dart';
-import 'package:wangyiyun/widgets/play_list_cover.dart';
+import 'package:wangyiyun/api/CommonService.dart';
 
 import 'home_banner.dart';
+import 'home_recommend.dart';
 
 class Find extends StatefulWidget {
   @override
@@ -15,8 +20,8 @@ class Find extends StatefulWidget {
 
 class _FindState extends State<Find> {
   List _type = Config.type;
+  int _code = Config.SUCCESS_CODE;
 
-  TabController _titleTabController;
   int now = new DateTime.now().day;
 
   // 推荐controller
@@ -28,9 +33,14 @@ class _FindState extends State<Find> {
 
   ScrollPhysics _physics;
 
+  List _bannerList;
+  List _recommendList;
+
   @override
   void initState() {
     super.initState();
+    _initBanner();
+    _initRecommend();
 
     _controller.addListener(() {
       if (_controller.position.haveDimensions && _physics == null) {
@@ -66,6 +76,37 @@ class _FindState extends State<Find> {
     _newController.dispose();
     _rankController.dispose();
     super.dispose();
+  }
+
+  void _initBanner() {
+    int _type;
+    if (Platform.isAndroid) {
+      _type = 1;
+    } else if (Platform.isIOS) {
+      _type = 2;
+    }
+    CommmonService().getBanner(_type).then((res) {
+      if (res.statusCode == 200) {
+        BannersModel _bean = BannersModel.fromJson(res.data);
+        if (_bean.code == _code) {
+          List<Banners> banners = _bean.banners;
+          setState(() {
+            _bannerList = banners;
+          });
+        }
+      }
+    });
+  }
+
+  void _initRecommend() {
+    CommmonService().getRecommendList((RecommendListModel _bean) {
+      if (_bean.code == _code) {
+        List recommendList = _bean.recommend;
+        setState(() {
+          _recommendList = recommendList;
+        });
+      }
+    });
   }
 
   Widget playType() {
@@ -104,7 +145,7 @@ class _FindState extends State<Find> {
 
   @override
   Widget build(BuildContext context) {
-    ScreenUtil.init(context, width: 750, height: 1334);
+    // ScreenUtil.init(context, width: 750, height: 1334);
     // gridview的宽高比
     double ratio =
         ScreenUtil().setWidth(100.0) / (MediaQuery.of(context).size.width - 60);
@@ -114,46 +155,14 @@ class _FindState extends State<Find> {
         padding: EdgeInsets.all(10.0),
         children: <Widget>[
           SizedBox(height: ScreenUtil().setHeight(80.0)),
-          HomeBanner(),
+          HomeBanner(_bannerList),
           SizedBox(height: ScreenUtil().setHeight(20.0)),
           // 发现页面类型
           playType(),
           SizedBox(height: ScreenUtil().setHeight(20.0)),
           // 发现页面推荐歌单
           TitleHeader(),
-          Container(
-            height: ScreenUtil().setHeight(260.0),
-            child: ListView.builder(
-              padding: EdgeInsets.only(top: 10.0, left: 10.0),
-              scrollDirection: Axis.horizontal,
-              itemCount: 6,
-              itemBuilder: (BuildContext context, int index) {
-                return InkWell(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => PlayListScreen()));
-                  },
-                  child: Padding(
-                    padding: EdgeInsets.only(right: 10.0),
-                    child: Column(children: <Widget>[
-                      PlayListCoverWidget(
-                          "https://uploads.5068.com/allimg/151109/48-151109110K6-50.jpg"),
-                      SizedBox(height: 5.0),
-                      Container(
-                          width: ScreenUtil().setWidth(200.0),
-                          child: Text(
-                            'adsadasdsadasdasdasdasdsada',
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 2,
-                          ))
-                    ]),
-                  ),
-                );
-              },
-            ),
-          ),
+          HomeRecommend(_recommendList),
           SizedBox(height: ScreenUtil().setHeight(20.0)),
           TitleHeader(),
           SizedBox(height: ScreenUtil().setHeight(20.0)),

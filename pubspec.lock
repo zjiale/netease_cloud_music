@@ -77,14 +77,14 @@ packages:
       name: extended_image
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.6.9"
+    version: "0.7.1"
   extended_image_library:
     dependency: transitive
     description:
       name: extended_image_library
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.1.9"
+    version: "0.2.0"
   fluro:
     dependency: "direct main"
     description:

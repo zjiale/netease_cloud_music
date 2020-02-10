@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class PlayListCoverWidget extends StatelessWidget {
   final String url;
-  final int playCount;
+  final String playCount;
   final double width;
 
   PlayListCoverWidget(this.url, {this.playCount, this.width = 200});
@@ -36,7 +36,7 @@ class PlayListCoverWidget extends StatelessWidget {
                           height: ScreenUtil().setWidth(30),
                         ),
                         Text(
-                          '$playCount',
+                          playCount,
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 12,
