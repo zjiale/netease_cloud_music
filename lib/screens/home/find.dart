@@ -1,9 +1,11 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wangyiyun/model/banner_model.dart';
 import 'package:wangyiyun/model/recommend_list_model.dart';
+import 'package:wangyiyun/model/recommend_song_list_model.dart';
 import 'package:wangyiyun/screens/home/title_header.dart';
 import 'package:wangyiyun/widgets/play_list_cover.dart';
 import 'package:wangyiyun/utils/config.dart';
@@ -12,6 +14,7 @@ import 'package:wangyiyun/api/CommonService.dart';
 
 import 'home_banner.dart';
 import 'home_recommend.dart';
+import 'home_recommend_song.dart';
 
 class Find extends StatefulWidget {
   @override
@@ -35,12 +38,14 @@ class _FindState extends State<Find> {
 
   List _bannerList;
   List _recommendList;
+  List _recommendSongList;
 
   @override
   void initState() {
     super.initState();
     _initBanner();
     _initRecommend();
+    _initRecommendSong();
 
     _controller.addListener(() {
       if (_controller.position.haveDimensions && _physics == null) {
@@ -109,6 +114,24 @@ class _FindState extends State<Find> {
     });
   }
 
+  void _initRecommendSong() {
+    CommmonService().getRecommendSongList((RecommendSongListModel _bean) {
+      if (_bean.code == _code) {
+        _bean.recommend.shuffle();
+        List recommendSongList = _bean.recommend;
+        print(recommendSongList.first);
+        String reason = _bean.recommend.first.reason;
+        var filter = _bean.recommend.takeWhile((item) => item.reason == reason);
+        if (filter.length > 6) {
+        } else {
+          setState(() {
+            _recommendSongList = recommendSongList;
+          });
+        }
+      }
+    });
+  }
+
   Widget playType() {
     return Container(
       height: ScreenUtil().setHeight(150.0),
@@ -155,52 +178,16 @@ class _FindState extends State<Find> {
         padding: EdgeInsets.all(10.0),
         children: <Widget>[
           SizedBox(height: ScreenUtil().setHeight(80.0)),
-          HomeBanner(_bannerList),
+          HomeBanner(_bannerList), //banner
           SizedBox(height: ScreenUtil().setHeight(20.0)),
-          // 发现页面类型
-          playType(),
+          playType(), // 首页按钮
           SizedBox(height: ScreenUtil().setHeight(20.0)),
-          // 发现页面推荐歌单
           TitleHeader(),
-          HomeRecommend(_recommendList),
+          HomeRecommend(_recommendList), // 发现页面推荐歌单
           SizedBox(height: ScreenUtil().setHeight(20.0)),
           TitleHeader(),
           SizedBox(height: ScreenUtil().setHeight(20.0)),
-          Container(
-            height: ScreenUtil().setHeight(300.0),
-            child: GridView.builder(
-                scrollDirection: Axis.horizontal,
-                controller: _controller,
-                itemCount: 9,
-                physics: _physics,
-                padding: EdgeInsets.symmetric(horizontal: 10.0),
-                //SliverGridDelegateWithFixedCrossAxisCount 构建一个横轴固定数量Widget
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    //横轴元素个数
-                    crossAxisCount: 3,
-                    //纵轴间距
-                    mainAxisSpacing: 5.0,
-                    //横轴间距
-                    crossAxisSpacing: 10.0,
-                    //子组件宽高长度比例
-                    childAspectRatio: ratio),
-                itemBuilder: (BuildContext context, int index) {
-                  //Widget Function(BuildContext context, int index)
-                  return Column(children: <Widget>[
-                    Row(children: <Widget>[
-                      PlayListCoverWidget(
-                        "https://uploads.5068.com/allimg/151109/48-151109110K6-50.jpg",
-                        width: 100,
-                      ),
-                      Expanded(child: Text('$index')),
-                      Padding(
-                        padding: EdgeInsets.only(right: 10.0),
-                        child: Icon(Icons.play_arrow, size: 30.0),
-                      )
-                    ])
-                  ]);
-                }),
-          ),
+          HomeRecommendSong(_controller, _physics, _recommendSongList, ratio),
           TitleHeader(),
           SizedBox(height: ScreenUtil().setHeight(20.0)),
           Container(

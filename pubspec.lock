@@ -85,6 +85,20 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.2.0"
+  extended_text:
+    dependency: "direct main"
+    description:
+      name: extended_text
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.7.1"
+  extended_text_library:
+    dependency: transitive
+    description:
+      name: extended_text_library
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.5.3"
   fluro:
     dependency: "direct main"
     description:

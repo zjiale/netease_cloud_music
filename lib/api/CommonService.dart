@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:wangyiyun/api/api.dart';
+import 'package:wangyiyun/model/recommend_song_list_model.dart';
 import 'package:wangyiyun/utils/config.dart';
 import 'package:wangyiyun/model/recommend_list_model.dart';
 
@@ -11,6 +12,12 @@ class CommmonService {
   void getRecommendList(Function callback) async {
     Dio().get(Api.RECOMMEND_LIST, options: _getOptions()).then((response) {
       callback(RecommendListModel.fromJson(response.data));
+    });
+  }
+
+  void getRecommendSongList(Function callback) async {
+    Dio().get(Api.RECOMMEND_SONG_LIST, options: _getOptions()).then((response) {
+      callback(RecommendSongListModel.fromJson(response.data));
     });
   }
 
