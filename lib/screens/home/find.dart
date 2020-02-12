@@ -1,9 +1,11 @@
 import 'dart:io';
-import 'dart:math';
+import 'package:async/async.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:wangyiyun/model/banner_model.dart';
+import 'package:wangyiyun/model/newest_album_model.dart';
 import 'package:wangyiyun/model/recommend_list_model.dart';
 import 'package:wangyiyun/model/recommend_song_list_model.dart';
 import 'package:wangyiyun/screens/home/title_header.dart';
@@ -13,8 +15,9 @@ import 'package:wangyiyun/utils/custom_scroll_physic.dart';
 import 'package:wangyiyun/api/CommonService.dart';
 
 import 'home_banner.dart';
+import 'home_rank.dart';
 import 'home_recommend.dart';
-import 'home_recommend_song.dart';
+import 'home_music_list.dart';
 
 class Find extends StatefulWidget {
   @override
@@ -25,7 +28,8 @@ class _FindState extends State<Find> {
   List _type = Config.type;
   int _code = Config.SUCCESS_CODE;
 
-  int now = new DateTime.now().day;
+  DateTime now = new DateTime.now();
+  AsyncMemoizer _memoizer = AsyncMemoizer();
 
   // 推荐controller
   ScrollController _controller = new ScrollController();
@@ -36,16 +40,13 @@ class _FindState extends State<Find> {
 
   ScrollPhysics _physics;
 
-  List _bannerList;
-  List _recommendList;
-  List _recommendSongList;
-
   @override
   void initState() {
     super.initState();
     _initBanner();
     _initRecommend();
     _initRecommendSong();
+    _initNewestAlbum();
 
     _controller.addListener(() {
       if (_controller.position.haveDimensions && _physics == null) {
@@ -83,52 +84,101 @@ class _FindState extends State<Find> {
     super.dispose();
   }
 
-  void _initBanner() {
+  Future _initBanner() {
     int _type;
     if (Platform.isAndroid) {
       _type = 1;
     } else if (Platform.isIOS) {
       _type = 2;
     }
-    CommmonService().getBanner(_type).then((res) {
+    return CommmonService().getBanner(_type).then((res) {
       if (res.statusCode == 200) {
         BannersModel _bean = BannersModel.fromJson(res.data);
         if (_bean.code == _code) {
-          List<Banners> banners = _bean.banners;
-          setState(() {
-            _bannerList = banners;
-          });
+          return _bean.banners;
+          // setState(() {
+          //   _bannerList = banners;
+          // });
         }
       }
     });
   }
 
-  void _initRecommend() {
-    CommmonService().getRecommendList((RecommendListModel _bean) {
-      if (_bean.code == _code) {
-        List recommendList = _bean.recommend;
-        setState(() {
-          _recommendList = recommendList;
-        });
+  Future _initRecommend() {
+    return CommmonService().getRecommendList().then((res) {
+      if (res.statusCode == 200) {
+        RecommendListModel _bean = RecommendListModel.fromJson(res.data);
+        if (_bean.code == _code) {
+          return _bean.recommend;
+          // setState(() {
+          //   _recommendList = recommendList;
+          // });
+        }
       }
     });
   }
 
-  void _initRecommendSong() {
-    CommmonService().getRecommendSongList((RecommendSongListModel _bean) {
-      if (_bean.code == _code) {
-        _bean.recommend.shuffle();
-        List recommendSongList = _bean.recommend;
-        print(recommendSongList.first);
-        String reason = _bean.recommend.first.reason;
-        var filter = _bean.recommend.takeWhile((item) => item.reason == reason);
-        if (filter.length > 6) {
-        } else {
-          setState(() {
-            _recommendSongList = recommendSongList;
-          });
+  Future _initRecommendSong() {
+    return CommmonService().getRecommendSongList().then((res) {
+      if (res.statusCode == 200) {
+        RecommendSongListModel _bean =
+            RecommendSongListModel.fromJson(res.data);
+        if (_bean.code == _code) {
+          _bean.recommend
+            ..shuffle()
+            ..removeRange(9, _bean.recommend.length);
+          List recommendSongList = _bean.recommend;
+          String reason = _bean.recommend.first.reason;
+          var filter =
+              _bean.recommend.takeWhile((item) => item.reason == reason);
+          if (filter.length > 6) {
+          } else {
+            return recommendSongList;
+            // setState(() {
+            //   _recommendSongList = recommendSongList;
+            // });
+          }
         }
       }
+    });
+  }
+
+  Future _initNewestAlbum() {
+    return CommmonService().getNewestAlbum().then((res) {
+      if (res.statusCode == 200) {
+        NewestAlbumModel _bean = NewestAlbumModel.fromJson(res.data);
+        if (_bean.code == _code) {
+          _bean.albums
+            ..shuffle()
+            ..removeRange(6, _bean.albums.length);
+          return _bean.albums;
+        }
+      }
+    });
+  }
+
+  Future _initNewestAlbum() {
+    return CommmonService().getNewestAlbum().then((res) {
+      if (res.statusCode == 200) {
+        NewestAlbumModel _bean = NewestAlbumModel.fromJson(res.data);
+        if (_bean.code == _code) {
+          _bean.albums
+            ..shuffle()
+            ..removeRange(6, _bean.albums.length);
+          return _bean.albums;
+        }
+      }
+    });
+  }
+
+  _load() {
+    return _memoizer.runOnce(() async {
+      return Future.wait([
+        _initBanner(),
+        _initRecommend(),
+        _initRecommendSong(),
+        _initNewestAlbum()
+      ]);
     });
   }
 
@@ -149,7 +199,7 @@ class _FindState extends State<Find> {
                         ? Align(
                             alignment: FractionalOffset(0.5, 0.55),
                             child: Text(
-                              '$now',
+                              '${now.day}',
                               style: TextStyle(
                                   color: Color(0xffff1916),
                                   fontSize: ScreenUtil().setSp(25.0),
@@ -166,122 +216,63 @@ class _FindState extends State<Find> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    // ScreenUtil.init(context, width: 750, height: 1334);
-    // gridview的宽高比
-    double ratio =
-        ScreenUtil().setWidth(100.0) / (MediaQuery.of(context).size.width - 60);
-
+  Widget home(List bannerList, List recommendList, List recommendSongList,
+      List albumList, double ratio) {
     return ListView(
         scrollDirection: Axis.vertical,
         padding: EdgeInsets.all(10.0),
         children: <Widget>[
           SizedBox(height: ScreenUtil().setHeight(80.0)),
-          HomeBanner(_bannerList), //banner
+          HomeBanner(bannerList), //banner
           SizedBox(height: ScreenUtil().setHeight(20.0)),
           playType(), // 首页按钮
           SizedBox(height: ScreenUtil().setHeight(20.0)),
-          TitleHeader(),
-          HomeRecommend(_recommendList), // 发现页面推荐歌单
+          TitleHeader('推荐歌单', '为你精挑细选', 1),
+          HomeRecommend(recommendList), // 发现页面推荐歌单
           SizedBox(height: ScreenUtil().setHeight(20.0)),
-          TitleHeader(),
+          TitleHeader('风格推荐', '根据你喜欢的歌曲推荐', 0),
           SizedBox(height: ScreenUtil().setHeight(20.0)),
-          HomeRecommendSong(_controller, _physics, _recommendSongList, ratio),
-          TitleHeader(),
+          HomeMusicList(_controller, _physics, recommendSongList, ratio),
           SizedBox(height: ScreenUtil().setHeight(20.0)),
-          Container(
-            height: ScreenUtil().setHeight(300.0),
-            child: GridView.builder(
-                scrollDirection: Axis.horizontal,
-                controller: _newController,
-                itemCount: 6,
-                physics: _physics,
-                padding: EdgeInsets.symmetric(horizontal: 10.0),
-                //SliverGridDelegateWithFixedCrossAxisCount 构建一个横轴固定数量Widget
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    //横轴元素个数
-                    crossAxisCount: 3,
-                    //纵轴间距
-                    mainAxisSpacing: 5.0,
-                    //横轴间距
-                    crossAxisSpacing: 10.0,
-                    //子组件宽高长度比例
-                    childAspectRatio: ratio),
-                itemBuilder: (BuildContext context, int index) {
-                  //Widget Function(BuildContext context, int index)
-                  return Column(children: <Widget>[
-                    Row(children: <Widget>[
-                      PlayListCoverWidget(
-                        "https://uploads.5068.com/allimg/151109/48-151109110K6-50.jpg",
-                        width: 100,
-                      ),
-                      Expanded(child: Text('$index')),
-                      Padding(
-                        padding: EdgeInsets.only(right: 10.0),
-                        child: Icon(Icons.play_arrow, size: 30.0),
-                      )
-                    ])
-                  ]);
-                }),
-          ),
+          TitleHeader('${now.month}月${now.day}日', '新碟', 1),
           SizedBox(height: ScreenUtil().setHeight(20.0)),
-          TitleHeader(),
+          HomeMusicList(_newController, _physics, albumList, ratio,
+              isAlbum: true),
           SizedBox(height: ScreenUtil().setHeight(20.0)),
-          Container(
-            height: ScreenUtil().setHeight(380.0),
-            child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                controller: _rankController,
-                itemCount: 5,
-                physics: _physics,
-                padding: EdgeInsets.symmetric(horizontal: 10.0),
-                itemBuilder: (BuildContext context, int index) {
-                  return Container(
-                    width: MediaQuery.of(context).size.width - 60,
-                    margin: EdgeInsets.only(right: 10.0),
-                    padding: EdgeInsets.all(10.0),
-                    decoration: BoxDecoration(
-                        color: Color(0xfff1f1f1),
-                        borderRadius: BorderRadius.circular(10.0)),
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: <Widget>[
-                                Text('云音乐说唱排行榜',
-                                    style: TextStyle(
-                                        fontSize: ScreenUtil().setSp(28.0),
-                                        fontWeight: FontWeight.bold)),
-                                Icon(Icons.keyboard_arrow_right,
-                                    size: ScreenUtil().setSp(45.0))
-                              ]),
-                          Container(
-                            height: ScreenUtil().setHeight(300.0),
-                            padding: EdgeInsets.only(top: 5.0),
-                            child: ListView.builder(
-                                physics: NeverScrollableScrollPhysics(),
-                                itemCount: 3,
-                                itemBuilder: (BuildContext context, int index) {
-                                  return Padding(
-                                    padding: EdgeInsets.only(bottom: 10.0),
-                                    child: Row(children: <Widget>[
-                                      PlayListCoverWidget(
-                                        "https://uploads.5068.com/allimg/151109/48-151109110K6-50.jpg",
-                                        width: 100,
-                                      ),
-                                      Expanded(child: Text('$index')),
-                                      Icon(Icons.play_arrow, size: 30.0)
-                                    ]),
-                                  );
-                                }),
-                          )
-                        ]),
-                  );
-                }),
-          ),
+          TitleHeader('排行榜', '热歌风向标', 1),
+          SizedBox(height: ScreenUtil().setHeight(20.0)),
+          // HomeRank(_rankController, _physics, albumList, ratio),
+          SizedBox(
+              height: ScreenUtil().setHeight(150.0),
+              child: Center(
+                  child: Text('到底啦~', style: TextStyle(color: Colors.grey))))
         ]);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    double ratio = ScreenUtil().setWidth(100.0) /
+        (MediaQuery.of(context).size.width - 60); // gridview的宽高比
+
+    return FutureBuilder(
+      future: _load(),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        switch (snapshot.connectionState) {
+          case ConnectionState.waiting:
+            return Center(
+                child: SpinKitChasingDots(
+                    color: Theme.of(context).primaryColor, size: 30.0));
+          case ConnectionState.done:
+            List bannerList = snapshot.data[0];
+            List recommendList = snapshot.data[1];
+            List recommendSongList = snapshot.data[2];
+            List albumList = snapshot.data[3];
+            return home(
+                bannerList, recommendList, recommendSongList, albumList, ratio);
+          default:
+            return null;
+        }
+      },
+    );
   }
 }

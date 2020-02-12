@@ -46,4 +46,12 @@ class Config {
     {"image": "assets/icon_broadcast.png", "text": "我的电台"},
     {"image": "assets/icon_collect.png", "text": "我的收藏"}
   ];
+
+  static List rankType = [
+    {"title": "云音乐电音榜", "type": 4},
+    {"title": "网易原创歌曲榜", "type": 2},
+    {"title": "云音乐新歌榜", "type": 0},
+    {"title": "云音乐说唱榜", "type": 23},
+    {"title": "云音乐飙升榜", "type": 3},
+  ];
 }

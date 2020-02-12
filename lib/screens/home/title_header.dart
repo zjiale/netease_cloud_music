@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class TitleHeader extends StatelessWidget {
+  final String title;
+  final String subTitle;
+  final int type;
+
+  TitleHeader(this.title, this.subTitle, this.type);
+
   @override
   Widget build(BuildContext context) {
     ScreenUtil.init(context, width: 750, height: 1334);
@@ -15,12 +21,12 @@ class TitleHeader extends StatelessWidget {
             Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text("推荐歌单",
+                  Text(title,
                       style: TextStyle(
                           color: Color(0xffcdcdcd),
                           fontSize: ScreenUtil().setSp(23.0))),
                   SizedBox(height: 3.0),
-                  Text("为你精挑细选",
+                  Text(subTitle,
                       style: TextStyle(
                           color: Colors.black,
                           fontSize: ScreenUtil().setSp(30.0),
@@ -36,15 +42,21 @@ class TitleHeader extends StatelessWidget {
                     width: 1.0,
                   ),
                 ),
-                child: Row(children: <Widget>[
-                  Icon(Icons.play_arrow,
-                      color: Colors.black, size: ScreenUtil().setSp(30.0)),
-                  SizedBox(width: 1.0),
-                  Text('播放全部',
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontSize: ScreenUtil().setSp(25.0)))
-                ]))
+                child: type == 0
+                    ? Row(children: <Widget>[
+                        Icon(Icons.play_arrow,
+                            color: Colors.black,
+                            size: ScreenUtil().setSp(30.0)),
+                        SizedBox(width: 1.0),
+                        Text('播放全部',
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: ScreenUtil().setSp(25.0)))
+                      ])
+                    : Text('查看更多',
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: ScreenUtil().setSp(25.0))))
           ]),
     );
   }

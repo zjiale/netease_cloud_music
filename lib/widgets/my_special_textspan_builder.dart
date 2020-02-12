@@ -30,7 +30,7 @@ class MySpecialTextSpanBuilder extends SpecialTextSpanBuilder {
 }
 
 class AtText extends SpecialText {
-  static const String flag = "@";
+  static const String flag = "@s";
   final int start;
 
   /// whether show background for @somebody
@@ -40,7 +40,7 @@ class AtText extends SpecialText {
       {this.showAtBackground: false, this.start})
       : super(
           flag,
-          'e',
+          '@',
           textStyle,
         );
 

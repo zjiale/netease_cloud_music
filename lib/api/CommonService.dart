@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:wangyiyun/api/api.dart';
+import 'package:wangyiyun/model/newest_album_model.dart';
 import 'package:wangyiyun/model/recommend_song_list_model.dart';
 import 'package:wangyiyun/utils/config.dart';
 import 'package:wangyiyun/model/recommend_list_model.dart';
@@ -9,16 +10,21 @@ class CommmonService {
     return await Dio().get("${Api.BANNER}?type=$type", options: _getOptions());
   }
 
-  void getRecommendList(Function callback) async {
-    Dio().get(Api.RECOMMEND_LIST, options: _getOptions()).then((response) {
-      callback(RecommendListModel.fromJson(response.data));
-    });
+  Future<Response> getRecommendList() async {
+    return Dio().get(Api.RECOMMEND_LIST, options: _getOptions());
   }
 
-  void getRecommendSongList(Function callback) async {
-    Dio().get(Api.RECOMMEND_SONG_LIST, options: _getOptions()).then((response) {
-      callback(RecommendSongListModel.fromJson(response.data));
-    });
+  Future<Response> getRecommendSongList() async {
+    return Dio().get(Api.RECOMMEND_SONG_LIST, options: _getOptions());
+  }
+
+  Future<Response> getNewestAlbum() async {
+    return Dio().get(Api.NEWEST_ALBUM_LIST, options: _getOptions());
+  }
+
+  Future<Response> getRank(int type) async {
+    return await Dio()
+        .get("${Api.RANK_LIST}?idx=$type", options: _getOptions());
   }
 
   Options _getOptions() {

@@ -54,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen>
     ScreenUtil.init(context, width: 750, height: 1334);
     return SafeArea(
         child: Scaffold(
-            // drawer: Drawer(),
+            drawer: Drawer(),
             // appBar: AppBar(
             //   backgroundColor: Colors.transparent,
             //   elevation: 0,
