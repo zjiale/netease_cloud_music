@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:wangyiyun/model/banner_model.dart';
+import 'package:wangyiyun/model/home_rank_model.dart';
 import 'package:wangyiyun/model/newest_album_model.dart';
+import 'package:wangyiyun/model/rank_list_model.dart';
 import 'package:wangyiyun/model/recommend_list_model.dart';
 import 'package:wangyiyun/model/recommend_song_list_model.dart';
 import 'package:wangyiyun/screens/home/title_header.dart';
@@ -24,8 +26,9 @@ class Find extends StatefulWidget {
   _FindState createState() => _FindState();
 }
 
-class _FindState extends State<Find> {
+class _FindState extends State<Find> with AutomaticKeepAliveClientMixin {
   List _type = Config.type;
+  List _rankType = Config.rankType;
   int _code = Config.SUCCESS_CODE;
 
   DateTime now = new DateTime.now();
@@ -39,6 +42,9 @@ class _FindState extends State<Find> {
   ScrollController _rankController = new ScrollController();
 
   ScrollPhysics _physics;
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -157,18 +163,24 @@ class _FindState extends State<Find> {
     });
   }
 
-  Future _initNewestAlbum() {
-    return CommmonService().getNewestAlbum().then((res) {
-      if (res.statusCode == 200) {
-        NewestAlbumModel _bean = NewestAlbumModel.fromJson(res.data);
-        if (_bean.code == _code) {
-          _bean.albums
-            ..shuffle()
-            ..removeRange(6, _bean.albums.length);
-          return _bean.albums;
+  Future _initRankList() async {
+    List _list = new List();
+    for (var i in _rankType) {
+      await CommmonService().getRank(i["type"]).then((res) {
+        if (res.statusCode == 200) {
+          RankListModel _bean = RankListModel.fromJson(res.data);
+          if (_bean.code == _code) {
+            _bean.playlist.tracks.removeRange(3, _bean.playlist.tracks.length);
+            var rank = {
+              "title": "${i["title"]}",
+              "content": _bean.playlist.tracks
+            };
+            _list.add(rank);
+          }
         }
-      }
-    });
+      });
+    }
+    return _list;
   }
 
   _load() {
@@ -177,7 +189,8 @@ class _FindState extends State<Find> {
         _initBanner(),
         _initRecommend(),
         _initRecommendSong(),
-        _initNewestAlbum()
+        _initNewestAlbum(),
+        _initRankList()
       ]);
     });
   }
@@ -217,40 +230,44 @@ class _FindState extends State<Find> {
   }
 
   Widget home(List bannerList, List recommendList, List recommendSongList,
-      List albumList, double ratio) {
-    return ListView(
-        scrollDirection: Axis.vertical,
-        padding: EdgeInsets.all(10.0),
-        children: <Widget>[
-          SizedBox(height: ScreenUtil().setHeight(80.0)),
-          HomeBanner(bannerList), //banner
-          SizedBox(height: ScreenUtil().setHeight(20.0)),
-          playType(), // 首页按钮
-          SizedBox(height: ScreenUtil().setHeight(20.0)),
-          TitleHeader('推荐歌单', '为你精挑细选', 1),
-          HomeRecommend(recommendList), // 发现页面推荐歌单
-          SizedBox(height: ScreenUtil().setHeight(20.0)),
-          TitleHeader('风格推荐', '根据你喜欢的歌曲推荐', 0),
-          SizedBox(height: ScreenUtil().setHeight(20.0)),
-          HomeMusicList(_controller, _physics, recommendSongList, ratio),
-          SizedBox(height: ScreenUtil().setHeight(20.0)),
-          TitleHeader('${now.month}月${now.day}日', '新碟', 1),
-          SizedBox(height: ScreenUtil().setHeight(20.0)),
-          HomeMusicList(_newController, _physics, albumList, ratio,
-              isAlbum: true),
-          SizedBox(height: ScreenUtil().setHeight(20.0)),
-          TitleHeader('排行榜', '热歌风向标', 1),
-          SizedBox(height: ScreenUtil().setHeight(20.0)),
-          // HomeRank(_rankController, _physics, albumList, ratio),
-          SizedBox(
-              height: ScreenUtil().setHeight(150.0),
-              child: Center(
-                  child: Text('到底啦~', style: TextStyle(color: Colors.grey))))
-        ]);
+      List albumList, List homeRankList, double ratio) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: ListView(
+          scrollDirection: Axis.vertical,
+          padding: EdgeInsets.all(10.0),
+          children: <Widget>[
+            SizedBox(height: ScreenUtil().setHeight(80.0)),
+            HomeBanner(bannerList), //banner
+            SizedBox(height: ScreenUtil().setHeight(20.0)),
+            playType(), // 首页按钮
+            SizedBox(height: ScreenUtil().setHeight(20.0)),
+            TitleHeader('推荐歌单', '为你精挑细选', 1),
+            HomeRecommend(recommendList), // 发现页面推荐歌单
+            SizedBox(height: ScreenUtil().setHeight(20.0)),
+            TitleHeader('风格推荐', '根据你喜欢的歌曲推荐', 0),
+            SizedBox(height: ScreenUtil().setHeight(20.0)),
+            HomeMusicList(_controller, _physics, recommendSongList, ratio),
+            SizedBox(height: ScreenUtil().setHeight(20.0)),
+            TitleHeader('${now.month}月${now.day}日', '新碟', 1),
+            SizedBox(height: ScreenUtil().setHeight(20.0)),
+            HomeMusicList(_newController, _physics, albumList, ratio,
+                isAlbum: true),
+            SizedBox(height: ScreenUtil().setHeight(20.0)),
+            TitleHeader('排行榜', '热歌风向标', 1),
+            SizedBox(height: ScreenUtil().setHeight(20.0)),
+            HomeRank(_rankController, _physics, homeRankList, ratio),
+            SizedBox(
+                height: ScreenUtil().setHeight(150.0),
+                child: Center(
+                    child: Text('到底啦~', style: TextStyle(color: Colors.grey))))
+          ]),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     double ratio = ScreenUtil().setWidth(100.0) /
         (MediaQuery.of(context).size.width - 60); // gridview的宽高比
 
@@ -267,8 +284,9 @@ class _FindState extends State<Find> {
             List recommendList = snapshot.data[1];
             List recommendSongList = snapshot.data[2];
             List albumList = snapshot.data[3];
-            return home(
-                bannerList, recommendList, recommendSongList, albumList, ratio);
+            List homeRankList = snapshot.data[4];
+            return home(bannerList, recommendList, recommendSongList, albumList,
+                homeRankList, ratio);
           default:
             return null;
         }

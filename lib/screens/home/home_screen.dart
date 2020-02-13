@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wangyiyun/screens/home/find.dart';
@@ -12,6 +13,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
   List<String> _title = Config.title;
   List<Widget> _pages;
 
@@ -54,19 +57,8 @@ class _HomeScreenState extends State<HomeScreen>
     ScreenUtil.init(context, width: 750, height: 1334);
     return SafeArea(
         child: Scaffold(
-            drawer: Drawer(),
-            // appBar: AppBar(
-            //   backgroundColor: Colors.transparent,
-            //   elevation: 0,
-            //   //因为tittle准备放置一个listview，设置这个属性title横向填满
-            //   titleSpacing: 0.0,
-            //   centerTitle: true,
-            //   title: TabTitle(
-            //     _title,
-            //     setCall: _pageChagedCall,
-            //     itemClick: _tittleItemClickCall,
-            //   ),
-            // ),
+            key: _scaffoldKey,
+            drawer: new Drawer(),
             body: PageView.builder(
                 controller: _pageController,
                 itemCount: _title.length,
@@ -78,17 +70,35 @@ class _HomeScreenState extends State<HomeScreen>
                       height: ScreenUtil().setHeight(80.0),
                       width: double.infinity,
                       child: AppBar(
-                        backgroundColor: Colors.transparent,
-                        elevation: 0,
-                        //因为tittle准备放置一个listview，设置这个属性title横向填满
-                        titleSpacing: 0.0,
-                        centerTitle: true,
-                        title: TabTitle(
-                          _title,
-                          setCall: _pageChagedCall,
-                          itemClick: _tittleItemClickCall,
-                        ),
-                      ),
+                          backgroundColor:
+                              pos == 0 ? Colors.transparent : Colors.white,
+                          elevation: 0,
+                          //因为tittle准备放置一个listview，设置这个属性title横向填满
+                          titleSpacing: 0.0,
+                          centerTitle: true,
+                          title: TabTitle(
+                            _title,
+                            setCall: _pageChagedCall,
+                            itemClick: _tittleItemClickCall,
+                          ),
+                          leading: GestureDetector(
+                              onTap: () {
+                                if (_scaffoldKey.currentState.isDrawerOpen) {
+                                  _scaffoldKey.currentState.openEndDrawer();
+                                } else {
+                                  _scaffoldKey.currentState.openDrawer();
+                                }
+                              },
+                              child: IconButton(
+                                  icon: Icon(Icons.menu,
+                                      color: pos == 0
+                                          ? Colors.transparent
+                                          : Colors.black))),
+                          actions: <Widget>[
+                            IconButton(
+                                icon: Icon(Icons.search, color: Colors.black),
+                                onPressed: () {})
+                          ]),
                     ),
                   ]);
                 })));

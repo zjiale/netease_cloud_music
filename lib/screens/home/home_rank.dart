@@ -1,5 +1,7 @@
+import 'package:extended_text/extended_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:wangyiyun/widgets/my_special_textspan_builder.dart';
 import 'package:wangyiyun/widgets/play_list_cover.dart';
 
 class HomeRank extends StatelessWidget {
@@ -21,7 +23,7 @@ class HomeRank extends StatelessWidget {
       child: ListView.builder(
           scrollDirection: Axis.horizontal,
           controller: controller,
-          itemCount: 5,
+          itemCount: list.length,
           physics: physics,
           padding: EdgeInsets.symmetric(horizontal: 10.0),
           itemBuilder: (BuildContext context, int index) {
@@ -39,7 +41,7 @@ class HomeRank extends StatelessWidget {
                     Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
-                          Text('云音乐说唱排行榜',
+                          Text(list[index]["title"],
                               style: TextStyle(
                                   fontSize: ScreenUtil().setSp(28.0),
                                   fontWeight: FontWeight.bold)),
@@ -51,19 +53,43 @@ class HomeRank extends StatelessWidget {
                       padding: EdgeInsets.only(top: 5.0),
                       child: ListView.builder(
                           physics: NeverScrollableScrollPhysics(),
-                          itemCount: 3,
-                          itemBuilder: (BuildContext context, int index) {
+                          itemCount: list[index]["content"].length,
+                          itemBuilder: (BuildContext context, int ind) {
                             return Padding(
-                              padding: EdgeInsets.only(bottom: 10.0),
-                              child: Row(children: <Widget>[
-                                PlayListCoverWidget(
-                                  "https://uploads.5068.com/allimg/151109/48-151109110K6-50.jpg",
-                                  width: 100,
-                                ),
-                                Expanded(child: Text('$index')),
-                                Icon(Icons.play_arrow, size: 30.0)
-                              ]),
-                            );
+                                padding: EdgeInsets.only(bottom: 10.0),
+                                child: Row(children: <Widget>[
+                                  PlayListCoverWidget(
+                                    "${list[index]["content"][ind].al.picUrl}",
+                                    width: 100,
+                                  ),
+                                  SizedBox(width: ScreenUtil().setWidth(10.0)),
+                                  Expanded(
+                                      child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: <Widget>[
+                                        ExtendedText(
+                                            '  @num${ind + 1}@  ${list[index]["content"][ind].name} @s- ${list[index]["content"][ind].ar.first.name}@',
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 1,
+                                            specialTextSpanBuilder:
+                                                MySpecialTextSpanBuilder(),
+                                            overFlowTextSpan: OverFlowTextSpan(
+                                                children: <TextSpan>[
+                                                  TextSpan(text: '\u2026  '),
+                                                  TextSpan(
+                                                      text:
+                                                          "- ${list[index]["content"][ind].ar.first.name}",
+                                                      style: TextStyle(
+                                                          fontSize: ScreenUtil()
+                                                              .setSp(20.0),
+                                                          color: Colors.grey))
+                                                ])),
+                                        SizedBox(
+                                            height:
+                                                ScreenUtil().setHeight(8.0)),
+                                      ]))
+                                ]));
                           }),
                     )
                   ]),
