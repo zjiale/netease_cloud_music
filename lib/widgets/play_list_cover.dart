@@ -7,9 +7,13 @@ class PlayListCoverWidget extends StatelessWidget {
   final String playCount;
   final double width;
   final bool isAlbum;
+  final bool create;
 
   PlayListCoverWidget(this.url,
-      {this.playCount, this.width = 200, this.isAlbum = false});
+      {this.playCount,
+      this.width = 200,
+      this.isAlbum = false,
+      this.create = false});
 
   @override
   Widget build(BuildContext context) {
@@ -20,10 +24,13 @@ class PlayListCoverWidget extends StatelessWidget {
           child: Container(
             width: ScreenUtil().setWidth(width),
             height: ScreenUtil().setWidth(width),
+            color: Color(0xfff1f1f1),
             child: Stack(
               alignment: Alignment.topRight,
               children: <Widget>[
-                ExtendedImage.network(url, fit: BoxFit.cover),
+                create == false
+                    ? ExtendedImage.network(url, fit: BoxFit.cover)
+                    : Container(),
                 playCount == null
                     ? Container()
                     : Padding(

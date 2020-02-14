@@ -1,10 +1,15 @@
 import 'dart:ui';
+import 'package:async/async.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:wangyiyun/api/CommonService.dart';
+import 'package:wangyiyun/model/play_list_model.dart';
 import 'package:wangyiyun/utils/config.dart';
 import 'package:wangyiyun/widgets/flexible_detail_bar.dart';
 import 'package:wangyiyun/widgets/space_bar.dart';
+import 'package:wangyiyun/widgets/user_center_area.dart';
 import 'package:wangyiyun/widgets/user_center_list.dart';
 
 class UserCenterScreen extends StatefulWidget {
@@ -15,6 +20,23 @@ class UserCenterScreen extends StatefulWidget {
 class _UserCenterScreenState extends State<UserCenterScreen> {
   int _selectIndex = 0;
   List _button = Config.centerBtn;
+  List _area = Config.centerArea;
+  int _code = Config.SUCCESS_CODE;
+
+  AsyncMemoizer _memoizer = AsyncMemoizer();
+
+  Future _initPlayList() {
+    return _memoizer.runOnce(() async {
+      return CommmonService().getPlayList(93412043).then((res) {
+        if (res.statusCode == 200) {
+          PlayListModel _bean = PlayListModel.fromJson(res.data);
+          if (_bean.code == _code) {
+            return _bean.playlist;
+          }
+        }
+      });
+    });
+  }
 
   Widget centerButton() {
     return Row(
@@ -71,31 +93,32 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
     }).toList());
   }
 
-  List<Widget> playList(int index) {
+  List<Widget> playList(int index, List create, List collect) {
     int _length;
     switch (index) {
       case 0:
-        _length = 4;
+        _length = create.length;
         break;
       case 1:
-        _length = 10;
+        _length = collect.length;
         break;
+      default:
     }
     List<Widget> _list = [];
     for (int i = 0; i < _length; i++) {
-      _list.add(UserCenterList('歌单：粤语传世经典，怀旧是人的本能', subTitle: '继续播放'));
+      _list.add(UserCenterList(index == 0 ? create[i].name : collect[i].name,
+          subTitle:
+              '${index == 0 ? create[i].trackCount : collect[i].trackCount}首',
+          url: index == 0 ? create[i].coverImgUrl : collect[i].coverImgUrl));
     }
-    if (index == 0) {
+    if (_selectIndex == 0) {
       _list.add(UserCenterList('创建歌单', create: true));
     }
 
     return _list;
   }
 
-  @override
-  Widget build(BuildContext context) {
-    ScreenUtil.init(context, width: 750, height: 1334);
-
+  Widget userCenter(List subscribedList, List unSubscribedList) {
     return CustomScrollView(
       slivers: <Widget>[
         SliverAppBar(
@@ -153,25 +176,11 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                     ]),
                   ),
                 ),
-                background: Stack(
-                  children: <Widget>[
-                    Image.asset('assets/timg.jpg',
-                        width: MediaQuery.of(context).size.width,
-                        fit: BoxFit.cover,
-                        colorBlendMode: BlendMode.srcOver,
-                        color: Colors.black26),
-                    BackdropFilter(
-                        filter: ImageFilter.blur(
-                          sigmaY: 5,
-                          sigmaX: 5,
-                        ),
-                        child: Container(
-                          color: Colors.black38,
-                          width: double.infinity,
-                          height: double.infinity,
-                        ))
-                  ],
-                )),
+                background: Image.asset('assets/timg.jpg',
+                    width: MediaQuery.of(context).size.width,
+                    fit: BoxFit.cover,
+                    colorBlendMode: BlendMode.srcOver,
+                    color: Colors.black54)),
             bottom: SpaceBar()),
         SliverToBoxAdapter(
             child: Container(
@@ -192,18 +201,9 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                     height: ScreenUtil().setHeight(250.0),
                     child: ListView.builder(
                         scrollDirection: Axis.horizontal,
-                        // physics: NeverScrollableScrollPhysics(),
                         itemCount: 5,
                         itemBuilder: (BuildContext context, int index) {
-                          return Container(
-                            height: ScreenUtil().setHeight(250.0),
-                            margin: EdgeInsets.only(right: 10.0),
-                            width: (MediaQuery.of(context).size.width - 60) / 3,
-                            decoration: BoxDecoration(
-                                color: Colors.blue,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(5.0))),
-                          );
+                          return UserCenterArea(_area[index]);
                         })))),
         SliverToBoxAdapter(
             child: Container(
@@ -234,8 +234,9 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                   Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        UserCenterList('歌单：粤语传世经典，怀旧是人的本能', subTitle: '继续播放'),
-                        UserCenterList('歌单：粤语传世经典，怀旧是人的本能', subTitle: '继续播放')
+                        UserCenterList('全部已播歌曲', subTitle: '300首', play: true),
+                        UserCenterList('歌单：粤语传世经典，怀旧是人的本能',
+                            subTitle: '继续播放', play: true)
                       ])
                 ]))),
         SliverToBoxAdapter(
@@ -248,7 +249,8 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                       Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
-                            option(4, 10),
+                            option(
+                                unSubscribedList.length, subscribedList.length),
                             Icon(Icons.more_vert,
                                 size: ScreenUtil().setSp(50.0),
                                 color: Color(0xffcdcdcd))
@@ -257,12 +259,38 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                       Wrap(
                         spacing: 20.0,
                         runSpacing: ScreenUtil().setHeight(20.0),
-                        children: playList(_selectIndex),
+                        children: playList(
+                            _selectIndex, unSubscribedList, subscribedList),
                       )
                     ]))),
         SliverToBoxAdapter(
             child: Container(height: ScreenUtil().setHeight(100.0))),
       ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: _initPlayList(),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        switch (snapshot.connectionState) {
+          case ConnectionState.waiting:
+            return Center(
+                child: SpinKitChasingDots(
+                    color: Theme.of(context).primaryColor, size: 30.0));
+          case ConnectionState.done:
+            // List loveList = snapshot.data;
+            List subscribedList = List.from(snapshot.data);
+            List unSubscribedList = List.from(snapshot.data);
+            subscribedList.retainWhere((item) => item.subscribed == true);
+            unSubscribedList.retainWhere(
+                (item) => item.subscribed == false && item.specialType != 5);
+            return userCenter(subscribedList, unSubscribedList);
+          default:
+            return null;
+        }
+      },
     );
   }
 }

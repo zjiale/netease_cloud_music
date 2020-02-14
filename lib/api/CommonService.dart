@@ -27,6 +27,10 @@ class CommmonService {
         .get("${Api.RANK_LIST}?idx=$type", options: _getOptions());
   }
 
+  Future<Response> getPlayList(int id) async {
+    return await Dio().get("${Api.PLAY_LIST}?uid=$id", options: _getOptions());
+  }
+
   Options _getOptions() {
     return Options(headers: Config().getHeader());
   }

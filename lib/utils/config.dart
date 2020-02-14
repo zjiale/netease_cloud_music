@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:wangyiyun/model/center_area_model.dart';
 
 class Config {
   String cookie =
@@ -53,5 +55,53 @@ class Config {
     {"title": "云音乐新歌榜", "type": 0},
     {"title": "云音乐说唱榜", "type": 23},
     {"title": "云音乐飙升榜", "type": 3},
+  ];
+
+  static List<CenterAreaModel> centerArea = [
+    CenterAreaModel(
+        title: '我喜欢的音乐',
+        icon: Icon(Icons.favorite,
+            size: ScreenUtil().setWidth(60.0), color: Colors.redAccent),
+        subTitle: Container(
+            padding: EdgeInsets.all(ScreenUtil().setWidth(5.0)),
+            color: Colors.white54,
+            child: Row(children: <Widget>[
+              Icon(Icons.play_arrow,
+                  size: ScreenUtil().setSp(20.0), color: Colors.white),
+              Text('心动模式',
+                  style: TextStyle(
+                      fontSize: ScreenUtil().setSp(23.0), color: Colors.white))
+            ]))),
+    CenterAreaModel(
+        title: '私人FM',
+        icon: Icon(Icons.radio,
+            size: ScreenUtil().setWidth(60.0), color: Colors.white),
+        subTitle: Text('听新鲜的',
+            style: TextStyle(
+                fontSize: ScreenUtil().setSp(23.0), color: Colors.white))),
+    CenterAreaModel(
+        title: '驾驶模式',
+        icon: Icon(Icons.local_taxi,
+            size: ScreenUtil().setWidth(60.0), color: Colors.black),
+        subTitle: Text('')),
+    CenterAreaModel(
+        title: '古典专区',
+        header: '推荐',
+        icon: Icon(Icons.headset,
+            size: ScreenUtil().setWidth(60.0), color: Colors.black),
+        subTitle: Text('专业古典大全',
+            style: TextStyle(
+                fontSize: ScreenUtil().setSp(23.0),
+                color: Colors.grey,
+                fontWeight: FontWeight.bold))),
+    CenterAreaModel(
+        title: '最嗨电音',
+        icon: Icon(Icons.blur_on,
+            size: ScreenUtil().setWidth(60.0), color: Colors.black),
+        subTitle: Text('专业电音平台',
+            style: TextStyle(
+                fontSize: ScreenUtil().setSp(23.0),
+                color: Colors.grey,
+                fontWeight: FontWeight.bold)))
   ];
 }
