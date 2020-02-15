@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class PlayListBottom extends StatelessWidget implements PreferredSizeWidget {
+  final int totalCount;
+  final int subscribedCount;
+
+  PlayListBottom(this.totalCount, this.subscribedCount);
+
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
@@ -34,7 +39,7 @@ class PlayListBottom extends StatelessWidget implements PreferredSizeWidget {
                                       color: Colors.black),
                                   children: <TextSpan>[
                                 TextSpan(
-                                    text: '(共49首)',
+                                    text: '(共$totalCount首)',
                                     style: TextStyle(
                                         fontSize: ScreenUtil().setSp(28.0),
                                         color: Color(0xffcdcdcd)))
@@ -57,7 +62,7 @@ class PlayListBottom extends StatelessWidget implements PreferredSizeWidget {
                                         fontSize: ScreenUtil().setSp(30.0),
                                         color: Colors.white)),
                                 SizedBox(width: ScreenUtil().setWidth(10.0)),
-                                Text('收藏 (3728)',
+                                Text('收藏 ($subscribedCount)',
                                     style: TextStyle(
                                         fontSize: ScreenUtil().setSp(25.0),
                                         color: Colors.white))

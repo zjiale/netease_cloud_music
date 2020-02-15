@@ -1,19 +1,26 @@
 import 'dart:ui';
+import 'package:async/async.dart';
+import 'package:color_thief_flutter/color_thief_flutter.dart';
 
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:marquee_flutter/marquee_flutter.dart';
+import 'package:wangyiyun/api/CommonService.dart';
+import 'package:wangyiyun/model/play_list.detail.dart';
+import 'package:wangyiyun/model/recommend_list_model.dart';
 import 'package:wangyiyun/screens/playlist/play_list_bottom.dart';
 import 'package:wangyiyun/utils/config.dart';
+import 'package:wangyiyun/utils/numbers_convert.dart';
 import 'package:wangyiyun/widgets/flexible_detail_bar.dart';
+import 'package:wangyiyun/widgets/play_list_cover.dart';
 
 class PlayListScreen extends StatefulWidget {
-  // final PreferredSizeWidget musicHeader;
-  // final double expandedHeight;
-  // final Widget content;
+  final double expandedHeight;
+  final int pid;
 
-  // PlayListScreen(this.expandedHeight, this.content,
-  //     {this.musicHeader = PlayListBottom()});
+  PlayListScreen(this.expandedHeight, this.pid);
 
   @override
   _PlayListScreenState createState() => _PlayListScreenState();
@@ -21,8 +28,15 @@ class PlayListScreen extends StatefulWidget {
 
 class _PlayListScreenState extends State<PlayListScreen> {
   List _button = Config.button;
+  int _code = Config.SUCCESS_CODE;
+
   bool _marquee = false;
+
   ScrollController _controller = new ScrollController();
+
+  AsyncMemoizer _memoizer = AsyncMemoizer();
+
+  Color bgColor;
 
   @override
   void initState() {
@@ -42,17 +56,35 @@ class _PlayListScreenState extends State<PlayListScreen> {
     });
   }
 
-  Widget playButton() {
+  Future _initDetailPlayList() {
+    return _memoizer.runOnce(() async {
+      return CommmonService().getDetailPlayList(widget.pid).then((res) {
+        if (res.statusCode == 200) {
+          PlayListDetailModel _bean = PlayListDetailModel.fromJson(res.data);
+          if (_bean.code == _code) {
+            getColorFromUrl(_bean.playlist.coverImgUrl).then((color) {
+              setState(() {
+                bgColor = Color.fromRGBO(color[0], color[1], color[2], 1);
+              }); // [R,G,B]
+            });
+            return _bean.playlist;
+          }
+        }
+      });
+    });
+  }
+
+  Widget playButton(int shareCount, int commentCount) {
     return Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: _button.asMap().entries.map((MapEntry map) {
           String _text;
           switch (map.key) {
             case 0:
-              _text = '12356';
+              _text = commentCount != 0 ? '$commentCount' : '评论';
               break;
             case 1:
-              _text = '321';
+              _text = shareCount != 0 ? '$shareCount' : '分享';
               break;
             case 2:
               _text = '下载';
@@ -67,8 +99,8 @@ class _PlayListScreenState extends State<PlayListScreen> {
             },
             child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
               Image.asset(_button[map.key],
-                  width: ScreenUtil().setWidth(45.0),
-                  height: ScreenUtil().setWidth(45.0)),
+                  width: ScreenUtil().setWidth(40.0),
+                  height: ScreenUtil().setWidth(40.0)),
               SizedBox(height: ScreenUtil().setHeight(5.0)),
               Text(_text)
             ]),
@@ -76,156 +108,170 @@ class _PlayListScreenState extends State<PlayListScreen> {
         }).toList());
   }
 
+  Widget content(Playlist playList) {
+    return CustomScrollView(controller: _controller, slivers: <Widget>[
+      SliverAppBar(
+          pinned: true,
+          expandedHeight: ScreenUtil().setHeight(widget.expandedHeight),
+          elevation: 0,
+          brightness: Brightness.dark,
+          iconTheme: IconThemeData(color: Colors.white),
+          title: _marquee
+              ? Container(
+                  height: ScreenUtil().setHeight(80),
+                  child: MarqueeWidget(
+                    text: playList.name,
+                    scrollAxis: Axis.horizontal,
+                  ),
+                )
+              : Text('歌单'),
+          flexibleSpace: FlexibleDetailBar(
+              content: SafeArea(
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    left: ScreenUtil().setWidth(35),
+                    right: ScreenUtil().setWidth(35),
+                    top: ScreenUtil().setWidth(120),
+                  ),
+                  child: Column(children: <Widget>[
+                    Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          PlayListCoverWidget(playList.coverImgUrl,
+                              width: 230,
+                              playCount: NumberUtils.amountConversion(
+                                  playList.playCount)),
+                          SizedBox(width: ScreenUtil().setWidth(40.0)),
+                          Expanded(
+                              child: Container(
+                            height: ScreenUtil().setWidth(230),
+                            child: Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(playList.name,
+                                      style: TextStyle(
+                                          fontSize: ScreenUtil().setSp(33.0),
+                                          fontWeight: FontWeight.bold)),
+                                  Row(children: <Widget>[
+                                    ClipOval(
+                                        child: Container(
+                                      width: 20.0,
+                                      height: 20.0,
+                                      child: ExtendedImage.network(
+                                          playList.creator.avatarUrl,
+                                          fit: BoxFit.cover),
+                                    )),
+                                    SizedBox(
+                                        width: ScreenUtil().setWidth(10.0)),
+                                    Text(playList.creator.nickname,
+                                        style: TextStyle(
+                                            fontSize: ScreenUtil().setSp(25.0),
+                                            color: Color(0xffcdcdcd))),
+                                    Icon(Icons.keyboard_arrow_right,
+                                        size: ScreenUtil().setSp(40.0),
+                                        color: Color(0xffcdcdcd))
+                                  ]),
+                                  Text(playList.description,
+                                      style: TextStyle(
+                                          fontSize: ScreenUtil().setSp(20.0),
+                                          color: Color(0xffcdcdcd)),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis)
+                                ]),
+                          ))
+                        ]),
+                    SizedBox(height: ScreenUtil().setHeight(30.0)),
+                    playButton(playList.shareCount, playList.commentCount)
+                  ]),
+                ),
+              ),
+              background: Stack(
+                children: <Widget>[
+                  Container(
+                      width: double.infinity,
+                      height: double.infinity,
+                      color: bgColor),
+                  BackdropFilter(
+                    filter: ImageFilter.blur(
+                      sigmaY: 5,
+                      sigmaX: 5,
+                    ),
+                    child: Container(
+                      color: Colors.black26,
+                      width: double.infinity,
+                      height: double.infinity,
+                    ),
+                  ),
+                ],
+              )),
+          bottom:
+              PlayListBottom(playList.trackCount, playList.subscribedCount)),
+      SliverPadding(
+        padding: EdgeInsets.only(left: 20.0),
+        sliver: SliverFixedExtentList(
+          itemExtent: ScreenUtil().setHeight(100.0),
+          delegate:
+              SliverChildBuilderDelegate((BuildContext context, int index) {
+            return Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Text('${index + 1}',
+                      style: TextStyle(
+                          fontSize: ScreenUtil().setSp(30.0),
+                          color: Colors.black45)),
+                  Expanded(
+                      child: ListTile(
+                    title: RichText(
+                        overflow: TextOverflow.ellipsis,
+                        text: TextSpan(
+                            text: playList.tracks[index].name,
+                            style: TextStyle(color: Colors.black),
+                            children: <TextSpan>[
+                              TextSpan(
+                                  text: playList.tracks[index].tns != null
+                                      ? '(${playList.tracks[index].tns.first})'
+                                      : '',
+                                  style: TextStyle(color: Color(0xffcdcdcd)))
+                            ])),
+                    subtitle: Text(
+                        '${playList.tracks[index].ar.first.name} - ${playList.tracks[index].al.name}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis),
+                  )),
+                  IconButton(
+                    icon: Icon(Icons.more_vert),
+                    onPressed: () {},
+                  )
+                ]);
+          }, childCount: playList.trackCount),
+        ),
+      ),
+      SliverToBoxAdapter(
+          child: Container(height: ScreenUtil().setHeight(100.0))),
+    ]);
+  }
+
   @override
   Widget build(BuildContext context) {
     ScreenUtil.init(context, width: 750, height: 1334);
 
     return Scaffold(
-      body: CustomScrollView(
-        controller: _controller,
-        slivers: <Widget>[
-          SliverAppBar(
-              pinned: true,
-              expandedHeight: ScreenUtil().setHeight(530),
-              elevation: 0,
-              brightness: Brightness.dark,
-              iconTheme: IconThemeData(color: Colors.white),
-              title: _marquee
-                  ? Container(
-                      height: ScreenUtil().setHeight(80),
-                      child: MarqueeWidget(
-                        text: "粤语传世经典，怀旧是人的本能",
-                        scrollAxis: Axis.horizontal,
-                      ),
-                    )
-                  : Text('歌单'),
-              flexibleSpace: FlexibleDetailBar(
-                  content: SafeArea(
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                        left: ScreenUtil().setWidth(35),
-                        right: ScreenUtil().setWidth(35),
-                        top: ScreenUtil().setWidth(120),
-                      ),
-                      child: Column(children: <Widget>[
-                        Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Container(
-                                width: ScreenUtil().setWidth(230.0),
-                                height: ScreenUtil().setWidth(230.0),
-                                color: Colors.blue,
-                              ),
-                              SizedBox(width: ScreenUtil().setWidth(40.0)),
-                              Expanded(
-                                  child: Container(
-                                height: ScreenUtil().setWidth(230),
-                                child: Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Text('粤语传世经典，怀旧是人的本能',
-                                          style: TextStyle(
-                                              fontSize:
-                                                  ScreenUtil().setSp(33.0),
-                                              fontWeight: FontWeight.bold)),
-                                      Row(children: <Widget>[
-                                        ClipOval(
-                                            child: Container(
-                                          color: Colors.yellow,
-                                          width: 20.0,
-                                          height: 20.0,
-                                        )),
-                                        SizedBox(
-                                            width: ScreenUtil().setWidth(10.0)),
-                                        Text('橘子树风车',
-                                            style: TextStyle(
-                                                fontSize:
-                                                    ScreenUtil().setSp(25.0),
-                                                color: Color(0xffcdcdcd))),
-                                        Icon(Icons.keyboard_arrow_right,
-                                            size: ScreenUtil().setSp(40.0),
-                                            color: Color(0xffcdcdcd))
-                                      ]),
-                                      Text('封面： 叶倩文&张国荣',
-                                          style: TextStyle(
-                                              fontSize:
-                                                  ScreenUtil().setSp(20.0),
-                                              color: Color(0xffcdcdcd)))
-                                    ]),
-                              ))
-                            ]),
-                        SizedBox(height: ScreenUtil().setHeight(30.0)),
-                        playButton()
-                      ]),
-                    ),
-                  ),
-                  background: Stack(
-                    children: <Widget>[
-                      Image.asset(
-                        'assets/timg.jpg',
-                        width: MediaQuery.of(context).size.width,
-                        fit: BoxFit.cover,
-                      ),
-                      BackdropFilter(
-                        filter: ImageFilter.blur(
-                          sigmaY: 5,
-                          sigmaX: 5,
-                        ),
-                        child: Container(
-                          color: Colors.black38,
-                          width: double.infinity,
-                          height: double.infinity,
-                        ),
-                      ),
-                    ],
-                  )),
-              bottom: PlayListBottom()),
-          SliverPadding(
-            padding: EdgeInsets.only(left: 20.0),
-            sliver: SliverFixedExtentList(
-              itemExtent: ScreenUtil().setHeight(100.0),
-              delegate:
-                  SliverChildBuilderDelegate((BuildContext context, int index) {
-                return Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Text('${index + 1}',
-                          style: TextStyle(
-                              fontSize: ScreenUtil().setSp(30.0),
-                              color: Colors.black45)),
-                      Expanded(
-                          child: ListTile(
-                        title: RichText(
-                            overflow: TextOverflow.ellipsis,
-                            text: TextSpan(
-                                text: 'We are the light',
-                                style: TextStyle(color: Colors.black),
-                                children: <TextSpan>[
-                                  TextSpan(
-                                      text: '(日剧《濑户内海》主题曲主题曲主题曲主题曲主题曲主题曲主题曲)',
-                                      style:
-                                          TextStyle(color: Color(0xffcdcdcd)))
-                                ])),
-                        subtitle: Text(
-                            'aaaasdasdasdasdassssssssssssssdasdsadaaaaaaaaaaaaasadasdasdasdasdasdas',
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis),
-                      )),
-                      IconButton(
-                        icon: Icon(Icons.more_vert),
-                        onPressed: () {},
-                      )
-                    ]);
-              }, childCount: 49),
-            ),
-          ),
-          SliverToBoxAdapter(
-              child: Container(height: ScreenUtil().setHeight(100.0))),
-        ],
-      ),
-    );
+        body: FutureBuilder(
+            future: _initDetailPlayList(),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              switch (snapshot.connectionState) {
+                case ConnectionState.waiting:
+                  return Center(
+                      child: SpinKitChasingDots(
+                          color: Theme.of(context).primaryColor, size: 30.0));
+                case ConnectionState.done:
+                  Playlist playList = snapshot.data;
+                  return content(playList);
+                default:
+                  return null;
+              }
+            }));
   }
 }

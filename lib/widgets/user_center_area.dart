@@ -4,7 +4,8 @@ import 'package:wangyiyun/model/center_area_model.dart';
 
 class UserCenterArea extends StatelessWidget {
   final CenterAreaModel area;
-  UserCenterArea(this.area);
+  final int index;
+  UserCenterArea(this.area, this.index);
 
   @override
   Widget build(BuildContext context) {
@@ -14,18 +15,20 @@ class UserCenterArea extends StatelessWidget {
         width: (MediaQuery.of(context).size.width - 60) / 3,
         decoration: BoxDecoration(
             color: Color(0xfff1f1f1),
-            borderRadius: BorderRadius.all(Radius.circular(5.0))),
+            borderRadius: BorderRadius.all(Radius.circular(5.0)),
+            image: index == 0 || index == 1
+                ? DecorationImage(
+                    fit: BoxFit.cover,
+                    image: AssetImage('assets/timg.jpg'),
+                    colorFilter:
+                        ColorFilter.mode(Colors.black54, BlendMode.srcOver))
+                : null),
         child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              area.subTitle,
-              Column(children: <Widget>[
-                area.icon,
-                Text(area.title,
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: ScreenUtil().setSp(25.0)))
-              ]),
+              area.header,
+              Column(children: <Widget>[area.icon, area.title]),
               area.subTitle
             ]));
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:wangyiyun/utils/my_behavior.dart';
 
 class TabTitle extends StatefulWidget {
   List<String> datas;
@@ -79,7 +80,9 @@ class TabTitleState extends State<TabTitle> {
               fontSize: curItem == pos
                   ? ScreenUtil().setSp(35.0)
                   : ScreenUtil().setSp(30.0),
-              color: curItem == pos ? Colors.black : Colors.grey,
+              color: curItem == 0
+                  ? Colors.white
+                  : curItem == pos ? Colors.black : Colors.grey,
               fontWeight: curItem == pos ? FontWeight.bold : FontWeight.normal),
         ),
       ),
@@ -90,14 +93,17 @@ class TabTitleState extends State<TabTitle> {
     return Container(
       height: ScreenUtil().setHeight(80.0),
       // decoration: BoxDecoration(border: Border.all(color: Colors.blue)),
-      child: ListView.builder(
-        shrinkWrap: true,
-        controller: _controller,
-        scrollDirection: Axis.horizontal,
-        itemCount: datas.length,
-        itemBuilder: (context, pos) {
-          return initItemView(context, datas[pos], pos);
-        },
+      child: ScrollConfiguration(
+        behavior: MyBehavior(),
+        child: ListView.builder(
+          shrinkWrap: true,
+          controller: _controller,
+          scrollDirection: Axis.horizontal,
+          itemCount: datas.length,
+          itemBuilder: (context, pos) {
+            return initItemView(context, datas[pos], pos);
+          },
+        ),
       ),
     );
   }

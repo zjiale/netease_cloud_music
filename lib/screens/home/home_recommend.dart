@@ -20,8 +20,11 @@ class HomeRecommend extends StatelessWidget {
         itemBuilder: (BuildContext context, int index) {
           return InkWell(
             onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => PlayListScreen()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          PlayListScreen(520, recommendList[index].id)));
             },
             child: Padding(
               padding: EdgeInsets.only(right: 10.0),

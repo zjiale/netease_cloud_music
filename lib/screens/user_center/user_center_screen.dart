@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:wangyiyun/api/CommonService.dart';
 import 'package:wangyiyun/model/play_list_model.dart';
+import 'package:wangyiyun/screens/playlist/play_list_screen.dart';
 import 'package:wangyiyun/utils/config.dart';
 import 'package:wangyiyun/widgets/flexible_detail_bar.dart';
 import 'package:wangyiyun/widgets/space_bar.dart';
@@ -106,10 +107,19 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
     }
     List<Widget> _list = [];
     for (int i = 0; i < _length; i++) {
-      _list.add(UserCenterList(index == 0 ? create[i].name : collect[i].name,
-          subTitle:
-              '${index == 0 ? create[i].trackCount : collect[i].trackCount}首',
-          url: index == 0 ? create[i].coverImgUrl : collect[i].coverImgUrl));
+      _list.add(GestureDetector(
+        onTap: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => PlayListScreen(
+                      520, index == 0 ? create[i].id : collect[i].id)));
+        },
+        child: UserCenterList(index == 0 ? create[i].name : collect[i].name,
+            subTitle:
+                '${index == 0 ? create[i].trackCount : collect[i].trackCount}首',
+            url: index == 0 ? create[i].coverImgUrl : collect[i].coverImgUrl),
+      ));
     }
     if (_selectIndex == 0) {
       _list.add(UserCenterList('创建歌单', create: true));
@@ -203,7 +213,7 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                         scrollDirection: Axis.horizontal,
                         itemCount: 5,
                         itemBuilder: (BuildContext context, int index) {
-                          return UserCenterArea(_area[index]);
+                          return UserCenterArea(_area[index], index);
                         })))),
         SliverToBoxAdapter(
             child: Container(

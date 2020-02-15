@@ -40,6 +40,7 @@ dependencies:
   extended_text: 0.7.1
   # 跑马灯
   marquee_flutter: 0.1.4
+  color_thief_flutter: 1.0.2
 
 dev_dependencies:
   flutter_test:

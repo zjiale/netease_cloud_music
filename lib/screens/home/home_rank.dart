@@ -1,7 +1,7 @@
 import 'package:extended_text/extended_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:wangyiyun/widgets/my_special_textspan_builder.dart';
+import 'package:wangyiyun/utils/my_special_textspan_builder.dart';
 import 'package:wangyiyun/widgets/play_list_cover.dart';
 
 class HomeRank extends StatelessWidget {

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 class CenterAreaModel {
-  String header;
-  String title;
+  Widget header;
+  Widget title;
   Icon icon;
-  Widget subTitle;
+  final Widget subTitle;
 
   CenterAreaModel({this.header, this.title, this.icon, this.subTitle});
 }

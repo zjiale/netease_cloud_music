@@ -59,34 +59,58 @@ class Config {
 
   static List<CenterAreaModel> centerArea = [
     CenterAreaModel(
-        title: '我喜欢的音乐',
+        header: Text(''),
+        title: Text('我喜欢的音乐',
+            style: TextStyle(
+                color: Colors.white, fontSize: ScreenUtil().setSp(25.0))),
         icon: Icon(Icons.favorite,
             size: ScreenUtil().setWidth(60.0), color: Colors.redAccent),
         subTitle: Container(
-            padding: EdgeInsets.all(ScreenUtil().setWidth(5.0)),
-            color: Colors.white54,
+            padding: EdgeInsets.symmetric(horizontal: 5.0, vertical: 2.0),
+            width: ScreenUtil().setWidth(142.0),
+            decoration: BoxDecoration(
+              shape: BoxShape.rectangle,
+              borderRadius: BorderRadius.circular(30.0),
+              color: Colors.white54,
+            ),
             child: Row(children: <Widget>[
               Icon(Icons.play_arrow,
-                  size: ScreenUtil().setSp(20.0), color: Colors.white),
+                  size: ScreenUtil().setSp(25.0), color: Colors.white),
               Text('心动模式',
                   style: TextStyle(
                       fontSize: ScreenUtil().setSp(23.0), color: Colors.white))
             ]))),
     CenterAreaModel(
-        title: '私人FM',
+        header: Text(''),
+        title: Text('私人FM',
+            style: TextStyle(
+                color: Colors.white, fontSize: ScreenUtil().setSp(25.0))),
         icon: Icon(Icons.radio,
             size: ScreenUtil().setWidth(60.0), color: Colors.white),
         subTitle: Text('听新鲜的',
             style: TextStyle(
                 fontSize: ScreenUtil().setSp(23.0), color: Colors.white))),
     CenterAreaModel(
-        title: '驾驶模式',
+        header: Text('推荐',
+            style: TextStyle(
+                fontSize: ScreenUtil().setSp(23.0),
+                color: Colors.grey,
+                fontWeight: FontWeight.bold)),
+        title: Text('驾驶模式',
+            style: TextStyle(
+                color: Colors.black, fontSize: ScreenUtil().setSp(25.0))),
         icon: Icon(Icons.local_taxi,
             size: ScreenUtil().setWidth(60.0), color: Colors.black),
         subTitle: Text('')),
     CenterAreaModel(
-        title: '古典专区',
-        header: '推荐',
+        header: Text('推荐',
+            style: TextStyle(
+                fontSize: ScreenUtil().setSp(23.0),
+                color: Colors.grey,
+                fontWeight: FontWeight.bold)),
+        title: Text('古典专区',
+            style: TextStyle(
+                color: Colors.black, fontSize: ScreenUtil().setSp(25.0))),
         icon: Icon(Icons.headset,
             size: ScreenUtil().setWidth(60.0), color: Colors.black),
         subTitle: Text('专业古典大全',
@@ -95,7 +119,14 @@ class Config {
                 color: Colors.grey,
                 fontWeight: FontWeight.bold))),
     CenterAreaModel(
-        title: '最嗨电音',
+        header: Text('推荐',
+            style: TextStyle(
+                fontSize: ScreenUtil().setSp(23.0),
+                color: Colors.grey,
+                fontWeight: FontWeight.bold)),
+        title: Text('最嗨电音',
+            style: TextStyle(
+                color: Colors.black, fontSize: ScreenUtil().setSp(25.0))),
         icon: Icon(Icons.blur_on,
             size: ScreenUtil().setWidth(60.0), color: Colors.black),
         subTitle: Text('专业电音平台',
