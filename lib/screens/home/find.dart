@@ -260,7 +260,8 @@ class _FindState extends State<Find> with AutomaticKeepAliveClientMixin {
             SizedBox(
                 height: ScreenUtil().setHeight(150.0),
                 child: Center(
-                    child: Text('到底啦~', style: TextStyle(color: Colors.grey))))
+                    child: Text('到底啦~', style: TextStyle(color: Colors.grey)))),
+            SizedBox(height: ScreenUtil().setHeight(80.0))
           ]),
     );
   }

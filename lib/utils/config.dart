@@ -17,6 +17,10 @@ class Config {
     return _headerMap;
   }
 
+  prefixImg(String key) {
+    return "assets/icon_$key.png";
+  }
+
   static List<Tab> titleTabs = <Tab>[
     Tab(text: '我的'),
     Tab(text: '发现'),

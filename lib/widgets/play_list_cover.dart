@@ -29,7 +29,7 @@ class PlayListCoverWidget extends StatelessWidget {
               alignment: Alignment.topRight,
               children: <Widget>[
                 create == false
-                    ? ExtendedImage.network(url, fit: BoxFit.cover)
+                    ? ExtendedImage.network(url, fit: BoxFit.cover, cache: true)
                     : Container(),
                 playCount == null
                     ? Container()
