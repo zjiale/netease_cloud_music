@@ -40,7 +40,11 @@ dependencies:
   extended_text: 0.7.1
   # 跑马灯
   marquee_flutter: 0.1.4
+  # 颜色提取器
   color_thief_flutter: 1.0.2
+  # 音乐播放器
+  audioplayers: 0.14.0
+  permission_handler: ^3.2.0
 
 dev_dependencies:
   flutter_test:

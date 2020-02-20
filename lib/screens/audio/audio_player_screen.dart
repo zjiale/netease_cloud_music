@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wangyiyun/utils/config.dart';
@@ -36,10 +37,17 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
   double value = 0.0;
 
   int mode = 0; //模拟数据
+  AudioPlayer audioPlayer;
+  AudioPlayerState _audioPlayerState;
 
   @override
   void initState() {
     super.initState();
+    audioPlayer = new AudioPlayer();
+    audioPlayer.setReleaseMode(ReleaseMode.STOP);
+    audioPlayer.setVolume(1.0);
+    AudioPlayer.logEnabled = true;
+
     _switchMode();
     _controller = AnimationController(vsync: this, duration: duration);
     _imgController =
@@ -57,13 +65,22 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
     });
   }
 
-  _play() {
+  _play() async {
     setState(() {
       _playKey.replaceRange(2, 3, ['song_pause']);
       isPlay = true;
       _controller.reverse();
       _imgController.forward();
     });
+
+    int result = await audioPlayer
+        .play('https://music.163.com/song/media/outer/url?id=1325357378.mp3');
+    if (result == 1) {
+      // success
+      print('play success');
+    } else {
+      print('play failed');
+    }
   }
 
   _pause() {
