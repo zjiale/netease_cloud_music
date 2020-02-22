@@ -43,16 +43,15 @@ class _FindState extends State<Find> with AutomaticKeepAliveClientMixin {
 
   ScrollPhysics _physics;
 
+  Future _initData;
+
   @override
   bool get wantKeepAlive => true;
 
   @override
   void initState() {
+    _initData = _load();
     super.initState();
-    _initBanner();
-    _initRecommend();
-    _initRecommendSong();
-    _initNewestAlbum();
 
     _controller.addListener(() {
       if (_controller.position.haveDimensions && _physics == null) {
@@ -261,7 +260,7 @@ class _FindState extends State<Find> with AutomaticKeepAliveClientMixin {
                 height: ScreenUtil().setHeight(150.0),
                 child: Center(
                     child: Text('到底啦~', style: TextStyle(color: Colors.grey)))),
-            SizedBox(height: ScreenUtil().setHeight(80.0))
+            SizedBox(height: ScreenUtil().setHeight(30.0))
           ]),
     );
   }
@@ -273,7 +272,7 @@ class _FindState extends State<Find> with AutomaticKeepAliveClientMixin {
         (MediaQuery.of(context).size.width - 60); // gridview的宽高比
 
     return FutureBuilder(
-      future: _load(),
+      future: _initData,
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         switch (snapshot.connectionState) {
           case ConnectionState.waiting:

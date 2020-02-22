@@ -126,7 +126,7 @@ class _HomeScreenState extends State<HomeScreen>
                         padding: EdgeInsets.only(left: 10.0),
                         height: ScreenUtil().setHeight(80.0),
                         width: MediaQuery.of(context).size.width,
-                        color: Colors.white70,
+                        color: Colors.white.withOpacity(0.9),
                         child: Row(
                             // crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[

@@ -2,9 +2,14 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:wangyiyun/screens/audio/play_button.dart';
+import 'package:wangyiyun/store/index.dart';
 import 'package:wangyiyun/utils/config.dart';
+
+import 'package:wangyiyun/store/model/play_song_model.dart';
 
 class AudioPlayerScreen extends StatefulWidget {
   @override
@@ -19,36 +24,20 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
     "song_comment",
     "song_more"
   ];
-  final List<String> _playKey = [
-    "songs_circle",
-    "song_left",
-    "song_pause",
-    "song_right",
-    "play_songs"
-  ];
   final Duration duration = const Duration(milliseconds: 300);
   AnimationController _controller;
   AnimationController _imgController;
   Animation<double> _rotateAnimation;
 
-  bool isPlay = true;
-
   bool isLike = false;
   double value = 0.0;
 
   int mode = 0; //模拟数据
-  AudioPlayer audioPlayer;
-  AudioPlayerState _audioPlayerState;
 
   @override
   void initState() {
     super.initState();
-    audioPlayer = new AudioPlayer();
-    audioPlayer.setReleaseMode(ReleaseMode.STOP);
-    audioPlayer.setVolume(1.0);
-    AudioPlayer.logEnabled = true;
 
-    _switchMode();
     _controller = AnimationController(vsync: this, duration: duration);
     _imgController =
         AnimationController(vsync: this, duration: Duration(seconds: 25));
@@ -56,110 +45,22 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
     _rotateAnimation =
         Tween<double>(begin: 0.01, end: -0.05).animate(_controller);
     //动画开始、结束、向前移动或向后移动时会调用StatusListener
-    _imgController.forward();
     _imgController.addStatusListener((status) {
-      if (status == AnimationStatus.completed && isPlay) {
+      if (status == AnimationStatus.completed) {
         _imgController.reset(); //重置起点
         _imgController.forward(); //开启
       }
     });
   }
 
-  _play() async {
-    setState(() {
-      _playKey.replaceRange(2, 3, ['song_pause']);
-      isPlay = true;
-      _controller.reverse();
-      _imgController.forward();
-    });
-
-    int result = await audioPlayer
-        .play('https://music.163.com/song/media/outer/url?id=1325357378.mp3');
-    if (result == 1) {
-      // success
-      print('play success');
-    } else {
-      print('play failed');
-    }
+  @override
+  void dispose() {
+    _controller.dispose();
+    _imgController.dispose();
+    super.dispose();
   }
 
-  _pause() {
-    setState(() {
-      _playKey.replaceRange(2, 3, ['song_play']);
-      isPlay = false;
-      _controller.forward();
-      _imgController.stop();
-    });
-  }
-
-  _switchMode() {
-    String _mode;
-    switch (mode) {
-      case 0:
-        _mode = "songs_circle";
-        setState(() {
-          _playKey.replaceRange(0, 1, [_mode]);
-          mode = 1;
-        });
-        break;
-      case 1:
-        _mode = "song_single_circle";
-        setState(() {
-          _playKey.replaceRange(0, 1, [_mode]);
-          mode = 2;
-        });
-        break;
-      case 2:
-        _mode = "songs_random";
-        setState(() {
-          _playKey.replaceRange(0, 1, [_mode]);
-          mode = 0;
-        });
-        break;
-    }
-  }
-
-  Widget _playButton() {
-    List<Widget> _button = _playKey.asMap().entries.map((MapEntry map) {
-      return Expanded(
-        child: GestureDetector(
-          onTap: () {
-            switch (map.key) {
-              case 0:
-                _switchMode();
-                break;
-              case 2:
-                if (isPlay) {
-                  _pause();
-                } else {
-                  _play();
-                }
-                break;
-              default:
-            }
-          },
-          child: Image.asset("${Config().prefixImg(_playKey[map.key])}",
-              width: map.key == 2
-                  ? ScreenUtil().setWidth(130.0)
-                  : ScreenUtil().setWidth(80.0),
-              height: map.key == 2
-                  ? ScreenUtil().setWidth(130.0)
-                  : ScreenUtil().setWidth(80.0)),
-        ),
-      );
-    }).toList();
-
-    return Positioned(
-        bottom: 10.0,
-        child: Container(
-            width: MediaQuery.of(context).size.width,
-            padding: EdgeInsets.symmetric(horizontal: 50.0),
-            child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: _button)));
-  }
-
-  Widget _funButton() {
+  Widget _funButton(PlaySongModel model) {
     return Positioned(
         bottom: 110.0,
         child: Container(
@@ -203,7 +104,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
                 }).toList())));
   }
 
-  Widget _playTime() {
+  Widget _playTime(PlaySongModel model) {
     return Positioned(
         bottom: 80.0,
         child: Container(
@@ -250,7 +151,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
         ));
   }
 
-  Widget _body() {
+  Widget _body(PlaySongModel model) {
     return Stack(alignment: Alignment.topCenter, children: <Widget>[
       Positioned(
           top: ScreenUtil().setHeight(200.0),
@@ -258,8 +159,10 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
             turns: _imgController,
             child: Stack(alignment: Alignment.center, children: <Widget>[
               ClipOval(
-                  child: Image.asset('assets/timg.jpg',
-                      width: ScreenUtil().setWidth(400), fit: BoxFit.cover)),
+                  child: ExtendedImage.network(model.curSong.picUrl,
+                      cache: true,
+                      width: ScreenUtil().setWidth(400),
+                      fit: BoxFit.contain)),
               Image.asset('assets/bet.png', width: ScreenUtil().setWidth(500))
             ]),
           )),
@@ -278,54 +181,64 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
             child: Image.asset('assets/bgm.png',
                 height: ScreenUtil().setHeight(280.0))),
       ),
-      _funButton(),
-      _playTime(),
-      _playButton()
+      _funButton(model),
+      _playTime(model),
+      Positioned(bottom: 10, child: PlayButton(model))
     ]);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(children: <Widget>[
-      Image.asset(
-        'assets/timg.jpg',
-        fit: BoxFit.cover,
-        height: double.infinity,
-      ),
-      BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-          child: Container(
-              width: double.infinity,
-              height: double.infinity,
-              color: Colors.black54)),
-      Scaffold(
-          backgroundColor: Colors.transparent,
-          appBar: AppBar(
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              title: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text('河',
-                        style: TextStyle(fontSize: ScreenUtil().setSp(30.0))),
-                    Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          Text('池田绫子',
-                              style: TextStyle(
-                                  fontSize: ScreenUtil().setSp(25.0),
-                                  color: Colors.grey)),
-                          Icon(Icons.keyboard_arrow_right,
-                              size: ScreenUtil().setWidth(35.0),
-                              color: Colors.grey)
-                        ])
-                  ]),
-              actions: <Widget>[
-                IconButton(
-                    icon: Icon(Icons.share, size: ScreenUtil().setWidth(40.0)),
-                    onPressed: () {})
-              ]),
-          body: _body())
-    ]);
+    return Store.connect<PlaySongModel>(builder: (context, model, child) {
+      if (model.curState == AudioPlayerState.PLAYING) {
+        _imgController.forward();
+        _controller.reverse();
+      } else {
+        _imgController.stop();
+        _controller.forward();
+      }
+      return Stack(children: <Widget>[
+        Image.asset(
+          'assets/timg.jpg',
+          fit: BoxFit.cover,
+          height: double.infinity,
+        ),
+        BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+            child: Container(
+                width: double.infinity,
+                height: double.infinity,
+                color: Colors.black54)),
+        Scaffold(
+            backgroundColor: Colors.transparent,
+            appBar: AppBar(
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                title: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(model.curSong.name,
+                          style: TextStyle(fontSize: ScreenUtil().setSp(30.0))),
+                      Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Text(model.curSong.artists,
+                                style: TextStyle(
+                                    fontSize: ScreenUtil().setSp(25.0),
+                                    color: Colors.grey)),
+                            Icon(Icons.keyboard_arrow_right,
+                                size: ScreenUtil().setWidth(35.0),
+                                color: Colors.grey)
+                          ])
+                    ]),
+                actions: <Widget>[
+                  IconButton(
+                      icon:
+                          Icon(Icons.share, size: ScreenUtil().setWidth(40.0)),
+                      onPressed: () {})
+                ]),
+            body: _body(model))
+      ]);
+    });
   }
 }

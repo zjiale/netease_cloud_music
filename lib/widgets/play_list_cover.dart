@@ -2,7 +2,7 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class PlayListCoverWidget extends StatelessWidget {
+class PlayListCoverWidget extends StatefulWidget {
   final String url;
   final String playCount;
   final double width;
@@ -16,22 +16,56 @@ class PlayListCoverWidget extends StatelessWidget {
       this.create = false});
 
   @override
+  _PlayListCoverWidgetState createState() => _PlayListCoverWidgetState();
+}
+
+class _PlayListCoverWidgetState extends State<PlayListCoverWidget>
+    with SingleTickerProviderStateMixin {
+  AnimationController _controller;
+
+  @override
+  void initState() {
+    _controller =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 500));
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Row(
       children: <Widget>[
         ClipRRect(
           borderRadius: BorderRadius.all(Radius.circular(8)),
           child: Container(
-            width: ScreenUtil().setWidth(width),
-            height: ScreenUtil().setWidth(width),
+            width: ScreenUtil().setWidth(widget.width),
+            height: ScreenUtil().setWidth(widget.width),
             color: Color(0xfff1f1f1),
             child: Stack(
               alignment: Alignment.topRight,
               children: <Widget>[
-                create == false
-                    ? ExtendedImage.network(url, fit: BoxFit.cover, cache: true)
+                widget.create == false
+                    ? ExtendedImage.network(widget.url,
+                        fit: BoxFit.cover, cache: true,
+                        loadStateChanged: (ExtendedImageState state) {
+                        switch (state.extendedImageLoadState) {
+                          case LoadState.loading:
+                            _controller.reset();
+                            return Container();
+                            break;
+                          case LoadState.completed:
+                            _controller.forward();
+                            return FadeTransition(
+                              opacity: _controller,
+                              child: ExtendedRawImage(
+                                  image: state.extendedImageInfo?.image),
+                            );
+                            break;
+                          case LoadState.failed:
+                            return null;
+                        }
+                      })
                     : Container(),
-                playCount == null
+                widget.playCount == null
                     ? Container()
                     : Padding(
                         padding: EdgeInsets.only(
@@ -46,7 +80,7 @@ class PlayListCoverWidget extends StatelessWidget {
                               height: ScreenUtil().setWidth(30),
                             ),
                             Text(
-                              playCount,
+                              widget.playCount,
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 12,
@@ -60,9 +94,9 @@ class PlayListCoverWidget extends StatelessWidget {
             ),
           ),
         ),
-        isAlbum
+        widget.isAlbum
             ? Image.asset('assets/icon_album.png',
-                height: ScreenUtil().setWidth(width))
+                height: ScreenUtil().setWidth(widget.width))
             : Container(),
       ],
     );

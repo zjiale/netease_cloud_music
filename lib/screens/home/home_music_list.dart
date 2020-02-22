@@ -1,6 +1,11 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:extended_text/extended_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:wangyiyun/model/music_song_model.dart';
+import 'package:wangyiyun/screens/audio/audio_player_screen.dart';
+import 'package:wangyiyun/store/index.dart';
+import 'package:wangyiyun/store/model/play_song_model.dart';
 import 'package:wangyiyun/utils/my_special_textspan_builder.dart';
 import 'package:wangyiyun/widgets/play_list_cover.dart';
 
@@ -18,6 +23,21 @@ class HomeMusicList extends StatefulWidget {
 }
 
 class _HomeMusicListState extends State<HomeMusicList> {
+  _play(int index, PlaySongModel model) {
+    MusicSong song;
+    if (widget.isAlbum != true) {
+      song = MusicSong(widget.list[index].id,
+          name: widget.list[index].name,
+          artists: widget.list[index].artists.first.name,
+          picUrl: widget.list[index].album.blurPicUrl);
+      model.playOneSong(song);
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => AudioPlayerScreen()));
+    } else {
+      return;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -40,53 +60,63 @@ class _HomeMusicListState extends State<HomeMusicList> {
           itemBuilder: (BuildContext context, int index) {
             //Widget Function(BuildContext context, int index)
             return Column(children: <Widget>[
-              Row(children: <Widget>[
-                PlayListCoverWidget(
-                  widget.isAlbum != true
-                      ? widget.list[index].album.blurPicUrl
-                      : widget.list[index].blurPicUrl,
-                  width: 100,
-                  isAlbum: widget.isAlbum,
-                ),
-                SizedBox(width: ScreenUtil().setWidth(10.0)),
-                Expanded(
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                      ExtendedText(
-                          '${widget.list[index].name} @s- ${widget.list[index].artists.first.name}@',
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                          specialTextSpanBuilder: MySpecialTextSpanBuilder(),
-                          overFlowTextSpan:
-                              OverFlowTextSpan(children: <TextSpan>[
-                            TextSpan(text: '\u2026  '),
-                            TextSpan(
-                                text:
-                                    "- ${widget.list[index].artists.first.name}",
-                                style: TextStyle(
-                                    fontSize: ScreenUtil().setSp(20.0),
-                                    color: Colors.grey))
-                          ])),
-                      SizedBox(height: ScreenUtil().setHeight(8.0)),
-                      !widget.isAlbum
-                          ? Text('${widget.list[index].album.name}',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                  fontSize: ScreenUtil().setSp(20.0),
-                                  color: Colors.grey))
-                          : Container()
-                    ])),
-                !widget.isAlbum
-                    ? Padding(
-                        padding: EdgeInsets.only(right: 10.0),
-                        child: Icon(Icons.play_circle_outline,
-                            size: 30.0, color: Theme.of(context).primaryColor),
-                      )
-                    : Container(
-                        width: 30.0, padding: EdgeInsets.only(right: 10.0))
-              ])
+              Store.connect<PlaySongModel>(builder: (context, model, child) {
+                return GestureDetector(
+                    onTap: () => _play(index, model),
+                    child: Container(
+                      color: Colors.transparent,
+                      child: Row(children: <Widget>[
+                        PlayListCoverWidget(
+                          widget.isAlbum != true
+                              ? widget.list[index].album.blurPicUrl
+                              : widget.list[index].blurPicUrl,
+                          width: 100,
+                          isAlbum: widget.isAlbum,
+                        ),
+                        SizedBox(width: ScreenUtil().setWidth(10.0)),
+                        Expanded(
+                            child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                              ExtendedText(
+                                  '${widget.list[index].name} @s- ${widget.list[index].artists.first.name}@',
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 1,
+                                  specialTextSpanBuilder:
+                                      MySpecialTextSpanBuilder(),
+                                  overFlowTextSpan:
+                                      OverFlowTextSpan(children: <TextSpan>[
+                                    TextSpan(text: '\u2026  '),
+                                    TextSpan(
+                                        text:
+                                            "- ${widget.list[index].artists.first.name}",
+                                        style: TextStyle(
+                                            fontSize: ScreenUtil().setSp(20.0),
+                                            color: Colors.grey))
+                                  ])),
+                              SizedBox(height: ScreenUtil().setHeight(8.0)),
+                              !widget.isAlbum
+                                  ? Text('${widget.list[index].album.name}',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                          fontSize: ScreenUtil().setSp(20.0),
+                                          color: Colors.grey))
+                                  : Container()
+                            ])),
+                        !widget.isAlbum
+                            ? Padding(
+                                padding: EdgeInsets.only(right: 10.0),
+                                child: Icon(Icons.play_circle_outline,
+                                    size: 30.0,
+                                    color: Theme.of(context).primaryColor),
+                              )
+                            : Container(
+                                width: 30.0,
+                                padding: EdgeInsets.only(right: 10.0))
+                      ]),
+                    ));
+              })
             ]);
           }),
     );
