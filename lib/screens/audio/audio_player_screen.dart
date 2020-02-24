@@ -2,10 +2,12 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:common_utils/common_utils.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wangyiyun/screens/audio/play_button.dart';
+import 'package:wangyiyun/screens/audio/slider_time.dart';
 import 'package:wangyiyun/store/index.dart';
 import 'package:wangyiyun/utils/config.dart';
 
@@ -104,53 +106,6 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
                 }).toList())));
   }
 
-  Widget _playTime(PlaySongModel model) {
-    return Positioned(
-        bottom: 80.0,
-        child: Container(
-          width: MediaQuery.of(context).size.width,
-          padding: EdgeInsets.symmetric(horizontal: 20.0),
-          child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('00:00',
-                    style: TextStyle(
-                        fontSize: ScreenUtil().setSp(20.0),
-                        color: Colors.white)),
-                SizedBox(width: ScreenUtil().setWidth(5.0)),
-                Expanded(
-                  child: SliderTheme(
-                    data: SliderTheme.of(context).copyWith(
-                        activeTrackColor: Colors.white54, //进度条滑块左边颜色
-                        inactiveTrackColor: Colors.grey, //进度条滑块右边颜色
-                        thumbColor: Colors.white, //滑块颜色
-                        overlayColor: Colors.white, //滑块拖拽时外圈的颜色
-                        overlayShape: RoundSliderOverlayShape(
-                          //可继承SliderComponentShape自定义形状
-                          overlayRadius: ScreenUtil().setWidth(15.0), //滑块外圈大小
-                        ),
-                        thumbShape: RoundSliderThumbShape(
-                          //可继承SliderComponentShape自定义形状
-                          enabledThumbRadius: ScreenUtil().setWidth(8.0), //滑块大小
-                        )),
-                    child: Slider(
-                      value: value,
-                      onChanged: (v) {
-                        setState(() => value = v);
-                      },
-                      max: 100,
-                      min: 0,
-                    ),
-                  ),
-                ),
-                SizedBox(width: ScreenUtil().setWidth(5.0)),
-                Text('04:06',
-                    style: TextStyle(
-                        fontSize: ScreenUtil().setSp(20.0), color: Colors.grey))
-              ]),
-        ));
-  }
-
   Widget _body(PlaySongModel model) {
     return Stack(alignment: Alignment.topCenter, children: <Widget>[
       Positioned(
@@ -182,8 +137,8 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
                 height: ScreenUtil().setHeight(280.0))),
       ),
       _funButton(model),
-      _playTime(model),
-      Positioned(bottom: 10, child: PlayButton(model))
+      SliderTime(model),
+      PlayButton(model)
     ]);
   }
 

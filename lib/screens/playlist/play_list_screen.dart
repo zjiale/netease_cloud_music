@@ -9,7 +9,6 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:marquee_flutter/marquee_flutter.dart';
 import 'package:wangyiyun/api/CommonService.dart';
 import 'package:wangyiyun/model/play_list.detail.dart';
-import 'package:wangyiyun/model/recommend_list_model.dart';
 import 'package:wangyiyun/screens/playlist/play_list_bottom.dart';
 import 'package:wangyiyun/utils/config.dart';
 import 'package:wangyiyun/utils/numbers_convert.dart';
@@ -206,8 +205,7 @@ class _PlayListScreenState extends State<PlayListScreen> {
                   ),
                 ],
               )),
-          bottom:
-              PlayListBottom(playList.trackCount, playList.subscribedCount)),
+          bottom: PlayListBottom(playList)),
       SliverPadding(
         padding: EdgeInsets.only(left: 20.0),
         sliver: SliverFixedExtentList(
