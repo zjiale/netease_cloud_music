@@ -57,7 +57,7 @@ class _PlayListScreenState extends State<PlayListScreen> {
 
   Future _initDetailPlayList() {
     return _memoizer.runOnce(() async {
-      return CommmonService().getDetailPlayList(widget.pid).then((res) {
+      return CommmonService().getDetailPlayList(443797814).then((res) {
         if (res.statusCode == 200) {
           PlayListDetailModel _bean = PlayListDetailModel.fromJson(res.data);
           if (_bean.code == _code) {
@@ -66,7 +66,7 @@ class _PlayListScreenState extends State<PlayListScreen> {
                 bgColor = Color.fromRGBO(color[0], color[1], color[2], 1);
               }); // [R,G,B]
             });
-            return _bean.playlist;
+            return _bean;
           }
         }
       });
@@ -107,7 +107,7 @@ class _PlayListScreenState extends State<PlayListScreen> {
         }).toList());
   }
 
-  Widget content(Playlist playList) {
+  Widget content(PlayListDetailModel detail) {
     return CustomScrollView(controller: _controller, slivers: <Widget>[
       SliverAppBar(
           pinned: true,
@@ -119,7 +119,7 @@ class _PlayListScreenState extends State<PlayListScreen> {
               ? Container(
                   height: ScreenUtil().setHeight(80),
                   child: MarqueeWidget(
-                    text: playList.name,
+                    text: detail.playlist.name,
                     scrollAxis: Axis.horizontal,
                   ),
                 )
@@ -136,10 +136,10 @@ class _PlayListScreenState extends State<PlayListScreen> {
                     Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          PlayListCoverWidget(playList.coverImgUrl,
+                          PlayListCoverWidget(detail.playlist.coverImgUrl,
                               width: 230,
                               playCount: NumberUtils.amountConversion(
-                                  playList.playCount)),
+                                  detail.playlist.playCount)),
                           SizedBox(width: ScreenUtil().setWidth(40.0)),
                           Expanded(
                               child: Container(
@@ -149,7 +149,7 @@ class _PlayListScreenState extends State<PlayListScreen> {
                                     MainAxisAlignment.spaceBetween,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
-                                  Text(playList.name,
+                                  Text(detail.playlist.name,
                                       style: TextStyle(
                                           fontSize: ScreenUtil().setSp(33.0),
                                           fontWeight: FontWeight.bold)),
@@ -159,12 +159,12 @@ class _PlayListScreenState extends State<PlayListScreen> {
                                       width: 20.0,
                                       height: 20.0,
                                       child: ExtendedImage.network(
-                                          playList.creator.avatarUrl,
+                                          detail.playlist.creator.avatarUrl,
                                           fit: BoxFit.cover),
                                     )),
                                     SizedBox(
                                         width: ScreenUtil().setWidth(10.0)),
-                                    Text(playList.creator.nickname,
+                                    Text(detail.playlist.creator.nickname,
                                         style: TextStyle(
                                             fontSize: ScreenUtil().setSp(25.0),
                                             color: Color(0xffcdcdcd))),
@@ -172,7 +172,7 @@ class _PlayListScreenState extends State<PlayListScreen> {
                                         size: ScreenUtil().setSp(40.0),
                                         color: Color(0xffcdcdcd))
                                   ]),
-                                  Text(playList.description,
+                                  Text(detail.playlist.description,
                                       style: TextStyle(
                                           fontSize: ScreenUtil().setSp(20.0),
                                           color: Color(0xffcdcdcd)),
@@ -182,7 +182,8 @@ class _PlayListScreenState extends State<PlayListScreen> {
                           ))
                         ]),
                     SizedBox(height: ScreenUtil().setHeight(30.0)),
-                    playButton(playList.shareCount, playList.commentCount)
+                    playButton(detail.playlist.shareCount,
+                        detail.playlist.commentCount)
                   ]),
                 ),
               ),
@@ -205,9 +206,9 @@ class _PlayListScreenState extends State<PlayListScreen> {
                   ),
                 ],
               )),
-          bottom: PlayListBottom(playList)),
+          bottom: PlayListBottom(detail)),
       SliverPadding(
-        padding: EdgeInsets.only(left: 20.0),
+        padding: EdgeInsets.only(left: 10.0),
         sliver: SliverFixedExtentList(
           itemExtent: ScreenUtil().setHeight(100.0),
           delegate:
@@ -215,26 +216,42 @@ class _PlayListScreenState extends State<PlayListScreen> {
             return Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  Text('${index + 1}',
-                      style: TextStyle(
-                          fontSize: ScreenUtil().setSp(30.0),
-                          color: Colors.black45)),
+                  Container(
+                    width: ScreenUtil().setWidth(60.0),
+                    child: Center(
+                      child: Text('${index + 1}',
+                          style: TextStyle(
+                              fontSize: ScreenUtil().setSp(30.0),
+                              color: Colors.black45)),
+                    ),
+                  ),
                   Expanded(
                       child: ListTile(
+                    contentPadding: EdgeInsets.symmetric(horizontal: 12.0),
                     title: RichText(
                         overflow: TextOverflow.ellipsis,
                         text: TextSpan(
-                            text: playList.tracks[index].name,
-                            style: TextStyle(color: Colors.black),
+                            text: detail.playlist.tracks[index].name,
+                            style: TextStyle(
+                                fontSize: ScreenUtil().setSp(28.0),
+                                color: detail.privileges[index].st == -200
+                                    ? Colors.grey
+                                    : Colors.black),
                             children: <TextSpan>[
                               TextSpan(
-                                  text: playList.tracks[index].tns != null
-                                      ? '(${playList.tracks[index].tns.first})'
+                                  text: detail.playlist.tracks[index].tns !=
+                                          null
+                                      ? '(${detail.playlist.tracks[index].tns.first})'
                                       : '',
                                   style: TextStyle(color: Color(0xffcdcdcd)))
                             ])),
                     subtitle: Text(
-                        '${playList.tracks[index].ar.first.name} - ${playList.tracks[index].al.name}',
+                        '${detail.playlist.tracks[index].ar.first.name} - ${detail.playlist.tracks[index].al.name}',
+                        style: TextStyle(
+                            fontSize: ScreenUtil().setSp(20.0),
+                            color: detail.privileges[index].st == -200
+                                ? Colors.grey
+                                : Colors.black54),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis),
                   )),
@@ -243,7 +260,7 @@ class _PlayListScreenState extends State<PlayListScreen> {
                     onPressed: () {},
                   )
                 ]);
-          }, childCount: playList.trackCount),
+          }, childCount: detail.playlist.trackCount),
         ),
       ),
       SliverToBoxAdapter(
@@ -265,7 +282,7 @@ class _PlayListScreenState extends State<PlayListScreen> {
                       child: SpinKitChasingDots(
                           color: Theme.of(context).primaryColor, size: 30.0));
                 case ConnectionState.done:
-                  Playlist playList = snapshot.data;
+                  PlayListDetailModel playList = snapshot.data;
                   return content(playList);
                 default:
                   return null;

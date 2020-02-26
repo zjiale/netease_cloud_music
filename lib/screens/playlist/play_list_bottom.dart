@@ -7,18 +7,20 @@ import 'package:wangyiyun/store/index.dart';
 import 'package:wangyiyun/store/model/play_song_model.dart';
 
 class PlayListBottom extends StatelessWidget implements PreferredSizeWidget {
-  final Playlist playList;
+  final PlayListDetailModel detail;
 
-  PlayListBottom(this.playList);
+  PlayListBottom(this.detail);
 
   void playMoreSong(BuildContext context, PlaySongModel model) {
     List<MusicSong> list = [];
-    for (var song in playList.tracks) {
-      list.add(MusicSong(song.id,
-          totalTime: song.dt,
-          name: song.name,
-          artists: song.ar.first.name,
-          picUrl: song.al.picUrl));
+    for (int i = 0; i <= detail.playlist.tracks.length - 1; i++) {
+      if (detail.playlist.tracks[i].fee == 1 || detail.privileges[i].st == -200)
+        continue;
+      list.add(MusicSong(detail.playlist.tracks[i].id,
+          totalTime: detail.playlist.tracks[i].dt,
+          name: detail.playlist.tracks[i].name,
+          artists: detail.playlist.tracks[i].ar.first.name,
+          picUrl: detail.playlist.tracks[i].al.picUrl));
     }
     model.playMoreSong(list);
     Navigator.push(
@@ -56,7 +58,8 @@ class PlayListBottom extends StatelessWidget implements PreferredSizeWidget {
                                           color: Colors.black),
                                       children: <TextSpan>[
                                     TextSpan(
-                                        text: '(共${playList.trackCount}首)',
+                                        text:
+                                            '(共${detail.playlist.trackCount}首)',
                                         style: TextStyle(
                                             fontSize: ScreenUtil().setSp(28.0),
                                             color: Color(0xffcdcdcd)))
@@ -80,7 +83,8 @@ class PlayListBottom extends StatelessWidget implements PreferredSizeWidget {
                                             color: Colors.white)),
                                     SizedBox(
                                         width: ScreenUtil().setWidth(10.0)),
-                                    Text('收藏 (${playList.subscribedCount})',
+                                    Text(
+                                        '收藏 (${detail.playlist.subscribedCount})',
                                         style: TextStyle(
                                             fontSize: ScreenUtil().setSp(25.0),
                                             color: Colors.white))

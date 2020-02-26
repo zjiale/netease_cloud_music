@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:audioplayers/audioplayers.dart';
-import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:wangyiyun/model/music_song_model.dart';
 
@@ -21,6 +20,7 @@ class PlaySongModel with ChangeNotifier {
   bool isChange = false;
 
   int get mode => _mode;
+  List<MusicSong> get curList => _curList;
   MusicSong get curSong => _curList[_curIndex];
   AudioPlayerState get curState => _curState;
   Stream<String> get curPositionStream =>
@@ -49,6 +49,10 @@ class PlaySongModel with ChangeNotifier {
               ? curSong.totalTime
               : p.inMilliseconds)
           : _curPositionController.sink.done;
+    });
+
+    _audioPlayer.onPlayerError.listen((msg) {
+      print('audioPlayer error : $msg');
     });
   }
 
@@ -86,9 +90,24 @@ class PlaySongModel with ChangeNotifier {
     this.play();
   }
 
+  // void filter() {
+  //   // 因为json看不出vip与普通歌曲的区别只能用蠢办法,只适用于歌单中筛选
+  //   Dio()
+  //       .get(
+  //           'https://music.163.com/song/media/outer/url?id=${this._curList[this._curIndex].id}.mp3')
+  //       .then((res) {
+  //     if (res.realUri.toString() != 'https://music.163.com/404') {
+  //       this.play();
+  //     } else {
+  //       print(123);
+  //     }
+  //   });
+  // }
+
   void play() {
-    _audioPlayer.play(
-        'https://music.163.com/song/media/outer/url?id=${this._curList[_curIndex].id}.mp3');
+    _audioPlayer.setUrl(
+        'https://music.163.com/song/media/outer/url?id=${this._curList[this._curIndex].id}.mp3');
+    this.resume();
   }
 
   void pause() {
@@ -103,14 +122,17 @@ class PlaySongModel with ChangeNotifier {
     switch (_mode) {
       case 0:
         _mode = 1; //单曲循环
+        _audioPlayer.setReleaseMode(ReleaseMode.LOOP);
         break;
       case 1:
         _mode = 2; //随机播放
+        _audioPlayer.setReleaseMode(ReleaseMode.STOP);
         break;
       case 2:
         _mode = 0; //顺序播放
         break;
     }
+    notifyListeners();
   }
 
   void seek(int milliseconds) {
@@ -118,6 +140,8 @@ class PlaySongModel with ChangeNotifier {
   }
 
   void next() {
+    print(_curIndex);
+    if (_mode == 2) _curList.shuffle();
     if (this._curIndex == this._curList.length) {
       this._curIndex = 0;
     } else {
@@ -127,6 +151,7 @@ class PlaySongModel with ChangeNotifier {
   }
 
   void previous() {
+    if (_mode == 2) _curList.shuffle();
     if (this._curIndex == 0) {
       this._curIndex = this._curList.length - 1;
     } else {
