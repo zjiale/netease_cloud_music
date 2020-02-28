@@ -57,7 +57,7 @@ class _PlayListScreenState extends State<PlayListScreen> {
 
   Future _initDetailPlayList() {
     return _memoizer.runOnce(() async {
-      return CommmonService().getDetailPlayList(443797814).then((res) {
+      return CommmonService().getDetailPlayList(widget.pid).then((res) {
         if (res.statusCode == 200) {
           PlayListDetailModel _bean = PlayListDetailModel.fromJson(res.data);
           if (_bean.code == _code) {

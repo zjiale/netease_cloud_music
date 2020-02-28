@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wangyiyun/screens/audio/audio_player_screen.dart';
+import 'package:wangyiyun/screens/audio/mini_player.dart';
 import 'package:wangyiyun/screens/home/find.dart';
 import 'package:wangyiyun/screens/home/tab_title.dart';
 import 'package:wangyiyun/screens/user_center/user_center_screen.dart';
@@ -113,54 +114,7 @@ class _HomeScreenState extends State<HomeScreen>
                           onPressed: () {})
                     ]),
               ),
-              Positioned(
-                  bottom: 0.0,
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => AudioPlayerScreen()));
-                    },
-                    child: Container(
-                        padding: EdgeInsets.only(left: 10.0),
-                        height: ScreenUtil().setHeight(80.0),
-                        width: MediaQuery.of(context).size.width,
-                        color: Colors.white.withOpacity(0.9),
-                        child: Row(
-                            // crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              ClipOval(
-                                  child: Container(
-                                      width: ScreenUtil().setWidth(60.0),
-                                      height: ScreenUtil().setWidth(60.0),
-                                      color: Colors.orange)),
-                              SizedBox(width: ScreenUtil().setWidth(10.0)),
-                              Expanded(
-                                  child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                    Text(
-                                      'asdadasdsadddddddddddddddddddddasdasdsadasdasdasdasdadsadadasdasdasdasdsa',
-                                      maxLines: 1,
-                                    ),
-                                    Text('aaaa')
-                                  ])),
-                              IconButton(
-                                  icon: Icon(Icons.play_circle_outline,
-                                      size: ScreenUtil().setWidth(60.0),
-                                      color: Colors.black54),
-                                  onPressed: () {}),
-                              IconButton(
-                                  icon: Icon(Icons.list,
-                                      size: ScreenUtil().setWidth(60.0),
-                                      color: Colors.black54),
-                                  onPressed: () {}),
-                            ])),
-                  ))
+              Positioned(bottom: 0.0, child: MiniPlayer())
             ])));
   }
 }

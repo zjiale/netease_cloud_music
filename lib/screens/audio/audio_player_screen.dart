@@ -29,12 +29,14 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
   final Duration duration = const Duration(milliseconds: 300);
   AnimationController _controller;
   AnimationController _imgController;
+  AnimationController _fadeController;
   Animation<double> _rotateAnimation;
+  Animation<double> _fadeAnimation;
 
   bool isLike = false;
   double value = 0.0;
 
-  int mode = 0; //模拟数据
+  int _currentIndex = 0;
 
   @override
   void initState() {
@@ -43,9 +45,12 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
     _controller = AnimationController(vsync: this, duration: duration);
     _imgController =
         AnimationController(vsync: this, duration: Duration(seconds: 25));
+    _fadeController =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 500));
     // 为controller添加配置，这里为缩放动画配置
     _rotateAnimation =
         Tween<double>(begin: 0.01, end: -0.05).animate(_controller);
+    _fadeAnimation = Tween<double>(begin: 0, end: 1).animate(_fadeController);
     //动画开始、结束、向前移动或向后移动时会调用StatusListener
     _imgController.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
@@ -59,83 +64,109 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
   void dispose() {
     _controller.dispose();
     _imgController.dispose();
+    _fadeController.dispose();
     super.dispose();
   }
 
   Widget _funButton(PlaySongModel model) {
-    return Positioned(
-        bottom: 110.0,
-        child: Container(
-            width: MediaQuery.of(context).size.width,
-            padding: EdgeInsets.symmetric(horizontal: 50.0),
-            child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: _key.asMap().entries.map((MapEntry map) {
-                  return GestureDetector(
-                    onTap: () {
-                      switch (map.key) {
-                        case 0:
-                          setState(() {
-                            if (isLike) {
-                              isLike = false;
-                              _key.replaceRange(0, 1, ['dislike']);
-                            } else {
-                              isLike = true;
-                              _key.replaceRange(0, 1, ['liked']);
-                            }
-                          });
-                          break;
-                        default:
-                      }
-                    },
-                    child: Stack(overflow: Overflow.visible, children: <Widget>[
-                      Image.asset("${Config().prefixImg(_key[map.key])}",
-                          width: ScreenUtil().setWidth(80.0)),
-                      map.key == 2
-                          ? Positioned(
-                              right: -6.0,
-                              top: 5.0,
-                              child: Text('999+',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: ScreenUtil().setSp(18.0))),
-                            )
-                          : Container()
-                    ]),
-                  );
-                }).toList())));
+    return Container(
+        width: MediaQuery.of(context).size.width,
+        padding: EdgeInsets.symmetric(horizontal: 50.0),
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: _key.asMap().entries.map((MapEntry map) {
+              return GestureDetector(
+                onTap: () {
+                  switch (map.key) {
+                    case 0:
+                      setState(() {
+                        if (isLike) {
+                          isLike = false;
+                          _key.replaceRange(0, 1, ['dislike']);
+                        } else {
+                          isLike = true;
+                          _key.replaceRange(0, 1, ['liked']);
+                        }
+                      });
+                      break;
+                    default:
+                  }
+                },
+                child: Stack(overflow: Overflow.visible, children: <Widget>[
+                  Image.asset("${Config().prefixImg(_key[map.key])}",
+                      width: ScreenUtil().setWidth(80.0)),
+                  map.key == 2
+                      ? Positioned(
+                          right: -6.0,
+                          top: 5.0,
+                          child: Text('999+',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: ScreenUtil().setSp(18.0))),
+                        )
+                      : Container()
+                ]),
+              );
+            }).toList()));
   }
 
   Widget _body(PlaySongModel model) {
-    return Stack(alignment: Alignment.topCenter, children: <Widget>[
-      Positioned(
-          top: ScreenUtil().setHeight(200.0),
-          child: RotationTransition(
-            turns: _imgController,
-            child: Stack(alignment: Alignment.center, children: <Widget>[
-              ClipOval(
-                  child: ExtendedImage.network(model.curSong.picUrl,
-                      cache: true,
-                      width: ScreenUtil().setWidth(400),
-                      fit: BoxFit.contain)),
-              Image.asset('assets/bet.png', width: ScreenUtil().setWidth(500))
-            ]),
-          )),
-      Align(
-        alignment: Alignment(0.25, -1),
-        // left: MediaQuery.of(context).size.width / 2,
-        child: RotationTransition(
-            turns: _rotateAnimation,
-            alignment: Alignment(
-                -1 +
-                    (ScreenUtil().setWidth(45 * 2) /
-                        (ScreenUtil().setWidth(293))),
-                -1 +
-                    (ScreenUtil().setWidth(45 * 2) /
-                        (ScreenUtil().setWidth(504)))),
-            child: Image.asset('assets/bgm.png',
-                height: ScreenUtil().setHeight(280.0))),
-      ),
+    return Column(children: <Widget>[
+      Expanded(
+          child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  if (_currentIndex == 0) {
+                    _fadeController.forward();
+                    _currentIndex = 1;
+                  } else {
+                    _fadeController.reverse();
+                    _currentIndex = 0;
+                  }
+                });
+              },
+              child: Container(
+                  color: Colors.transparent,
+                  child: IndexedStack(index: _currentIndex, children: <Widget>[
+                    Stack(alignment: Alignment.topCenter, children: <Widget>[
+                      Positioned(
+                          top: ScreenUtil().setHeight(200.0),
+                          child: RotationTransition(
+                            turns: _imgController,
+                            child: Stack(
+                                alignment: Alignment.center,
+                                children: <Widget>[
+                                  ClipOval(
+                                      child: ExtendedImage.network(
+                                          model.curSong.picUrl,
+                                          cache: true,
+                                          width: ScreenUtil().setWidth(400),
+                                          fit: BoxFit.contain)),
+                                  Image.asset('assets/bet.png',
+                                      width: ScreenUtil().setWidth(500))
+                                ]),
+                          )),
+                      Align(
+                        alignment: Alignment(0.25, -1),
+                        // left: MediaQuery.of(context).size.width / 2,
+                        child: RotationTransition(
+                            turns: _rotateAnimation,
+                            alignment: Alignment(
+                                -1 +
+                                    (ScreenUtil().setWidth(45 * 2) /
+                                        (ScreenUtil().setWidth(293))),
+                                -1 +
+                                    (ScreenUtil().setWidth(45 * 2) /
+                                        (ScreenUtil().setWidth(504)))),
+                            child: Image.asset('assets/bgm.png',
+                                height: ScreenUtil().setHeight(280.0))),
+                      )
+                    ]),
+                    FadeTransition(
+                        opacity: _fadeAnimation,
+                        child:
+                            Container(width: 300.0, color: Colors.amberAccent))
+                  ])))),
       _funButton(model),
       SliderTime(model),
       PlayButton(model)

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:wangyiyun/model/music_song_model.dart';
 
 class PlaySongModel with ChangeNotifier {
@@ -14,7 +15,12 @@ class PlaySongModel with ChangeNotifier {
   Duration curSongDuration;
 
   int _curIndex = 0;
+  int _sequenceIndex;
+  int _randomIndex = 0;
+
   List<MusicSong> _curList = [];
+  List<MusicSong> _sequenceList = [];
+  List<MusicSong> _randomList = [];
   MusicSong _curSong;
 
   bool isChange = false;
@@ -45,7 +51,7 @@ class PlaySongModel with ChangeNotifier {
     // 当前播放进度监听
     _audioPlayer.onAudioPositionChanged.listen((Duration p) {
       !isChange
-          ? sinkProgress(p.inMilliseconds > curSong.totalTime
+          ? sinkProgress(p.inMilliseconds >= curSong.totalTime
               ? curSong.totalTime
               : p.inMilliseconds)
           : _curPositionController.sink.done;
@@ -72,42 +78,44 @@ class PlaySongModel with ChangeNotifier {
 
   void togglePlay() {
     if (_curState == AudioPlayerState.PAUSED) {
-      this.resume();
+      resume();
     } else {
-      this.pause();
+      pause();
     }
   }
 
   void playOneSong(MusicSong song) {
-    this._curSong = _curList[_curIndex];
-    this._curList.insert(0, song);
-    this.play();
+    _curSong = _curList[_curIndex];
+    _curList.insert(0, song);
+    play();
   }
 
   void playMoreSong(List<MusicSong> playList, {int index}) {
-    this._curList = playList;
+    _curList = playList;
+    _sequenceList = playList;
+    _randomList = List.from(playList);
+    _randomList.shuffle();
     if (index != null) _curIndex = index;
-    this.play();
+    play();
   }
 
-  // void filter() {
-  //   // 因为json看不出vip与普通歌曲的区别只能用蠢办法,只适用于歌单中筛选
-  //   Dio()
-  //       .get(
-  //           'https://music.163.com/song/media/outer/url?id=${this._curList[this._curIndex].id}.mp3')
-  //       .then((res) {
-  //     if (res.realUri.toString() != 'https://music.163.com/404') {
-  //       this.play();
-  //     } else {
-  //       print(123);
-  //     }
-  //   });
-  // }
-
   void play() {
-    _audioPlayer.setUrl(
-        'https://music.163.com/song/media/outer/url?id=${this._curList[this._curIndex].id}.mp3');
-    this.resume();
+    _audioPlayer
+        .setUrl(
+            'https://music.163.com/song/media/outer/url?id=${_curList[_curIndex].id}.mp3')
+        .then((result) {
+      print(result);
+      resume();
+    }).catchError((error) async {
+      showToast(
+        '网络出现点问题，请检查下网络！',
+        position: ToastPosition.bottom,
+        duration: Duration(seconds: 2),
+        backgroundColor: Colors.grey,
+        radius: 13.0,
+        textStyle: TextStyle(fontSize: 15.0),
+      );
+    });
   }
 
   void pause() {
@@ -121,6 +129,7 @@ class PlaySongModel with ChangeNotifier {
   void changeMode() {
     switch (_mode) {
       case 0:
+        // _sequenceIndex = _curIndex;
         _mode = 1; //单曲循环
         _audioPlayer.setReleaseMode(ReleaseMode.LOOP);
         break;
@@ -129,6 +138,9 @@ class PlaySongModel with ChangeNotifier {
         _audioPlayer.setReleaseMode(ReleaseMode.STOP);
         break;
       case 2:
+        _sequenceIndex = _sequenceList
+            .indexWhere((song) => song.id == _curList[_curIndex].id);
+        // print(_sequenceIndex);
         _mode = 0; //顺序播放
         break;
     }
@@ -140,24 +152,29 @@ class PlaySongModel with ChangeNotifier {
   }
 
   void next() {
-    print(_curIndex);
-    if (_mode == 2) _curList.shuffle();
-    if (this._curIndex == this._curList.length) {
-      this._curIndex = 0;
+    _curList = _mode == 0 ? _sequenceList : _randomList;
+    _curIndex =
+        _mode == 0 && _sequenceIndex != null ? _sequenceIndex : _curIndex;
+    if (_curIndex == _curList.length) {
+      _curIndex = 0;
     } else {
-      this._curIndex++;
+      _curIndex++;
     }
-    this.play();
+    _sequenceIndex = _curIndex;
+    play();
   }
 
   void previous() {
-    if (_mode == 2) _curList.shuffle();
-    if (this._curIndex == 0) {
-      this._curIndex = this._curList.length - 1;
+    _curList = _mode == 0 ? _sequenceList : _randomList;
+    _curIndex =
+        _mode == 0 && _sequenceIndex != null ? _sequenceIndex : _curIndex;
+    if (_curIndex == 0) {
+      _curIndex = _curList.length - 1;
     } else {
-      this._curIndex--;
+      _curIndex--;
     }
-    this.play();
+    _sequenceIndex = _curIndex;
+    play();
   }
 
   @override

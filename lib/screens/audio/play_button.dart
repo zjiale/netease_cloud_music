@@ -26,34 +26,31 @@ class PlayButton extends StatelessWidget {
         break;
     }
 
-    return Positioned(
-      bottom: 10,
-      child: Container(
-          width: MediaQuery.of(context).size.width,
-          padding: EdgeInsets.symmetric(horizontal: 50.0),
-          child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                ImageButton(ScreenUtil().setWidth(80),
-                    ScreenUtil().setHeight(80), _mode,
-                    fun: () => model.changeMode()),
-                ImageButton(ScreenUtil().setWidth(80),
-                    ScreenUtil().setHeight(80), 'song_left',
-                    fun: () => model.previous()),
-                ImageButton(
-                    ScreenUtil().setWidth(130),
-                    ScreenUtil().setHeight(130),
-                    model.curState == AudioPlayerState.PLAYING
-                        ? 'song_pause'
-                        : 'song_play',
-                    fun: () => model.togglePlay()),
-                ImageButton(ScreenUtil().setWidth(80),
-                    ScreenUtil().setHeight(80), 'song_right',
-                    fun: () => model.next()),
-                ImageButton(ScreenUtil().setWidth(80),
-                    ScreenUtil().setHeight(80), 'play_songs',
-                    fun: () {})
-              ])),
-    );
+    return Container(
+        width: MediaQuery.of(context).size.width,
+        padding: EdgeInsets.symmetric(horizontal: 50.0),
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              ImageButton(
+                  ScreenUtil().setWidth(80), ScreenUtil().setHeight(80), _mode,
+                  fun: () => model.changeMode()),
+              ImageButton(ScreenUtil().setWidth(80), ScreenUtil().setHeight(80),
+                  'song_left',
+                  fun: () => model.previous()),
+              ImageButton(
+                  ScreenUtil().setWidth(130),
+                  ScreenUtil().setHeight(130),
+                  model.curState == AudioPlayerState.PLAYING
+                      ? 'song_pause'
+                      : 'song_play',
+                  fun: () => model.togglePlay()),
+              ImageButton(ScreenUtil().setWidth(80), ScreenUtil().setHeight(80),
+                  'song_right',
+                  fun: () => model.next()),
+              ImageButton(ScreenUtil().setWidth(80), ScreenUtil().setHeight(80),
+                  'play_songs',
+                  fun: () {})
+            ]));
   }
 }
