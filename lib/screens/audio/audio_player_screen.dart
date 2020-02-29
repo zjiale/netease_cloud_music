@@ -184,9 +184,10 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
         _controller.forward();
       }
       return Stack(children: <Widget>[
-        Image.asset(
-          'assets/timg.jpg',
+        Image.network(
+          model.curSong.picUrl,
           fit: BoxFit.cover,
+          alignment: Alignment.bottomLeft,
           height: double.infinity,
         ),
         BackdropFilter(

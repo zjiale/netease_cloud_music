@@ -5,7 +5,11 @@ import 'package:wangyiyun/screens/audio/audio_player_screen.dart';
 import 'package:wangyiyun/screens/audio/mini_player.dart';
 import 'package:wangyiyun/screens/home/find.dart';
 import 'package:wangyiyun/screens/home/tab_title.dart';
+import 'package:wangyiyun/screens/moments/moments_screen.dart';
 import 'package:wangyiyun/screens/user_center/user_center_screen.dart';
+import 'package:wangyiyun/screens/video/video_screen.dart';
+import 'package:wangyiyun/store/index.dart';
+import 'package:wangyiyun/store/model/play_song_model.dart';
 import 'package:wangyiyun/utils/config.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -54,7 +58,11 @@ class _HomeScreenState extends State<HomeScreen>
     // TODO: implement initState
     super.initState();
     _currentIndex = 1;
-    _pages = List()..add(UserCenterScreen())..add(Find());
+    _pages = List()
+      ..add(UserCenterScreen())
+      ..add(Find())
+      ..add(MomentsScreen())
+      ..add(VideoScreen());
     _pageController = PageController(initialPage: _currentIndex)
       ..addListener(() {
         setState(() {
@@ -114,7 +122,13 @@ class _HomeScreenState extends State<HomeScreen>
                           onPressed: () {})
                     ]),
               ),
-              Positioned(bottom: 0.0, child: MiniPlayer())
+              Positioned(
+                  bottom: 0.0,
+                  child: Store.connect<PlaySongModel>(
+                      builder: (context, model, child) {
+                    return Offstage(
+                        offstage: model.show, child: MiniPlayer(model));
+                  }))
             ])));
   }
 }

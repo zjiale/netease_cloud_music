@@ -3,9 +3,12 @@ import 'package:flutter/rendering.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:wangyiyun/store/index.dart' show Store;
 import 'package:wangyiyun/screens/home/home_screen.dart';
+import 'package:wangyiyun/utils/cache.dart';
 
-void main() {
+Future<void> main() async {
   debugPaintSizeEnabled = false;
+  WidgetsFlutterBinding.ensureInitialized();
+  await SpUtil.getInstance();
   runApp(MyApp());
 }
 

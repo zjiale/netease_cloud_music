@@ -4,8 +4,12 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:wangyiyun/model/music_song_model.dart';
+import 'package:wangyiyun/utils/cache.dart';
+import 'package:wangyiyun/utils/fluro_convert_util.dart';
 
 class PlaySongModel with ChangeNotifier {
+  static const String _SongKey = 'PLAYING_SONG';
+  static const String _IndexKey = 'SONG_INDEX';
   AudioPlayer _audioPlayer = AudioPlayer();
   StreamController<String> _curPositionController =
       StreamController<String>.broadcast();
@@ -16,25 +20,29 @@ class PlaySongModel with ChangeNotifier {
 
   int _curIndex = 0;
   int _sequenceIndex;
-  int _randomIndex = 0;
 
   List<MusicSong> _curList = [];
   List<MusicSong> _sequenceList = [];
   List<MusicSong> _randomList = [];
-  MusicSong _curSong;
 
   bool isChange = false;
+  bool _isShow = false;
 
-  int get mode => _mode;
-  List<MusicSong> get curList => _curList;
-  MusicSong get curSong => _curList[_curIndex];
-  AudioPlayerState get curState => _curState;
+  bool get show => _isShow; // 迷你播放器是否显示
+  int get mode => _mode; // 播放模式
+  List<MusicSong> get curList => _curList; // 当前播放列表
+  MusicSong get curSong => _curList[_curIndex]; // 当前播放歌曲
+  AudioPlayerState get curState => _curState; //当前播放器状态
   Stream<String> get curPositionStream =>
       _curPositionController.stream; // SteamController的出口
 
   void init() {
     AudioPlayer.logEnabled = false;
     _audioPlayer.setReleaseMode(ReleaseMode.STOP);
+
+    var songList = SpUtil.preferences.get(_SongKey);
+    if (songList == null) _isShow = true;
+
     // 播放状态监听
     _audioPlayer.onPlayerStateChanged.listen((state) {
       _curState = state;
@@ -48,6 +56,7 @@ class PlaySongModel with ChangeNotifier {
     _audioPlayer.onDurationChanged.listen((d) {
       curSongDuration = d;
     });
+
     // 当前播放进度监听
     _audioPlayer.onAudioPositionChanged.listen((Duration p) {
       !isChange
@@ -55,10 +64,6 @@ class PlaySongModel with ChangeNotifier {
               ? curSong.totalTime
               : p.inMilliseconds)
           : _curPositionController.sink.done;
-    });
-
-    _audioPlayer.onPlayerError.listen((msg) {
-      print('audioPlayer error : $msg');
     });
   }
 
@@ -85,7 +90,6 @@ class PlaySongModel with ChangeNotifier {
   }
 
   void playOneSong(MusicSong song) {
-    _curSong = _curList[_curIndex];
     _curList.insert(0, song);
     play();
   }
@@ -104,11 +108,12 @@ class PlaySongModel with ChangeNotifier {
         .setUrl(
             'https://music.163.com/song/media/outer/url?id=${_curList[_curIndex].id}.mp3')
         .then((result) {
-      print(result);
       resume();
+      if (_isShow) _isShow = false;
+      save2sp();
     }).catchError((error) async {
       showToast(
-        '网络出现点问题，请检查下网络！',
+        '正在加载音乐,请稍等!!!',
         position: ToastPosition.bottom,
         duration: Duration(seconds: 2),
         backgroundColor: Colors.grey,
@@ -175,6 +180,13 @@ class PlaySongModel with ChangeNotifier {
     }
     _sequenceIndex = _curIndex;
     play();
+  }
+
+  void save2sp() {
+    SpUtil.preferences.remove(_SongKey);
+    SpUtil.preferences.setInt(_IndexKey, _curIndex);
+    SpUtil.preferences.setStringList(_SongKey,
+        _curList.map((s) => FluroConvertUtils.object2string(s)).toList());
   }
 
   @override

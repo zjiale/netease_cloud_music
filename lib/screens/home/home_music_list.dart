@@ -32,8 +32,6 @@ class _HomeMusicListState extends State<HomeMusicList> {
           artists: widget.list[index].artists.first.name,
           picUrl: widget.list[index].album.blurPicUrl);
       model.playOneSong(song);
-      Navigator.push(context,
-          MaterialPageRoute(builder: (context) => AudioPlayerScreen()));
     } else {
       return;
     }
@@ -105,13 +103,30 @@ class _HomeMusicListState extends State<HomeMusicList> {
                                           color: Colors.grey))
                                   : Container()
                             ])),
+                        SizedBox(width: ScreenUtil().setWidth(13.0)),
                         !widget.isAlbum
                             ? Padding(
                                 padding: EdgeInsets.only(right: 10.0),
-                                child: Icon(Icons.play_circle_outline,
-                                    size: 30.0,
-                                    color: Theme.of(context).primaryColor),
-                              )
+                                child: model.curList.length > 0 &&
+                                        model.curSong.id ==
+                                            widget.list[index].id
+                                    ? Icon(Icons.volume_up,
+                                        size: ScreenUtil().setWidth(40.0),
+                                        color: Theme.of(context).primaryColor)
+                                    : Container(
+                                        width: ScreenUtil().setWidth(45.0),
+                                        height: ScreenUtil().setWidth(45.0),
+                                        // padding: EdgeInsets.all(10.0),
+                                        decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            border: Border.all(
+                                                color: Color(0xffcdcdcd),
+                                                width: 1.0)),
+                                        child: Center(
+                                            child: Icon(Icons.play_arrow,
+                                                size: ScreenUtil().setSp(30.0),
+                                                color: Theme.of(context)
+                                                    .primaryColor))))
                             : Container(
                                 width: 30.0,
                                 padding: EdgeInsets.only(right: 10.0))
