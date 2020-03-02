@@ -45,7 +45,7 @@ class _PlayListCoverWidgetState extends State<PlayListCoverWidget>
               children: <Widget>[
                 widget.create == false
                     ? ExtendedImage.network(widget.url,
-                        fit: BoxFit.cover, cache: true,
+                        fit: BoxFit.contain, cache: true,
                         loadStateChanged: (ExtendedImageState state) {
                         switch (state.extendedImageLoadState) {
                           case LoadState.loading:

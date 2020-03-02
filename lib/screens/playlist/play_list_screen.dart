@@ -14,6 +14,7 @@ import 'package:wangyiyun/utils/config.dart';
 import 'package:wangyiyun/utils/numbers_convert.dart';
 import 'package:wangyiyun/widgets/flexible_detail_bar.dart';
 import 'package:wangyiyun/widgets/play_list_cover.dart';
+import 'package:wangyiyun/widgets/sliver_appbar_custom.dart';
 
 class PlayListScreen extends StatefulWidget {
   final double expandedHeight;
@@ -109,12 +110,8 @@ class _PlayListScreenState extends State<PlayListScreen> {
 
   Widget content(PlayListDetailModel detail) {
     return CustomScrollView(controller: _controller, slivers: <Widget>[
-      SliverAppBar(
-          pinned: true,
-          expandedHeight: ScreenUtil().setHeight(widget.expandedHeight),
-          elevation: 0,
-          brightness: Brightness.dark,
-          iconTheme: IconThemeData(color: Colors.white),
+      SliverAppBarCustom(
+          expandedHeight: widget.expandedHeight,
           title: _marquee
               ? Container(
                   height: ScreenUtil().setHeight(80),
@@ -124,89 +121,86 @@ class _PlayListScreenState extends State<PlayListScreen> {
                   ),
                 )
               : Text('歌单'),
-          flexibleSpace: FlexibleDetailBar(
-              content: SafeArea(
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    left: ScreenUtil().setWidth(35),
-                    right: ScreenUtil().setWidth(35),
-                    top: ScreenUtil().setWidth(120),
-                  ),
-                  child: Column(children: <Widget>[
-                    Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          PlayListCoverWidget(detail.playlist.coverImgUrl,
-                              width: 230,
-                              playCount: NumberUtils.amountConversion(
-                                  detail.playlist.playCount)),
-                          SizedBox(width: ScreenUtil().setWidth(40.0)),
-                          Expanded(
-                              child: Container(
-                            height: ScreenUtil().setWidth(230),
-                            child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Text(detail.playlist.name,
-                                      style: TextStyle(
-                                          fontSize: ScreenUtil().setSp(33.0),
-                                          fontWeight: FontWeight.bold)),
-                                  Row(children: <Widget>[
-                                    ClipOval(
-                                        child: Container(
-                                      width: 20.0,
-                                      height: 20.0,
-                                      child: ExtendedImage.network(
-                                          detail.playlist.creator.avatarUrl,
-                                          fit: BoxFit.cover),
-                                    )),
-                                    SizedBox(
-                                        width: ScreenUtil().setWidth(10.0)),
-                                    Text(detail.playlist.creator.nickname,
-                                        style: TextStyle(
-                                            fontSize: ScreenUtil().setSp(25.0),
-                                            color: Color(0xffcdcdcd))),
-                                    Icon(Icons.keyboard_arrow_right,
-                                        size: ScreenUtil().setSp(40.0),
-                                        color: Color(0xffcdcdcd))
-                                  ]),
-                                  Text(detail.playlist.description,
-                                      style: TextStyle(
-                                          fontSize: ScreenUtil().setSp(20.0),
-                                          color: Color(0xffcdcdcd)),
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis)
-                                ]),
-                          ))
-                        ]),
-                    SizedBox(height: ScreenUtil().setHeight(30.0)),
-                    playButton(detail.playlist.shareCount,
-                        detail.playlist.commentCount)
-                  ]),
+          content: SafeArea(
+            child: Padding(
+              padding: EdgeInsets.only(
+                left: ScreenUtil().setWidth(35),
+                right: ScreenUtil().setWidth(35),
+                top: ScreenUtil().setWidth(120),
+              ),
+              child: Column(children: <Widget>[
+                Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      PlayListCoverWidget(detail.playlist.coverImgUrl,
+                          width: 230,
+                          playCount: NumberUtils.amountConversion(
+                              detail.playlist.playCount)),
+                      SizedBox(width: ScreenUtil().setWidth(40.0)),
+                      Expanded(
+                          child: Container(
+                        height: ScreenUtil().setWidth(230),
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(detail.playlist.name,
+                                  style: TextStyle(
+                                      fontSize: ScreenUtil().setSp(33.0),
+                                      fontWeight: FontWeight.bold)),
+                              Row(children: <Widget>[
+                                ClipOval(
+                                    child: Container(
+                                  width: 20.0,
+                                  height: 20.0,
+                                  child: ExtendedImage.network(
+                                      detail.playlist.creator.avatarUrl,
+                                      fit: BoxFit.cover),
+                                )),
+                                SizedBox(width: ScreenUtil().setWidth(10.0)),
+                                Text(detail.playlist.creator.nickname,
+                                    style: TextStyle(
+                                        fontSize: ScreenUtil().setSp(25.0),
+                                        color: Color(0xffcdcdcd))),
+                                Icon(Icons.keyboard_arrow_right,
+                                    size: ScreenUtil().setSp(40.0),
+                                    color: Color(0xffcdcdcd))
+                              ]),
+                              Text(detail.playlist.description,
+                                  style: TextStyle(
+                                      fontSize: ScreenUtil().setSp(20.0),
+                                      color: Color(0xffcdcdcd)),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis)
+                            ]),
+                      ))
+                    ]),
+                SizedBox(height: ScreenUtil().setHeight(30.0)),
+                playButton(
+                    detail.playlist.shareCount, detail.playlist.commentCount)
+              ]),
+            ),
+          ),
+          background: Stack(
+            children: <Widget>[
+              Container(
+                  width: double.infinity,
+                  height: double.infinity,
+                  color: bgColor),
+              BackdropFilter(
+                filter: ImageFilter.blur(
+                  sigmaY: 5,
+                  sigmaX: 5,
+                ),
+                child: Container(
+                  color: Colors.black26,
+                  width: double.infinity,
+                  height: double.infinity,
                 ),
               ),
-              background: Stack(
-                children: <Widget>[
-                  Container(
-                      width: double.infinity,
-                      height: double.infinity,
-                      color: bgColor),
-                  BackdropFilter(
-                    filter: ImageFilter.blur(
-                      sigmaY: 5,
-                      sigmaX: 5,
-                    ),
-                    child: Container(
-                      color: Colors.black26,
-                      width: double.infinity,
-                      height: double.infinity,
-                    ),
-                  ),
-                ],
-              )),
-          bottom: PlayListBottom(detail)),
+            ],
+          ),
+          bottom: PlayListBottom(detail: detail)),
       SliverPadding(
         padding: EdgeInsets.only(left: 10.0),
         sliver: SliverFixedExtentList(

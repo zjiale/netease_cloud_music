@@ -157,6 +157,17 @@ class PlaySongModel with ChangeNotifier {
   }
 
   void next() {
+    if (_curList.length == 1) {
+      showToast(
+        '当前歌曲为最后一首，请添加歌曲！！！！',
+        position: ToastPosition.bottom,
+        duration: Duration(seconds: 2),
+        backgroundColor: Colors.grey,
+        radius: 13.0,
+        textStyle: TextStyle(fontSize: 15.0),
+      );
+      return;
+    }
     _curList = _mode == 0 ? _sequenceList : _randomList;
     _curIndex =
         _mode == 0 && _sequenceIndex != null ? _sequenceIndex : _curIndex;
@@ -170,6 +181,17 @@ class PlaySongModel with ChangeNotifier {
   }
 
   void previous() {
+    if (_curList.length == 1) {
+      showToast(
+        '当前歌曲为最后一首，请添加歌曲！！！！',
+        position: ToastPosition.bottom,
+        duration: Duration(seconds: 2),
+        backgroundColor: Colors.grey,
+        radius: 13.0,
+        textStyle: TextStyle(fontSize: 15.0),
+      );
+      return;
+    }
     _curList = _mode == 0 ? _sequenceList : _randomList;
     _curIndex =
         _mode == 0 && _sequenceIndex != null ? _sequenceIndex : _curIndex;

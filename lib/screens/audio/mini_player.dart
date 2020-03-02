@@ -14,7 +14,6 @@ class MiniPlayer extends StatelessWidget {
         ? StreamBuilder(
             stream: model.curPositionStream,
             builder: (context, AsyncSnapshot snapshot) {
-              print(snapshot.data);
               return GestureDetector(
                 onTap: () {
                   Navigator.push(
