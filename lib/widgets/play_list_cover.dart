@@ -31,6 +31,12 @@ class _PlayListCoverWidgetState extends State<PlayListCoverWidget>
   }
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Row(
       children: <Widget>[

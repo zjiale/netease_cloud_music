@@ -12,6 +12,7 @@ import 'package:wangyiyun/model/recommend_list_model.dart';
 import 'package:wangyiyun/model/recommend_song_list_model.dart';
 import 'package:wangyiyun/screens/daily_recommend/daily_recommend_screen.dart';
 import 'package:wangyiyun/screens/home/title_header.dart';
+import 'package:wangyiyun/screens/playlist/play_list_ground_screen.dart';
 import 'package:wangyiyun/widgets/play_list_cover.dart';
 import 'package:wangyiyun/utils/config.dart';
 import 'package:wangyiyun/utils/custom_scroll_physic.dart';
@@ -211,6 +212,12 @@ class _FindState extends State<Find> with AutomaticKeepAliveClientMixin {
                           context,
                           MaterialPageRoute(
                               builder: (context) => DailyRecommendScreen()));
+                      break;
+                    case 1:
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => PlayListGroundScreen()));
                       break;
                     default:
                   }

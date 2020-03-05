@@ -30,7 +30,7 @@ class SongItem extends StatelessWidget {
       Expanded(
           child: ListTile(
               dense: true,
-              contentPadding: EdgeInsets.symmetric(horizontal: 12.0),
+              contentPadding: EdgeInsets.only(left: 12.0),
               title: RichText(
                   overflow: TextOverflow.ellipsis,
                   text: TextSpan(
@@ -79,8 +79,7 @@ class SongItem extends StatelessWidget {
                               color: Colors.red)),
                     ),
                   ),
-                  Container(
-                    width: ScreenUtil().setWidth(450.0),
+                  Flexible(
                     child: Text('${detail.artists} - ${detail.album}',
                         style: TextStyle(
                             fontSize: ScreenUtil().setSp(20.0),
@@ -92,10 +91,15 @@ class SongItem extends StatelessWidget {
                   ),
                 ],
               ),
-              trailing: detail.mvid != 0
-                  ? Container(
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Offstage(
+                    offstage: detail.mvid == 0 ? true : false,
+                    child: Container(
                       width: ScreenUtil().setWidth(35.0),
                       height: ScreenUtil().setWidth(30.0),
+                      margin: EdgeInsets.only(right: 5.0),
                       decoration: BoxDecoration(
                           shape: BoxShape.rectangle,
                           border: Border.all(width: 1.0, color: Colors.grey),
@@ -107,15 +111,17 @@ class SongItem extends StatelessWidget {
                           color: Colors.grey,
                         ),
                       ),
-                    )
-                  : Container())),
-      IconButton(
-        icon: Icon(
-          Icons.more_vert,
-          color: Colors.grey,
-        ),
-        onPressed: () {},
-      )
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      Icons.more_vert,
+                      color: Colors.grey,
+                    ),
+                    onPressed: () {},
+                  )
+                ],
+              )))
     ]);
   }
 }

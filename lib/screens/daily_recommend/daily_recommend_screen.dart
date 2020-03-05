@@ -29,8 +29,6 @@ class _DailyRecommendScreenState extends State<DailyRecommendScreen> {
 
   @override
   void initState() {
-    super.initState();
-
     _initData = _initDailyRecommend();
 
     double ratio = (window.physicalSize.width / window.devicePixelRatio) /
@@ -51,6 +49,7 @@ class _DailyRecommendScreenState extends State<DailyRecommendScreen> {
         });
       }
     });
+    super.initState();
   }
 
   Future _initDailyRecommend() {
@@ -75,14 +74,18 @@ class _DailyRecommendScreenState extends State<DailyRecommendScreen> {
       }
     }
     return artists;
-    // _list.forEach((artist){
-    //   artists+='${artist.name}\/';
-    // });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: FutureBuilder(
           future: _initData,
           builder: (BuildContext context, AsyncSnapshot snapshot) {
