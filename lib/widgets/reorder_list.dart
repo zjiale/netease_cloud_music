@@ -53,12 +53,7 @@ class WReorderListState extends State<WReorderList>
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onPanUpdate: (details) {
-        // print('update---localposition:${details.localPosition}');
-        // print('update---x:${details.globalPosition.dx}');
-        _offsetDx += details.globalPosition.dx;
-        setState(() {});
-      },
+      onHorizontalDragUpdate: (details) {},
       onPanEnd: (details) => swap(0, 1, 2),
       child: Stack(
         alignment: Alignment.center,

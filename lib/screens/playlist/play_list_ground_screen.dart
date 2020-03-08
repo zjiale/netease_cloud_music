@@ -3,6 +3,8 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:wangyiyun/widgets/custom_scroll_physic.dart';
 import 'package:wangyiyun/widgets/reorder_list.dart';
 
 class PlayListGroundScreen extends StatefulWidget {
@@ -29,6 +31,7 @@ class _PlayListGroundScreenState extends State<PlayListGroundScreen>
   TabController _tabController;
 
   double pageOffset = 0.0;
+  SwiperController _swiperController = new SwiperController();
 
   @override
   void initState() {
@@ -115,36 +118,38 @@ class _PlayListGroundScreenState extends State<PlayListGroundScreen>
                           height: 100.0,
                         ),
                         Container(
-                          height: 200.0,
-                          // width: 200.0,
-                          child: WReorderList(
-                              key: _key,
-                              children: _data
-                                  .asMap()
-                                  .entries
-                                  .map((MapEntry s) => Container(
-                                        height: 180.0,
-                                        width: 130.0,
-                                        margin: EdgeInsets.all(10.0),
-                                        decoration: BoxDecoration(
-                                            color: _data[s.key],
-                                            shape: BoxShape.rectangle,
-                                            borderRadius:
-                                                BorderRadius.circular(5.0)),
-                                        child: Center(
-                                          child: Text('${s.key + 1}'),
-                                        ),
-                                      ))
-                                  .toList(),
-                              onIndexChanged: (a, b, c) {
-                                setState(() {
-                                  var temp = _data[a];
-                                  _data[a] = _data[c];
-                                  _data[c] = _data[b];
-                                  _data[b] = temp;
-                                });
-                              }),
-                        )
+                            height: 300.0,
+                            // width: 200.0,
+                            child: new Swiper(
+                                loop: true,
+                                layout: SwiperLayout.CUSTOM,
+                                customLayoutOption: new CustomLayoutOption(
+                                        startIndex: -1, stateCount: 3)
+                                    .addTranslate([
+                                  new Offset(-50.0, 0.0),
+                                  new Offset(50.0, 0.0),
+                                  new Offset(0.0, 0.0)
+                                ]).addScale([
+                                  1.0,
+                                  1.0,
+                                  1.2
+                                ], Alignment.center).addOpacity(
+                                        [0.7, 0.7, 1.0]),
+                                itemWidth: 100.0,
+                                itemHeight: 150.0,
+                                itemBuilder: (context, index) {
+                                  return new Container(
+                                    decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(20.0),
+                                        shape: BoxShape.rectangle,
+                                        color: _data[index]),
+                                    child: new Center(
+                                      child: new Text("$index"),
+                                    ),
+                                  );
+                                },
+                                itemCount: 3))
                       ],
                     )
                   : Container();
