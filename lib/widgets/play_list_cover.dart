@@ -6,14 +6,20 @@ class PlayListCoverWidget extends StatefulWidget {
   final String url;
   final String playCount;
   final double width;
+  final double height;
+  final double circular;
   final bool isAlbum;
   final bool create;
+  final bool all;
 
   PlayListCoverWidget(this.url,
       {this.playCount,
       this.width = 200,
+      this.height = 0,
+      this.circular = 8.0,
       this.isAlbum = false,
-      this.create = false});
+      this.create = false,
+      this.all = true});
 
   @override
   _PlayListCoverWidgetState createState() => _PlayListCoverWidgetState();
@@ -41,10 +47,16 @@ class _PlayListCoverWidgetState extends State<PlayListCoverWidget>
     return Row(
       children: <Widget>[
         ClipRRect(
-          borderRadius: BorderRadius.all(Radius.circular(8)),
+          borderRadius: widget.all
+              ? BorderRadius.all(Radius.circular(widget.circular))
+              : BorderRadius.only(
+                  topLeft: Radius.circular(widget.circular),
+                  topRight: Radius.circular(widget.circular)),
           child: Container(
             width: ScreenUtil().setWidth(widget.width),
-            height: ScreenUtil().setWidth(widget.width),
+            height: widget.height != 0
+                ? ScreenUtil().setHeight(widget.height)
+                : ScreenUtil().setWidth(widget.width),
             color: Color(0xfff1f1f1),
             child: Stack(
               alignment: Alignment.topRight,

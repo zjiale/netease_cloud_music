@@ -31,6 +31,11 @@ class CommmonService {
     return await Dio().get("${Api.PLAY_LIST}?uid=$id", options: _getOptions());
   }
 
+  Future<Response> getGroundPlayList(int before, {String cat = "全部"}) async {
+    return await Dio().get("${Api.TOP_PLAY_LIST}?before=$before&cat=$cat",
+        options: _getOptions());
+  }
+
   Future<Response> getDetailPlayList(int id) async {
     return await Dio()
         .get("${Api.PLAY_LIST_DETAIL}?id=$id", options: _getOptions());

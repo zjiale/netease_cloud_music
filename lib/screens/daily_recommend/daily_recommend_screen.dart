@@ -138,7 +138,7 @@ class _DailyRecommendScreenState extends State<DailyRecommendScreen> {
                                           text: TextSpan(
                                               text: _now.day < 10
                                                   ? '0${_now.day}'
-                                                  : _now.day,
+                                                  : "${_now.day}",
                                               style: TextStyle(
                                                   fontSize:
                                                       ScreenUtil().setSp(70.0),
