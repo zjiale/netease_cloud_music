@@ -12,8 +12,10 @@ class ListSourceRepository extends LoadingMoreBase<Playlists> {
 
   final String tag;
   final List firstData;
+  final int total;
   bool isInit;
-  ListSourceRepository({this.firstData, this.isInit = false, this.tag = ""});
+  ListSourceRepository(
+      {this.firstData, this.total = 0, this.isInit = false, this.tag = ""});
 
   @override
   bool get hasMore => _hasMore || forceRefresh;
@@ -33,6 +35,7 @@ class ListSourceRepository extends LoadingMoreBase<Playlists> {
   @override
   Future<bool> loadData([bool isloadMoreAction = false]) async {
     List<Playlists> source = [];
+    int totalLength = 0;
     String url = "";
 
     if (this.length == 0) {
@@ -53,6 +56,7 @@ class ListSourceRepository extends LoadingMoreBase<Playlists> {
           TopQualityPlayListModel _bean =
               TopQualityPlayListModel.fromJson(result.data);
           if (_bean.code == Config.SUCCESS_CODE) {
+            totalLength = _bean.total;
             source = _bean.playlists;
           }
         }
@@ -66,9 +70,10 @@ class ListSourceRepository extends LoadingMoreBase<Playlists> {
       for (var item in source) {
         if (!this.contains(item) && hasMore) this.add(item);
       }
-      _hasMore = source.length >= 30;
+
+      _hasMore = source.length * pageindex < (total != 0 ? total : totalLength);
+      if (_hasMore) before = source.last.updateTime;
       pageindex++;
-      before = source.last.updateTime;
       isSuccess = true;
     } catch (exception, stack) {
       isSuccess = false;

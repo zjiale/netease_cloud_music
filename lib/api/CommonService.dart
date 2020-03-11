@@ -27,12 +27,17 @@ class CommmonService {
         .get("${Api.RANK_LIST}?idx=$type", options: _getOptions());
   }
 
+  Future<Response> getPlayListsTags() async {
+    return Dio().get(Api.PLAY_LIST_TAGS, options: _getOptions());
+  }
+
   Future<Response> getPlayList(int id) async {
     return await Dio().get("${Api.PLAY_LIST}?uid=$id", options: _getOptions());
   }
 
   Future<Response> getGroundPlayList(int before, {String cat = "全部"}) async {
-    return await Dio().get("${Api.TOP_PLAY_LIST}?before=$before&cat=$cat",
+    return await Dio().get(
+        "${Api.TOP_PLAY_LIST}?limit=30&before=$before&cat=$cat",
         options: _getOptions());
   }
 

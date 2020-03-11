@@ -13,6 +13,8 @@ import 'package:wangyiyun/model/recommend_song_list_model.dart';
 import 'package:wangyiyun/screens/daily_recommend/daily_recommend_screen.dart';
 import 'package:wangyiyun/screens/home/title_header.dart';
 import 'package:wangyiyun/screens/playlist/play_list_ground_screen.dart';
+import 'package:wangyiyun/store/index.dart';
+import 'package:wangyiyun/store/model/tag_model.dart';
 import 'package:wangyiyun/widgets/play_list_cover.dart';
 import 'package:wangyiyun/utils/config.dart';
 import 'package:wangyiyun/utils/custom_scroll_physic.dart';
@@ -197,57 +199,60 @@ class _FindState extends State<Find> with AutomaticKeepAliveClientMixin {
   }
 
   Widget playType() {
-    return Container(
-      height: ScreenUtil().setHeight(150.0),
-      padding: EdgeInsets.symmetric(horizontal: 10.0),
-      child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: _type.map((item) {
-            return Column(children: <Widget>[
-              GestureDetector(
-                onTap: () {
-                  switch (item["index"]) {
-                    case 0:
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => DailyRecommendScreen()));
-                      break;
-                    case 1:
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => PlayListGroundScreen()));
-                      break;
-                    default:
-                  }
-                },
-                child: CircleAvatar(
-                    radius: 22.0,
-                    backgroundColor: Color(0xffff1916),
-                    child:
-                        Stack(alignment: Alignment.center, children: <Widget>[
-                      Image.asset(item["image"]),
-                      item["index"] == 0
-                          ? Align(
-                              alignment: FractionalOffset(0.5, 0.55),
-                              child: Text(
-                                '${now.day}',
-                                style: TextStyle(
-                                    color: Color(0xffff1916),
-                                    fontSize: ScreenUtil().setSp(25.0),
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            )
-                          : Container()
-                    ])),
-              ),
-              SizedBox(height: 5.0),
-              Text(item["text"],
-                  style: TextStyle(fontSize: ScreenUtil().setSp(20.0)))
-            ]);
-          }).toList()),
-    );
+    return Store.connect<TagModel>(builder: (context, model, child) {
+      return Container(
+        height: ScreenUtil().setHeight(150.0),
+        padding: EdgeInsets.symmetric(horizontal: 10.0),
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: _type.map((item) {
+              return Column(children: <Widget>[
+                GestureDetector(
+                  onTap: () {
+                    switch (item["index"]) {
+                      case 0:
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => DailyRecommendScreen()));
+                        break;
+                      case 1:
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    PlayListGroundScreen(tagModel: model)));
+                        break;
+                      default:
+                    }
+                  },
+                  child: CircleAvatar(
+                      radius: 22.0,
+                      backgroundColor: Color(0xffff1916),
+                      child:
+                          Stack(alignment: Alignment.center, children: <Widget>[
+                        Image.asset(item["image"]),
+                        item["index"] == 0
+                            ? Align(
+                                alignment: FractionalOffset(0.5, 0.55),
+                                child: Text(
+                                  '${now.day}',
+                                  style: TextStyle(
+                                      color: Color(0xffff1916),
+                                      fontSize: ScreenUtil().setSp(25.0),
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              )
+                            : Container()
+                      ])),
+                ),
+                SizedBox(height: 5.0),
+                Text(item["text"],
+                    style: TextStyle(fontSize: ScreenUtil().setSp(20.0)))
+              ]);
+            }).toList()),
+      );
+    });
   }
 
   Widget home(List bannerList, List recommendList, List recommendSongList,
@@ -258,7 +263,7 @@ class _FindState extends State<Find> with AutomaticKeepAliveClientMixin {
           scrollDirection: Axis.vertical,
           padding: EdgeInsets.all(10.0),
           children: <Widget>[
-            SizedBox(height: ScreenUtil().setHeight(80.0)),
+            SizedBox(height: ScreenUtil().setHeight(60.0)),
             HomeBanner(bannerList), //banner
             SizedBox(height: ScreenUtil().setHeight(20.0)),
             playType(), // 首页按钮

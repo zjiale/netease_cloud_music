@@ -2,6 +2,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:loading_more_list/loading_more_list.dart';
@@ -9,11 +10,17 @@ import 'package:wangyiyun/api/CommonService.dart';
 import 'package:wangyiyun/model/top_quality_play_list_model.dart';
 import 'package:wangyiyun/screens/playlist/list_source_repository.dart';
 import 'package:wangyiyun/screens/playlist/top_disc.dart';
+import 'package:wangyiyun/store/model/tag_model.dart';
 import 'package:wangyiyun/utils/config.dart';
 import 'package:wangyiyun/utils/numbers_convert.dart';
 import 'package:wangyiyun/widgets/play_list_cover.dart';
+import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart'
+    as extended;
 
 class PlayListGroundScreen extends StatefulWidget {
+  final TagModel tagModel;
+  PlayListGroundScreen({@required this.tagModel});
+
   @override
   _PlayListGroundScreenState createState() => _PlayListGroundScreenState();
 }
@@ -21,16 +28,6 @@ class PlayListGroundScreen extends StatefulWidget {
 class _PlayListGroundScreenState extends State<PlayListGroundScreen>
     with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   int _code = Config.SUCCESS_CODE;
-  final List<String> myTabs = <String>[
-    '推荐',
-    // '官方',
-    // '精品',
-    '华语',
-    'ACG',
-    '流行',
-    '摇滚',
-    '电子'
-  ];
 
   TabController _tabController;
   AnimationController _controller;
@@ -44,7 +41,9 @@ class _PlayListGroundScreenState extends State<PlayListGroundScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(vsync: this, length: myTabs.length);
+
+    _tabController =
+        TabController(vsync: this, length: widget.tagModel.allTags.length);
     _controller =
         AnimationController(vsync: this, duration: Duration(milliseconds: 500));
     _initData = _getFirstTag();
@@ -63,7 +62,9 @@ class _PlayListGroundScreenState extends State<PlayListGroundScreen>
             TopQualityPlayListModel.fromJson(res.data);
         if (_bean.code == _code) {
           listSourceRepository = new ListSourceRepository(
-              firstData: _bean.playlists.sublist(3), isInit: true);
+              firstData: _bean.playlists.sublist(3),
+              total: _bean.total - 3,
+              isInit: true);
           return _bean.playlists.sublist(0, 3);
         }
       }
@@ -88,6 +89,60 @@ class _PlayListGroundScreenState extends State<PlayListGroundScreen>
         ]);
   }
 
+  Widget _buildIndicator(BuildContext context, IndicatorStatus status) {
+    bool isSliver = _tabController.index == 0 ? true : false;
+
+    Widget widget;
+    switch (status) {
+      case IndicatorStatus.none:
+        widget = Container(height: 0.0);
+        break;
+      case IndicatorStatus.loadingMoreBusying:
+        widget =
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+          SpinKitWave(color: Theme.of(context).primaryColor, size: 20.0),
+          SizedBox(
+            width: 5.0,
+          ),
+          Text(
+            '正在努力加载中..',
+            style: TextStyle(
+                fontSize: ScreenUtil().setSp(25.0), color: Colors.black54),
+          )
+        ]);
+        widget =
+            _setbackground(false, widget, height: ScreenUtil().setHeight(50.0));
+        break;
+      case IndicatorStatus.fullScreenBusying:
+        widget = _setbackground(true, widget);
+        if (isSliver) {
+          widget = SliverFillRemaining(
+            child: widget,
+          );
+        } else {}
+        break;
+      case IndicatorStatus.noMoreLoad:
+        widget = Text('到底啦~',
+            style: TextStyle(
+                fontSize: ScreenUtil().setSp(25.0), color: Colors.black54));
+        widget =
+            _setbackground(false, widget, height: ScreenUtil().setHeight(50.0));
+        break;
+      default:
+    }
+    return widget;
+  }
+
+  Widget _setbackground(bool full, Widget widget, {double height}) {
+    widget = Container(
+        width: double.infinity,
+        height: height,
+        child: widget,
+        color: Colors.transparent,
+        alignment: Alignment.center);
+    return widget;
+  }
+
   Widget content() {
     return FutureBuilder(
         future: _initData,
@@ -107,7 +162,7 @@ class _PlayListGroundScreenState extends State<PlayListGroundScreen>
                     Text(
                       '正在努力加载中',
                       style: TextStyle(
-                          fontSize: ScreenUtil().setSp(28.0),
+                          fontSize: ScreenUtil().setSp(25.0),
                           color: Colors.black54),
                     )
                   ]));
@@ -116,71 +171,61 @@ class _PlayListGroundScreenState extends State<PlayListGroundScreen>
               List<Playlists> source = snapshot.data;
               return FadeTransition(
                 opacity: _controller,
-                child: NestedScrollView(
-                  headerSliverBuilder: (context, innerScrolled) => <Widget>[
+                child: extended.NestedScrollView(
+                  pinnedHeaderSliverHeightBuilder: () {
+                    return MediaQuery.of(context).padding.top + kToolbarHeight;
+                  },
+                  innerScrollPositionKeyBuilder: () {
+                    var index = "Tab";
+                    index += _tabController.index.toString();
+                    return Key(index);
+                  },
+                  headerSliverBuilder: (context, innerBoxIsScrolled) =>
+                      <Widget>[
                     SliverOverlapAbsorber(
                       handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
                           context),
                     )
                   ],
-                  body: TabBarView(
-                    physics: NeverScrollableScrollPhysics(),
-                    controller: _tabController,
-                    children: myTabs.asMap().entries.map((MapEntry e) {
-                      return Builder(
-                        builder: (context) => e.key == 0
-                            ? LoadingMoreCustomScrollView(
-                                key: PageStorageKey<int>(e.key),
-                                slivers: <Widget>[
-                                  // SliverOverlapInjector(
-                                  //     handle: NestedScrollView
-                                  //         .sliverOverlapAbsorberHandleFor(context)),
-                                  SliverToBoxAdapter(
-                                    child: TopDisc(source: source),
-                                  ),
-                                  SliverPadding(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal:
-                                            ScreenUtil().setWidth(20.0)),
-                                    sliver: LoadingMoreSliverList(
-                                      SliverListConfig<Playlists>(
-                                        itemBuilder: restList,
-                                        sourceList: listSourceRepository,
-                                        padding: EdgeInsets.all(0.0),
-                                        gridDelegate:
-                                            SliverGridDelegateWithFixedCrossAxisCount(
-                                          crossAxisCount: 3,
-                                          childAspectRatio: 0.7,
-                                          crossAxisSpacing:
-                                              ScreenUtil().setWidth(20.0),
-                                          // mainAxisSpacing: 10.0,
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              )
-                            : Padding(
-                                padding:
-                                    EdgeInsets.all(ScreenUtil().setWidth(20.0)),
-                                child: LoadingMoreList(
-                                  ListConfig<Playlists>(
-                                    itemBuilder: restList,
-                                    sourceList: ListSourceRepository(
-                                        tag: myTabs[e.key]),
-                                    padding: EdgeInsets.all(0.0),
-                                    gridDelegate:
-                                        SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 3,
-                                      childAspectRatio: 0.7,
-                                      crossAxisSpacing:
-                                          ScreenUtil().setWidth(20.0),
-                                      // mainAxisSpacing: 10.0,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                      );
+                  body: IndexedStack(
+                    index: _tabController.index,
+                    children: widget.tagModel.allTags.map((tag) {
+                      return extended
+                          .NestedScrollViewInnerScrollPositionKeyWidget(
+                              Key("Tab${_tabController.index}"),
+                              EasyRefresh(
+                                child: _tabController.index == 0
+                                    ? CustomScrollView(
+                                        key: PageStorageKey<String>(tag),
+                                        slivers: <Widget>[
+                                          // SliverOverlapInjector(
+                                          //     handle: NestedScrollView
+                                          //         .sliverOverlapAbsorberHandleFor(context)),
+                                          SliverToBoxAdapter(
+                                            child: TopDisc(source: source),
+                                          ),
+                                          SliverPadding(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: ScreenUtil()
+                                                    .setWidth(20.0)),
+                                            sliver: GridView.builder(
+                                              padding: EdgeInsets.all(0.0),
+                                              gridDelegate:
+                                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                                crossAxisCount: 3,
+                                                childAspectRatio: 0.7,
+                                                crossAxisSpacing:
+                                                    ScreenUtil().setWidth(20.0),
+                                                // mainAxisSpacing: 10.0,
+                                              ),
+                                              itemCount: ,
+                                              itemBuilder: restList(context, item, index),
+                                            ),
+                                          )
+                                        ],
+                                      )
+                                    : Container(),
+                              ));
                     }).toList(),
                   ),
                 ),
@@ -199,7 +244,7 @@ class _PlayListGroundScreenState extends State<PlayListGroundScreen>
         children: <Widget>[
           Stack(children: <Widget>[
             Container(
-              height: ScreenUtil().setHeight(600.0),
+              height: ScreenUtil().setHeight(500.0),
               decoration: BoxDecoration(
                   color: Colors.white,
                   image: DecorationImage(
@@ -209,13 +254,13 @@ class _PlayListGroundScreenState extends State<PlayListGroundScreen>
             ),
             BackdropFilter(
               filter: ImageFilter.blur(
-                sigmaY: 10,
-                sigmaX: 10,
+                sigmaY: 20,
+                sigmaX: 20,
               ),
               child: Container(
                 color: Colors.white.withOpacity(0.8),
                 width: double.infinity,
-                height: double.infinity,
+                height: ScreenUtil().setHeight(600.0),
               ),
             )
           ]),
@@ -247,9 +292,9 @@ class _PlayListGroundScreenState extends State<PlayListGroundScreen>
                             unselectedLabelColor: Colors.black54,
                             indicatorColor: Theme.of(context).primaryColor,
                             indicatorSize: TabBarIndicatorSize.label,
-                            tabs: myTabs.map((item) {
+                            tabs: widget.tagModel.allTags.map((tag) {
                               return Tab(
-                                text: item,
+                                text: tag,
                               );
                             }).toList(),
                           ),

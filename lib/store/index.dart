@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:wangyiyun/store/model/play_song_model.dart';
+import 'package:wangyiyun/store/model/tag_model.dart';
 
 class Store {
   static BuildContext context;
@@ -15,6 +16,7 @@ class Store {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => PlaySongModel()..init()),
+        ChangeNotifierProvider(create: (_) => TagModel()..init()),
       ],
       child: child,
     );

@@ -40,7 +40,7 @@ class _HomeMusicListState extends State<HomeMusicList> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: ScreenUtil().setHeight(300.0),
+      height: ScreenUtil().setHeight(320.0),
       child: GridView.builder(
           scrollDirection: Axis.horizontal,
           controller: widget.controller,

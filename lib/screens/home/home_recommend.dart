@@ -12,7 +12,7 @@ class HomeRecommend extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: ScreenUtil().setHeight(260.0),
+      height: ScreenUtil().setHeight(280.0),
       child: ListView.builder(
         padding: EdgeInsets.only(top: 10.0, left: 10.0),
         scrollDirection: Axis.horizontal,
