@@ -6,7 +6,8 @@ import 'package:wangyiyun/widgets/play_list_cover.dart';
 
 class TopDisc extends StatelessWidget {
   final List<Playlists> source;
-  TopDisc({@required this.source});
+  final callback;
+  TopDisc({@required this.source, @required this.callback});
 
   @override
   Widget build(BuildContext context) {
@@ -17,13 +18,17 @@ class TopDisc extends StatelessWidget {
             vertical: ScreenUtil().setHeight(20.0)),
         child: new Swiper(
             loop: true,
+            onTap: (index) {},
+            onIndexChanged: (index) {
+              callback(index);
+            },
             control: new SwiperControl(
                 color: Colors.transparent,
                 padding: EdgeInsets.all(30.0),
                 size: 50.0),
             layout: SwiperLayout.CUSTOM,
             customLayoutOption:
-                new CustomLayoutOption(startIndex: -1, stateCount: 3)
+                new CustomLayoutOption(startIndex: 1, stateCount: 3)
                     .addTranslate([
               new Offset(
                   -ScreenUtil().setWidth(260.0) +
@@ -39,61 +44,54 @@ class TopDisc extends StatelessWidget {
             itemWidth: ScreenUtil().setWidth(260.0),
             itemHeight: ScreenUtil().setHeight(280.0),
             itemBuilder: (context, index) {
-              return GestureDetector(
-                onTap: () {
-                  print(index);
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(5.0),
-                      shape: BoxShape.rectangle),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Stack(
-                          alignment: Alignment.bottomRight,
-                          children: <Widget>[
-                            PlayListCoverWidget(
-                              source[index].coverImgUrl,
-                              circular: 5.0,
-                              height: 230.0,
-                              width: 260.0,
-                              all: false,
-                            ),
-                            Container(
-                              margin: EdgeInsets.all(5.0),
-                              width: ScreenUtil().setWidth(50.0),
-                              height: ScreenUtil().setWidth(50.0),
-                              decoration: BoxDecoration(
-                                color: Colors.white60,
-                                shape: BoxShape.circle,
-                              ),
-                              child: Center(
-                                child: Icon(
-                                  Icons.play_arrow,
-                                  size: 20.0,
-                                  color: Theme.of(context).primaryColor,
-                                ),
-                              ),
-                            )
-                          ]),
-                      // SizedBox(height: 10.0),
+              return Container(
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(5.0),
+                    shape: BoxShape.rectangle),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Stack(alignment: Alignment.bottomRight, children: <Widget>[
+                      PlayListCoverWidget(
+                        source[index].coverImgUrl,
+                        circular: 5.0,
+                        height: 230.0,
+                        width: 260.0,
+                        all: false,
+                      ),
                       Container(
-                        height: ScreenUtil().setHeight(280.0) -
-                            ScreenUtil().setHeight(230.0),
-                        padding: EdgeInsets.symmetric(horizontal: 5.0),
+                        margin: EdgeInsets.all(5.0),
+                        width: ScreenUtil().setWidth(50.0),
+                        height: ScreenUtil().setWidth(50.0),
+                        decoration: BoxDecoration(
+                          color: Colors.white60,
+                          shape: BoxShape.circle,
+                        ),
                         child: Center(
-                          child: Text(source[index].name,
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 2,
-                              style: TextStyle(
-                                  fontSize: ScreenUtil().setSp(16.0))),
+                          child: Icon(
+                            Icons.play_arrow,
+                            size: 20.0,
+                            color: Theme.of(context).primaryColor,
+                          ),
                         ),
                       )
-                    ],
-                  ),
+                    ]),
+                    // SizedBox(height: 10.0),
+                    Container(
+                      height: ScreenUtil().setHeight(280.0) -
+                          ScreenUtil().setHeight(230.0),
+                      padding: EdgeInsets.symmetric(horizontal: 5.0),
+                      child: Center(
+                        child: Text(source[index].name,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 2,
+                            style:
+                                TextStyle(fontSize: ScreenUtil().setSp(16.0))),
+                      ),
+                    )
+                  ],
                 ),
               );
             },

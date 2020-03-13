@@ -1,6 +1,7 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:wangyiyun/widgets/fade_network_image.dart';
 
 class PlayListCoverWidget extends StatefulWidget {
   final String url;
@@ -27,21 +28,6 @@ class PlayListCoverWidget extends StatefulWidget {
 
 class _PlayListCoverWidgetState extends State<PlayListCoverWidget>
     with SingleTickerProviderStateMixin {
-  AnimationController _controller;
-
-  @override
-  void initState() {
-    _controller =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 500));
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -62,26 +48,7 @@ class _PlayListCoverWidgetState extends State<PlayListCoverWidget>
               alignment: Alignment.topRight,
               children: <Widget>[
                 widget.create == false
-                    ? ExtendedImage.network(widget.url,
-                        fit: BoxFit.contain, cache: true,
-                        loadStateChanged: (ExtendedImageState state) {
-                        switch (state.extendedImageLoadState) {
-                          case LoadState.loading:
-                            _controller.reset();
-                            return Container();
-                            break;
-                          case LoadState.completed:
-                            _controller.forward();
-                            return FadeTransition(
-                              opacity: _controller,
-                              child: ExtendedRawImage(
-                                  image: state.extendedImageInfo?.image),
-                            );
-                            break;
-                          case LoadState.failed:
-                            return null;
-                        }
-                      })
+                    ? FadeNetWorkImage(widget.url)
                     : Container(),
                 widget.playCount == null
                     ? Container()
