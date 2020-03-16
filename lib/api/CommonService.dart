@@ -22,6 +22,10 @@ class CommmonService {
     return Dio().get(Api.NEWEST_ALBUM_LIST, options: _getOptions());
   }
 
+  Future<Response> getRankAbstrack() async {
+    return await Dio().get(Api.RANK_LIST_ABSTRACT, options: _getOptions());
+  }
+
   Future<Response> getRank(int type) async {
     return await Dio()
         .get("${Api.RANK_LIST}?idx=$type", options: _getOptions());

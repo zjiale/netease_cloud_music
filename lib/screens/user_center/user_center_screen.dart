@@ -113,7 +113,8 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
               context,
               MaterialPageRoute(
                   builder: (context) => PlayListScreen(
-                      520, index == 0 ? create[i].id : collect[i].id)));
+                      expandedHeight: 520,
+                      id: index == 0 ? create[i].id : collect[i].id)));
         },
         child: UserCenterList(index == 0 ? create[i].name : collect[i].name,
             subTitle:

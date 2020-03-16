@@ -6,10 +6,12 @@ import 'package:neteast_cloud_music/widgets/play_list_cover.dart';
 
 class SongItem extends StatelessWidget {
   final bool showIndex;
+  final bool showPic;
   final MusicSong detail;
   final int index;
 
-  SongItem({this.showIndex = false, this.detail, this.index});
+  SongItem(
+      {this.showIndex = false, this.showPic = false, this.detail, this.index});
 
   @override
   Widget build(BuildContext context) {
@@ -20,13 +22,13 @@ class SongItem extends StatelessWidget {
         child: Container(
           width: ScreenUtil().setWidth(60.0),
           child: Center(
-            child: Text('${0 + index}',
+            child: Text('${1 + index}',
                 style: TextStyle(
                     fontSize: ScreenUtil().setSp(30.0), color: Colors.black45)),
           ),
         ),
       ),
-      PlayListCoverWidget(detail.picUrl, width: 80.0),
+      showPic ? PlayListCoverWidget(detail.picUrl, width: 80.0) : Container(),
       Expanded(
           child: ListTile(
               dense: true,

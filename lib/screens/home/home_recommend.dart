@@ -23,8 +23,8 @@ class HomeRecommend extends StatelessWidget {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) =>
-                          PlayListScreen(520, recommendList[index].id)));
+                      builder: (context) => PlayListScreen(
+                          expandedHeight: 520, id: recommendList[index].id)));
             },
             child: Padding(
               padding: EdgeInsets.only(right: 10.0),

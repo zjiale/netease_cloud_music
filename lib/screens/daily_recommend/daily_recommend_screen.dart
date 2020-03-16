@@ -35,8 +35,6 @@ class _DailyRecommendScreenState extends State<DailyRecommendScreen> {
         (window.physicalSize.height / window.devicePixelRatio) / 1334;
     double _scrollOffset = (350 * ratio1) - (100 * ratio) - kToolbarHeight;
     _controller.addListener(() {
-      // _opacity =
-      //     _opacity < 0 ? 0 : 1.0 - max(0.0, _controller.offset) / _scrollOffset;
       if (_controller.offset >= _scrollOffset && _title == '') {
         setState(() {
           _title = '每日推荐';
@@ -181,6 +179,7 @@ class _DailyRecommendScreenState extends State<DailyRecommendScreen> {
                           return SongItem(
                             index: index,
                             showIndex: true,
+                            showPic: true,
                             detail: _list[index],
                           );
                         }, childCount: recommendList.length),

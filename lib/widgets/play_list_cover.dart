@@ -6,6 +6,7 @@ import 'package:neteast_cloud_music/widgets/fade_network_image.dart';
 class PlayListCoverWidget extends StatefulWidget {
   final String url;
   final String playCount;
+  final String updateTime;
   final double width;
   final double height;
   final double circular;
@@ -15,6 +16,7 @@ class PlayListCoverWidget extends StatefulWidget {
 
   PlayListCoverWidget(this.url,
       {this.playCount,
+      this.updateTime,
       this.width = 200,
       this.height = 0,
       this.circular = 8.0,
@@ -73,6 +75,22 @@ class _PlayListCoverWidgetState extends State<PlayListCoverWidget>
                               ),
                             )
                           ],
+                        ),
+                      ),
+                widget.updateTime == null
+                    ? Container()
+                    : Align(
+                        alignment: Alignment.bottomLeft,
+                        child: Container(
+                          padding: EdgeInsets.only(
+                              left: ScreenUtil().setWidth(10.0),
+                              bottom: ScreenUtil().setWidth(10.0)),
+                          child: Text(
+                            widget.updateTime,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: ScreenUtil().setSp(20.0)),
+                          ),
                         ),
                       )
               ],

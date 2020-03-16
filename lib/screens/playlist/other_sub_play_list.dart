@@ -140,9 +140,9 @@ class _OtherSubPlayListState extends State<OtherSubPlayList>
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => PlayListScreen(
-                                          520,
-                                          _source[index].id,
-                                          isOfficial:
+                                          expandedHeight: 520,
+                                          id: _source[index].id,
+                                          official:
                                               widget.index == 1 ? true : false,
                                         )));
                           },

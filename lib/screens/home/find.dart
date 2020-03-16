@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:neteast_cloud_music/model/banner_model.dart';
-import 'package:neteast_cloud_music/model/home_rank_model.dart';
 import 'package:neteast_cloud_music/model/newest_album_model.dart';
 import 'package:neteast_cloud_music/model/rank_list_model.dart';
 import 'package:neteast_cloud_music/model/recommend_list_model.dart';
@@ -13,9 +12,9 @@ import 'package:neteast_cloud_music/model/recommend_song_list_model.dart';
 import 'package:neteast_cloud_music/screens/daily_recommend/daily_recommend_screen.dart';
 import 'package:neteast_cloud_music/screens/home/title_header.dart';
 import 'package:neteast_cloud_music/screens/playlist/play_list_ground_screen.dart';
+import 'package:neteast_cloud_music/screens/rank/rank_list_screens.dart';
 import 'package:neteast_cloud_music/store/index.dart';
 import 'package:neteast_cloud_music/store/model/tag_model.dart';
-import 'package:neteast_cloud_music/widgets/play_list_cover.dart';
 import 'package:neteast_cloud_music/utils/config.dart';
 import 'package:neteast_cloud_music/utils/custom_scroll_physic.dart';
 import 'package:neteast_cloud_music/api/CommonService.dart';
@@ -222,6 +221,12 @@ class _FindState extends State<Find> with AutomaticKeepAliveClientMixin {
                             MaterialPageRoute(
                                 builder: (context) =>
                                     PlayListGroundScreen(tagModel: model)));
+                        break;
+                      case 2:
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => RankListScreens()));
                         break;
                       default:
                     }
