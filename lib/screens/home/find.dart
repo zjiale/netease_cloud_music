@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:async/async.dart';
+import 'package:common_utils/common_utils.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -18,6 +19,7 @@ import 'package:neteast_cloud_music/store/model/tag_model.dart';
 import 'package:neteast_cloud_music/utils/config.dart';
 import 'package:neteast_cloud_music/utils/custom_scroll_physic.dart';
 import 'package:neteast_cloud_music/api/CommonService.dart';
+import 'package:neteast_cloud_music/utils/routes/navigator_util.dart';
 
 import 'home_banner.dart';
 import 'home_rank.dart';
@@ -210,10 +212,7 @@ class _FindState extends State<Find> with AutomaticKeepAliveClientMixin {
                   onTap: () {
                     switch (item["index"]) {
                       case 0:
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => DailyRecommendScreen()));
+                        NavigatorUtil.goDailyPage(context);
                         break;
                       case 1:
                         Navigator.push(
@@ -223,10 +222,7 @@ class _FindState extends State<Find> with AutomaticKeepAliveClientMixin {
                                     PlayListGroundScreen(tagModel: model)));
                         break;
                       case 2:
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => RankListScreens()));
+                        NavigatorUtil.goRankPage(context);
                         break;
                       default:
                     }

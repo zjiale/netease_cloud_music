@@ -51,6 +51,15 @@ class CommmonService {
         .get("${Api.PLAY_LIST_DETAIL}?id=$id", options: _getOptions());
   }
 
+  Future<Response> getSubscribers(int id, {int offset = 0}) async {
+    return await Dio().get("${Api.SUBSCRIBERS}?id=$id&limit=20&offset=$offset",
+        options: _getOptions());
+  }
+
+  Future<Response> getEvent() async {
+    return await Dio().get("${Api.EVENT}", options: _getOptions());
+  }
+
   Options _getOptions() {
     return Options(headers: Config().getHeader());
   }

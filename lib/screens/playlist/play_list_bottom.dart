@@ -5,6 +5,7 @@ import 'package:neteast_cloud_music/model/play_list.detail.dart';
 import 'package:neteast_cloud_music/screens/audio/audio_player_screen.dart';
 import 'package:neteast_cloud_music/store/index.dart';
 import 'package:neteast_cloud_music/store/model/play_song_model.dart';
+import 'package:neteast_cloud_music/utils/routes/navigator_util.dart';
 
 class PlayListBottom extends StatelessWidget implements PreferredSizeWidget {
   final PlayListDetailModel detail;
@@ -27,8 +28,7 @@ class PlayListBottom extends StatelessWidget implements PreferredSizeWidget {
           picUrl: detail.playlist.tracks[i].al.picUrl));
     }
     model.playMoreSong(list);
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => AudioPlayerScreen()));
+    NavigatorUtil.goAudioPage(context);
   }
 
   @override

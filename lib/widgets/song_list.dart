@@ -9,7 +9,9 @@ import 'package:neteast_cloud_music/model/play_list.detail.dart';
 import 'package:neteast_cloud_music/model/subscribers_model.dart';
 import 'package:neteast_cloud_music/screens/playlist/play_list_bottom.dart';
 import 'package:neteast_cloud_music/screens/playlist/play_list_description.dart';
+import 'package:neteast_cloud_music/screens/playlist/subscriber_screen.dart';
 import 'package:neteast_cloud_music/utils/numbers_convert.dart';
+import 'package:neteast_cloud_music/utils/routes/navigator_util.dart';
 import 'package:neteast_cloud_music/widgets/fade_network_image.dart';
 import 'package:neteast_cloud_music/widgets/play_list_cover.dart';
 import 'package:neteast_cloud_music/widgets/sliver_appbar_custom.dart';
@@ -17,6 +19,7 @@ import 'package:neteast_cloud_music/widgets/song_item.dart';
 
 class SongList extends StatefulWidget {
   final double expandedHeight;
+  final int id;
   final PlayListDetailModel detail;
   final List<MusicSong> list;
   final List<SubscribersModel> suscribers;
@@ -25,6 +28,7 @@ class SongList extends StatefulWidget {
   final bool official;
   SongList(
       {@required this.expandedHeight,
+      @required this.id,
       @required this.detail,
       @required this.list,
       @required this.suscribers,
@@ -192,12 +196,16 @@ class _SongListState extends State<SongList> {
               : Text('歌单'),
           actions: [
             IconButton(
-              icon: Icon(Icons.search),
-              color: Colors.white,
+              icon: Icon(
+                Icons.search,
+                color: Colors.white,
+              ),
             ),
             IconButton(
-              icon: Icon(Icons.more_vert),
-              color: Colors.white,
+              icon: Icon(
+                Icons.more_vert,
+                color: Colors.white,
+              ),
             )
           ],
           content: SafeArea(
@@ -248,34 +256,45 @@ class _SongListState extends State<SongList> {
         ),
       ),
       SliverToBoxAdapter(
-          child: Container(
-        padding: EdgeInsets.only(
-            left: ScreenUtil().setWidth(30.0),
-            right: ScreenUtil().setWidth(20.0)),
-        height: ScreenUtil().setHeight(100.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Expanded(
-              child: Row(
-                  children: widget.suscribers.sublist(0, 5).map((subscriber) {
-                return Container(
-                  width: ScreenUtil().setWidth(60.0),
-                  height: ScreenUtil().setWidth(60.0),
-                  margin: EdgeInsets.only(right: ScreenUtil().setWidth(20.0)),
-                  child: ClipOval(
-                    child: ExtendedImage.network(subscriber.avatarUrl),
+          child: widget.suscribers.length > 0
+              ? GestureDetector(
+                  onTap: () =>
+                      NavigatorUtil.goSubscribersPage(context, id: widget.id),
+                  child: Container(
+                    color: Colors.transparent,
+                    padding: EdgeInsets.only(
+                        left: ScreenUtil().setWidth(30.0),
+                        right: ScreenUtil().setWidth(20.0)),
+                    height: ScreenUtil().setHeight(100.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Expanded(
+                          child: Row(
+                              children: widget.suscribers
+                                  .sublist(0, 5)
+                                  .map((subscriber) {
+                            return Container(
+                              width: ScreenUtil().setWidth(60.0),
+                              height: ScreenUtil().setWidth(60.0),
+                              margin: EdgeInsets.only(
+                                  right: ScreenUtil().setWidth(20.0)),
+                              child: ClipOval(
+                                child:
+                                    ExtendedImage.network(subscriber.avatarUrl),
+                              ),
+                            );
+                          }).toList()),
+                        ),
+                        Text(
+                          "${NumberUtils.amountConversion(widget.detail.playlist.subscribedCount)}人收藏",
+                          style: TextStyle(color: Colors.grey),
+                        )
+                      ],
+                    ),
                   ),
-                );
-              }).toList()),
-            ),
-            Text(
-              "${NumberUtils.amountConversion(widget.detail.playlist.subscribedCount)}人收藏",
-              style: TextStyle(color: Colors.grey),
-            )
-          ],
-        ),
-      )),
+                )
+              : Container()),
       SliverToBoxAdapter(
           child: Container(height: ScreenUtil().setHeight(100.0)))
     ]);

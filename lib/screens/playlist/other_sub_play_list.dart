@@ -11,6 +11,7 @@ import 'package:neteast_cloud_music/screens/playlist/play_list_screen.dart';
 import 'package:neteast_cloud_music/screens/playlist/top_disc.dart';
 import 'package:neteast_cloud_music/utils/config.dart';
 import 'package:neteast_cloud_music/utils/numbers_convert.dart';
+import 'package:neteast_cloud_music/utils/routes/navigator_util.dart';
 import 'package:neteast_cloud_music/widgets/data_loading.dart';
 import 'package:neteast_cloud_music/widgets/play_list_cover.dart';
 
@@ -135,17 +136,12 @@ class _OtherSubPlayListState extends State<OtherSubPlayList>
                       ),
                       delegate: SliverChildBuilderDelegate((context, index) {
                         return InkWell(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => PlayListScreen(
-                                          expandedHeight: 520,
-                                          id: _source[index].id,
-                                          official:
-                                              widget.index == 1 ? true : false,
-                                        )));
-                          },
+                          onTap: () => NavigatorUtil.goPlayListDetailPage(
+                            context,
+                            expandedHeight: 520,
+                            id: _source[index].id,
+                            official: widget.index == 1 ? true : false,
+                          ),
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[

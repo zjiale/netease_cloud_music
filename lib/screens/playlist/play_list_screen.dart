@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:async/async.dart';
 import 'package:color_thief_flutter/color_thief_flutter.dart';
+import 'package:common_utils/common_utils.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -51,7 +52,6 @@ class _PlayListScreenState extends State<PlayListScreen> {
 
   Future _initDetailPlayList() {
     return _memoizer.runOnce(() async {
-      print(widget.id);
       return CommmonService().getDetailPlayList(widget.id).then((res) {
         if (res.statusCode == 200) {
           PlayListDetailModel _bean = PlayListDetailModel.fromJson(res.data);
@@ -134,6 +134,7 @@ class _PlayListScreenState extends State<PlayListScreen> {
                     _suscribers.add(SubscribersModel(
                         name: subscriber.nickname,
                         id: subscriber.userId,
+                        description: subscriber.description,
                         avatarUrl: subscriber.avatarUrl,
                         gender: subscriber.gender));
                   });
@@ -141,6 +142,7 @@ class _PlayListScreenState extends State<PlayListScreen> {
                     children: <Widget>[
                       SongList(
                         expandedHeight: widget.expandedHeight,
+                        id: widget.id,
                         detail: playList,
                         list: _list,
                         suscribers: _suscribers,

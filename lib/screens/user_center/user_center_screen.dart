@@ -8,6 +8,7 @@ import 'package:neteast_cloud_music/api/CommonService.dart';
 import 'package:neteast_cloud_music/model/play_list_model.dart';
 import 'package:neteast_cloud_music/screens/playlist/play_list_screen.dart';
 import 'package:neteast_cloud_music/utils/config.dart';
+import 'package:neteast_cloud_music/utils/routes/navigator_util.dart';
 import 'package:neteast_cloud_music/widgets/flexible_detail_bar.dart';
 import 'package:neteast_cloud_music/widgets/space_bar.dart';
 import 'package:neteast_cloud_music/widgets/user_center_area.dart';
@@ -105,17 +106,12 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
         break;
       default:
     }
+
     List<Widget> _list = [];
     for (int i = 0; i < _length; i++) {
       _list.add(GestureDetector(
-        onTap: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => PlayListScreen(
-                      expandedHeight: 520,
-                      id: index == 0 ? create[i].id : collect[i].id)));
-        },
+        onTap: () => NavigatorUtil.goPlayListDetailPage(context,
+            expandedHeight: 520, id: index == 0 ? create[i].id : collect[i].id),
         child: UserCenterList(index == 0 ? create[i].name : collect[i].name,
             subTitle:
                 '${index == 0 ? create[i].trackCount : collect[i].trackCount}首',
@@ -268,7 +264,7 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                           ]),
                       SizedBox(height: ScreenUtil().setHeight(20.0)),
                       Wrap(
-                        spacing: 20.0,
+                        spacing: ScreenUtil().setWidth(30.0),
                         runSpacing: ScreenUtil().setHeight(20.0),
                         children: playList(
                             _selectIndex, unSubscribedList, subscribedList),

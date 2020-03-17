@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:neteast_cloud_music/model/center_area_model.dart';
+import 'package:neteast_cloud_music/utils/fluro/src/router.dart';
 
 class Config {
+  static Router router;
+
   String cookie =
       '__remember_me=true; MUSIC_U=abdca9af4324f26ef36310855b23ab2fcd1fcf1d285067808fc4a467c5dc65cbbdd1e76e7cd8459859b37bbcbfa845e87955a739ab43dce1; __csrf=1ac281f1e4ced023ed502cf28906a07e';
   Map<String, String> _headerMap;
