@@ -10,6 +10,7 @@ class PlayListCoverWidget extends StatefulWidget {
   final double width;
   final double height;
   final double circular;
+  final BoxFit fit;
   final bool isAlbum;
   final bool create;
   final bool all;
@@ -20,6 +21,7 @@ class PlayListCoverWidget extends StatefulWidget {
       this.width = 200,
       this.height = 0,
       this.circular = 8.0,
+      this.fit = BoxFit.contain,
       this.isAlbum = false,
       this.create = false,
       this.all = true});
@@ -50,7 +52,10 @@ class _PlayListCoverWidgetState extends State<PlayListCoverWidget>
               alignment: Alignment.topRight,
               children: <Widget>[
                 widget.create == false
-                    ? FadeNetWorkImage(widget.url)
+                    ? FadeNetWorkImage(
+                        widget.url,
+                        fit: widget.fit,
+                      )
                     : Container(),
                 widget.playCount == null
                     ? Container()
