@@ -56,8 +56,14 @@ class CommmonService {
         options: _getOptions());
   }
 
-  Future<Response> getEvent() async {
-    return await Dio().get("${Api.EVENT}", options: _getOptions());
+  Future<Response> getEvent({int lasttime = 0}) async {
+    return await Dio()
+        .get("${Api.EVENT}?lasttime=$lasttime", options: _getOptions());
+  }
+
+  Future<Response> getFollows() async {
+    return await Dio()
+        .get("${Api.FOLLOWS}?uid=93412043", options: _getOptions());
   }
 
   Options _getOptions() {

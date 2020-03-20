@@ -9,6 +9,7 @@ import 'package:neteast_cloud_music/screens/moments/moments_screen.dart';
 import 'package:neteast_cloud_music/screens/user_center/user_center_screen.dart';
 import 'package:neteast_cloud_music/screens/video/video_screen.dart';
 import 'package:neteast_cloud_music/store/index.dart';
+
 import 'package:neteast_cloud_music/store/model/play_song_model.dart';
 import 'package:neteast_cloud_music/utils/config.dart';
 

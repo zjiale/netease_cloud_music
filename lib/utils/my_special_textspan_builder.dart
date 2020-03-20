@@ -206,7 +206,7 @@ class UrlText extends SpecialText {
   InlineSpan finishText() {
     TextStyle textStyle = this.textStyle?.copyWith(color: Colors.blue);
 
-    final String atText = "\u{E157} 网页地址";
+    final String atText = "\u261b 网页地址";
 
     return showAtBackground
         ? BackgroundTextSpan(
