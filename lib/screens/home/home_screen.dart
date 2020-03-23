@@ -5,7 +5,7 @@ import 'package:neteast_cloud_music/screens/audio/audio_player_screen.dart';
 import 'package:neteast_cloud_music/screens/audio/mini_player.dart';
 import 'package:neteast_cloud_music/screens/home/find.dart';
 import 'package:neteast_cloud_music/screens/home/tab_title.dart';
-import 'package:neteast_cloud_music/screens/moments/moments_screen.dart';
+import 'package:neteast_cloud_music/screens/events/events_screen.dart';
 import 'package:neteast_cloud_music/screens/user_center/user_center_screen.dart';
 import 'package:neteast_cloud_music/screens/video/video_screen.dart';
 import 'package:neteast_cloud_music/store/index.dart';
@@ -62,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen>
     _pages = List()
       ..add(UserCenterScreen())
       ..add(Find())
-      ..add(MomentsScreen())
+      ..add(EventsScreen())
       ..add(VideoScreen());
     _pageController = PageController(initialPage: _currentIndex)
       ..addListener(() {
@@ -80,7 +80,6 @@ class _HomeScreenState extends State<HomeScreen>
 
     return SafeArea(
         child: Scaffold(
-            key: _scaffoldKey,
             drawer: new Drawer(),
             body: Stack(children: <Widget>[
               PageView.builder(
@@ -96,6 +95,7 @@ class _HomeScreenState extends State<HomeScreen>
                 child: AppBar(
                     backgroundColor: _colorTween.lerp(1 - _offset),
                     elevation: 0,
+                    iconTheme: IconThemeData(color: Colors.transparent),
                     //因为tittle准备放置一个listview，设置这个属性title横向填满
                     titleSpacing: 0.0,
                     centerTitle: true,
@@ -104,22 +104,20 @@ class _HomeScreenState extends State<HomeScreen>
                       setCall: _pageChagedCall,
                       itemClick: _tittleItemClickCall,
                     ),
-                    leading: GestureDetector(
-                        onTap: () {
-                          if (_scaffoldKey.currentState.isDrawerOpen) {
-                            _scaffoldKey.currentState.openEndDrawer();
-                          } else {
-                            _scaffoldKey.currentState.openDrawer();
-                          }
-                        },
-                        child: IconButton(
-                            icon: Icon(Icons.menu,
-                                color: _currentIndex == 0
-                                    ? Colors.transparent
-                                    : Colors.black))),
+                    leading: Builder(
+                      builder: (context) => IconButton(
+                          icon: Icon(Icons.menu,
+                              color: _currentIndex == 0
+                                  ? Colors.white
+                                  : Colors.black),
+                          onPressed: () => Scaffold.of(context).openDrawer()),
+                    ),
                     actions: <Widget>[
                       IconButton(
-                          icon: Icon(Icons.search, color: Colors.black),
+                          icon: Icon(Icons.search,
+                              color: _currentIndex == 0
+                                  ? Colors.white
+                                  : Colors.black),
                           onPressed: () {})
                     ]),
               ),

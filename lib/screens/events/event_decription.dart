@@ -4,143 +4,23 @@ import 'package:common_utils/common_utils.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:extended_text/extended_text.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyrefresh/easy_refresh.dart';
-import 'package:flutter_easyrefresh/material_footer.dart';
-import 'package:flutter_easyrefresh/material_header.dart';
-import 'package:flutter_ijkplayer/flutter_ijkplayer.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:neteast_cloud_music/api/CommonService.dart';
 import 'package:neteast_cloud_music/model/event_content_model.dart';
 import 'package:neteast_cloud_music/model/event_model.dart';
-import 'package:neteast_cloud_music/model/follow_model.dart';
+import 'package:neteast_cloud_music/model/music_song_model.dart';
+import 'package:neteast_cloud_music/store/model/play_song_model.dart';
 import 'package:neteast_cloud_music/utils/config.dart';
 import 'package:neteast_cloud_music/utils/my_special_textspan_builder.dart';
-import 'package:neteast_cloud_music/widgets/data_loading.dart';
+import 'package:neteast_cloud_music/utils/routes/navigator_util.dart';
 import 'package:neteast_cloud_music/widgets/fade_network_image.dart';
 import 'package:neteast_cloud_music/widgets/play_list_cover.dart';
 
-class MomentsScreen extends StatefulWidget {
-  @override
-  _MomentsScreenState createState() => _MomentsScreenState();
-}
-
-class _MomentsScreenState extends State<MomentsScreen>
-    with AutomaticKeepAliveClientMixin {
-  int _code = Config.SUCCESS_CODE;
-  int lastTime = 0;
-  List<Events> _event = [];
-  List<Follow> _followList = [];
-
-  EasyRefreshController _controller = EasyRefreshController();
-
-  bool get wantKeepAlive => true;
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  Future _getFollows() {
-    return CommmonService().getFollows().then((res) {
-      FollowModel _bean = FollowModel.fromJson(res.data);
-      if (_bean.code == _code) {
-        return _bean.follow
-            .sublist(0, _bean.follow.length < 5 ? _bean.follow.length : 5);
-      }
-    });
-  }
-
-  Future _getEvent({int lastTime = 0}) {
-    // type: 18 分享歌曲  24 分享专栏文章 13 分享歌单 39 发布视频
-    return CommmonService().getEvent(lasttime: lastTime).then((res) {
-      EventModel _bean = EventModel.fromJson(res.data);
-      if (_bean.code == _code) {
-        return _bean;
-      }
-    });
-  }
-
-  String _formateArtist(List<Artists> _list) {
-    String artists = '';
-    for (var i = 0; i <= _list.length - 1; i++) {
-      if (i == _list.length - 1) {
-        artists = '$artists${_list[i].name}';
-      } else {
-        artists = '$artists${_list[i].name}\/';
-      }
-    }
-    return artists;
-  }
-
-  Widget _follow() {
-    return Container(
-      padding: EdgeInsets.only(
-          top: ScreenUtil().setWidth(130),
-          left: ScreenUtil().setWidth(40.0),
-          bottom: ScreenUtil().setWidth(40.0)),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: _followList.map((follower) {
-          return Container(
-            width: ScreenUtil().setWidth(130.0),
-            padding: EdgeInsets.only(right: ScreenUtil().setWidth(10.0)),
-            child: Column(
-              children: <Widget>[
-                Stack(
-                  alignment: Alignment.center,
-                  overflow: Overflow.visible,
-                  children: <Widget>[
-                    ClipOval(
-                      child: FadeNetWorkImage(
-                        follower.avatarUrl,
-                        width: ScreenUtil().setWidth(80.0),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    follower.vipRights != null &&
-                            follower.vipRights.redVipAnnualCount == 1
-                        ? Positioned(
-                            bottom: 0.0,
-                            right: 0.0,
-                            child: Container(
-                              width: ScreenUtil().setWidth(30.0),
-                              height: ScreenUtil().setWidth(30.0),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.red,
-                              ),
-                              child: Center(
-                                child: Text(
-                                  "V",
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: ScreenUtil().setSp(18.0)),
-                                ),
-                              ),
-                            ),
-                          )
-                        : Container()
-                  ],
-                ),
-                SizedBox(
-                  height: ScreenUtil().setHeight(10.0),
-                ),
-                Text(
-                  follower.nickname,
-                  style: TextStyle(
-                      fontSize: ScreenUtil().setSp(22.0),
-                      color: Colors.black54),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                )
-              ],
-            ),
-          );
-        }).toList(),
-      ),
-    );
-  }
+class EventDescription extends StatelessWidget {
+  final Events event;
+  final PlaySongModel model;
+  final bool isDetail;
+  EventDescription(
+      {@required this.event, @required this.model, this.isDetail = false});
 
   Widget _defaultContent(
       {@required String url,
@@ -191,22 +71,25 @@ class _MomentsScreenState extends State<MomentsScreen>
                     TextSpan(children: [
                       WidgetSpan(
                           alignment: PlaceholderAlignment.middle,
-                          child: Container(
-                            padding: EdgeInsets.symmetric(horizontal: 2.0),
-                            margin: EdgeInsets.only(right: 3.0),
-                            decoration: BoxDecoration(
-                                shape: BoxShape.rectangle,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(3.0)),
-                                border: Border.all(color: Colors.red)),
-                            child: Text(
-                              isTopic ? "专栏" : "歌单",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  color: Colors.red,
-                                  fontSize: ScreenUtil().setSp(18.0)),
-                            ),
-                          )),
+                          child: !isSong
+                              ? Container(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 2.0),
+                                  margin: EdgeInsets.only(right: 3.0),
+                                  decoration: BoxDecoration(
+                                      shape: BoxShape.rectangle,
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(3.0)),
+                                      border: Border.all(color: Colors.red)),
+                                  child: Text(
+                                    isTopic ? "专栏" : "歌单",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        color: Colors.red,
+                                        fontSize: ScreenUtil().setSp(18.0)),
+                                  ),
+                                )
+                              : Text('')),
                       TextSpan(
                           text: title,
                           style: TextStyle(
@@ -243,7 +126,7 @@ class _MomentsScreenState extends State<MomentsScreen>
     );
   }
 
-  Widget _bottom(Events event) {
+  Widget _bottom() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
@@ -330,7 +213,8 @@ class _MomentsScreenState extends State<MomentsScreen>
     );
   }
 
-  Widget _eventList(Events event) {
+  @override
+  Widget build(BuildContext context) {
     EventContentModel _content =
         EventContentModel.fromJson(json.decode(event.json));
     Widget _picList;
@@ -341,18 +225,37 @@ class _MomentsScreenState extends State<MomentsScreen>
     switch (event.type) {
       case 13: //分享歌单
         _subTitle = "分享歌单";
-        _main = _defaultContent(
-            url: _content.playlist.coverImgUrl,
-            title: _content.playlist.name,
-            creator: _content.playlist.creator.nickname);
+        _main = InkWell(
+          onTap: () => NavigatorUtil.goPlayListDetailPage(
+            context,
+            expandedHeight: 520,
+            id: _content.playlist.id,
+          ),
+          child: _defaultContent(
+              url: _content.playlist.coverImgUrl,
+              title: _content.playlist.name,
+              creator: _content.playlist.creator.nickname),
+        );
         break;
       case 18: //分享歌曲
         _subTitle = "分享歌曲";
-        _main = _defaultContent(
-            url: _content.song.album.blurPicUrl,
-            title: _content.song.name,
-            creator: _formateArtist(_content.song.artists),
-            isSong: true);
+        _main = InkWell(
+          onTap: () {
+            MusicSong song = MusicSong(_content.song.id,
+                totalTime: _content.song.duration,
+                name: _content.song.name,
+                artists: Config().formateArtist(_content.song.artists),
+                picUrl: _content.song.album.picUrl);
+            print(song);
+            model.playOneSong(song);
+            NavigatorUtil.goAudioPage(context);
+          },
+          child: _defaultContent(
+              url: _content.song.album.blurPicUrl,
+              title: _content.song.name,
+              creator: Config().formateArtist(_content.song.artists),
+              isSong: true),
+        );
         break;
       case 22: //转发
         _subTitle = "转发";
@@ -381,14 +284,19 @@ class _MomentsScreenState extends State<MomentsScreen>
 
     String _eventTime = DateUtil.yearIsEqual(
             DateTime.fromMillisecondsSinceEpoch(event.showTime), DateTime.now())
-        ? DateUtil.isYesterday(
-                DateTime.fromMillisecondsSinceEpoch(event.showTime),
-                DateTime.now())
-            ? "昨天${DateUtil.formatDateMs(event.showTime, format: DataFormats.zh_h_m)}"
-            : "${DateUtil.formatDateMs(event.showTime, format: 'M月dd日')}"
+        ? DateUtil.isToday(event.showTime)
+            ? "${DateUtil.formatDateMs(event.showTime, format: DataFormats.h_m)}"
+            : DateUtil.isYesterday(
+                    DateTime.fromMillisecondsSinceEpoch(event.showTime),
+                    DateTime.now())
+                ? "昨天${DateUtil.formatDateMs(event.showTime, format: DataFormats.h_m)}"
+                : "${DateUtil.formatDateMs(event.showTime, format: 'M月dd日')}"
         : "${DateUtil.formatDateMs(event.showTime, format: 'yyyy/M/d')}";
 
     switch (event.pics.length) {
+      case 0:
+        _picList = Container();
+        break;
       case 1:
         _picList = ExtendedImage.network(
           event.pics.first.originUrl,
@@ -404,44 +312,35 @@ class _MomentsScreenState extends State<MomentsScreen>
           alignment: Alignment.topCenter,
         );
         break;
-      case 4:
-        _picList = Flow(
-            delegate: MyFlowDelegate(boxSize: ScreenUtil().setWidth(180.0)),
-            children: event.pics.map((urls) {
-              return GestureDetector(
-                onTap: () {
-                  print("");
-                },
-                child: Container(
-                  width: ScreenUtil().setWidth(180.0),
-                  child: PlayListCoverWidget(
-                    urls.squareUrl,
-                    width: 180.0,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              );
-            }).toList());
-        break;
       default:
-        _picList = Wrap(
-            spacing: 3.0,
-            runSpacing: 3.0,
-            children: event.pics.map((urls) {
-              return GestureDetector(
-                onTap: () {
-                  print("");
-                },
-                child: Container(
-                  width: ScreenUtil().setWidth(180.0),
-                  child: PlayListCoverWidget(
-                    urls.squareUrl,
-                    width: 180.0,
-                    fit: BoxFit.cover,
+        _picList = Container(
+          width: event.pics.length == 4
+              ? ScreenUtil().setWidth((2 * 180) + 5)
+              : ScreenUtil().setWidth((3 * 180) + 10),
+          child: GridView.builder(
+              shrinkWrap: true,
+              itemCount: event.pics.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: event.pics.length == 4 ? 2 : 3,
+                  mainAxisSpacing: ScreenUtil().setWidth(5.0),
+                  crossAxisSpacing: ScreenUtil().setWidth(5.0),
+                  childAspectRatio: 1.0),
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  onTap: () {
+                    print("");
+                  },
+                  child: Container(
+                    width: ScreenUtil().setWidth(180.0),
+                    child: PlayListCoverWidget(
+                      event.pics[index].squareUrl,
+                      width: 180.0,
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                ),
-              );
-            }).toList());
+                );
+              }),
+        );
     }
 
     return Padding(
@@ -467,115 +366,68 @@ class _MomentsScreenState extends State<MomentsScreen>
                             top: -5.0,
                             right: -5.0,
                             child: FadeNetWorkImage(
-                              event.pendantData.imageUrl,
+                              isDetail
+                                  ? event.pendantData.imageAndroidUrl
+                                  : event.pendantData.imageUrl,
                               width: ScreenUtil().setWidth(100.0),
                             ),
                           )
                         : Container()
                   ]),
               SizedBox(width: ScreenUtil().setWidth(20.0)),
-              Flexible(
-                child: Padding(
-                  padding: EdgeInsets.only(right: ScreenUtil().setWidth(10.0)),
-                  child: Column(
-                    // mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Row(children: <Widget>[
-                        Text(event.user.nickname,
-                            style: TextStyle(color: Colors.blue)),
-                        SizedBox(
-                          width: ScreenUtil().setWidth(10.0),
-                        ),
-                        Text(_subTitle,
-                            style: TextStyle(
-                                color: Colors.black54,
-                                fontSize: ScreenUtil().setSp(25.0))),
-                      ]),
+              Padding(
+                padding: EdgeInsets.only(right: ScreenUtil().setWidth(10.0)),
+                child: Column(
+                  // mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Row(children: <Widget>[
+                      Text(event.user.nickname,
+                          style: TextStyle(color: Colors.blue)),
                       SizedBox(
-                        height: ScreenUtil().setHeight(5.0),
+                        width: ScreenUtil().setWidth(10.0),
                       ),
-                      Text(
-                        _eventTime,
-                        style: TextStyle(
-                            color: Colors.black54,
-                            fontSize: ScreenUtil().setSp(20.0)),
-                      ),
-                      SizedBox(
-                        height: ScreenUtil().setHeight(20.0),
-                      ),
-                      ExtendedText(
-                        "${_content.msg} ",
-                        softWrap: true,
-                        strutStyle:
-                            StrutStyle(forceStrutHeight: true, height: 1.5),
-                        specialTextSpanBuilder: MySpecialTextSpanBuilder(),
-                      ),
-                      SizedBox(height: ScreenUtil().setHeight(8.0)),
-                      _picList,
-                      SizedBox(height: ScreenUtil().setHeight(8.0)),
-                      _main,
-                      _bottom(event),
-                    ],
-                  ),
+                      Text(_subTitle,
+                          style: TextStyle(
+                              color: Colors.black54,
+                              fontSize: ScreenUtil().setSp(25.0))),
+                    ]),
+                    SizedBox(
+                      height: ScreenUtil().setHeight(5.0),
+                    ),
+                    Text(
+                      _eventTime,
+                      style: TextStyle(
+                          color: Colors.black54,
+                          fontSize: ScreenUtil().setSp(20.0)),
+                    ),
+                  ],
                 ),
               )
             ],
           ),
-          Divider()
-        ],
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    super.build(context);
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: EasyRefresh.custom(
-        controller: _controller,
-        header: MaterialHeader(),
-        footer: MaterialFooter(),
-        firstRefresh: true,
-        firstRefreshWidget: Container(
-            width: double.infinity,
-            // height: double.infinity,
-            child: DataLoading()),
-        onRefresh: () async {
-          EventModel eventList = await _getEvent();
-          List<Follow> followList = await _getFollows();
-          if (eventList.more) lastTime = eventList.lasttime;
-
-          if (mounted) {
-            _event = eventList.event;
-            _followList = followList;
-          }
-          setState(() {});
-          _controller.finishLoad(noMore: !eventList.more);
-        },
-        onLoad: () async {
-          EventModel eventList = await _getEvent(lastTime: lastTime);
-          if (eventList.more) lastTime = eventList.lasttime;
-          if (mounted) {
-            _event.addAll(eventList.event);
-          }
-          setState(() {});
-          _controller.finishLoad(noMore: !eventList.more);
-        },
-        slivers: <Widget>[
-          SliverToBoxAdapter(
-            child: _follow(),
-          ),
-          SliverToBoxAdapter(
-            child: Divider(color: Colors.black54, height: 1.0),
-          ),
-          SliverPadding(
-            padding: EdgeInsets.all(ScreenUtil().setWidth(40.0)),
-            sliver: SliverList(
-              delegate: SliverChildBuilderDelegate((context, index) {
-                return _eventList(_event[index]);
-              }, childCount: _event.length),
+          Padding(
+            padding: isDetail
+                ? EdgeInsets.zero
+                : EdgeInsets.only(left: ScreenUtil().setWidth(90.0)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                SizedBox(
+                  height: ScreenUtil().setHeight(20.0),
+                ),
+                ExtendedText(
+                  "${_content.msg} ",
+                  softWrap: true,
+                  strutStyle: StrutStyle(forceStrutHeight: true, height: 1.5),
+                  specialTextSpanBuilder: MySpecialTextSpanBuilder(),
+                ),
+                SizedBox(height: ScreenUtil().setHeight(8.0)),
+                _picList,
+                SizedBox(height: ScreenUtil().setHeight(8.0)),
+                _main,
+                isDetail ? Container() : _bottom(),
+              ],
             ),
           )
         ],

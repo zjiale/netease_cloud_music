@@ -24,6 +24,18 @@ class Config {
     return "assets/icon_$key.png";
   }
 
+  String formateArtist(List _list) {
+    String artists = '';
+    for (var i = 0; i <= _list.length - 1; i++) {
+      if (i == _list.length - 1) {
+        artists = '$artists${_list[i].name}';
+      } else {
+        artists = '$artists${_list[i].name}\/';
+      }
+    }
+    return artists;
+  }
+
   static List<Tab> titleTabs = <Tab>[
     Tab(text: '我的'),
     Tab(text: '发现'),

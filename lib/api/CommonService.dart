@@ -66,6 +66,12 @@ class CommmonService {
         .get("${Api.FOLLOWS}?uid=93412043", options: _getOptions());
   }
 
+  Future<Response> getEventComment(String threadId, {int offset = 0}) async {
+    return await Dio().get(
+        "${Api.EVENT_COMMENT}?threadId=$threadId&offset=$offset",
+        options: _getOptions());
+  }
+
   Options _getOptions() {
     return Options(headers: Config().getHeader());
   }

@@ -131,9 +131,9 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
         SliverAppBar(
             pinned: true,
             elevation: 0,
+            iconTheme: IconThemeData(color: Colors.transparent),
             expandedHeight: ScreenUtil().setHeight(380.0),
             brightness: Brightness.dark,
-            iconTheme: IconThemeData(color: Colors.white),
             flexibleSpace: FlexibleDetailBar(
                 content: SafeArea(
                   child: Padding(
