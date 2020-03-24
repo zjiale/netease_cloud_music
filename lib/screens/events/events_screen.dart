@@ -29,6 +29,8 @@ class _EventsScreenState extends State<EventsScreen>
 
   EasyRefreshController _controller = EasyRefreshController();
 
+  final ValueNotifier<double> notifier = ValueNotifier(-1);
+
   bool get wantKeepAlive => true;
 
   @override
@@ -139,68 +141,76 @@ class _EventsScreenState extends State<EventsScreen>
     super.build(context);
     return Scaffold(
         backgroundColor: Colors.white,
-        body: Store.connect<PlaySongModel>(builder: (context, model, child) {
-          return EasyRefresh.custom(
-            controller: _controller,
-            header: MaterialHeader(),
-            footer: MaterialFooter(),
-            firstRefresh: true,
-            firstRefreshWidget: Container(
-                width: double.infinity,
-                // height: double.infinity,
-                child: DataLoading()),
-            onRefresh: () async {
-              EventModel eventList = await _getEvent();
-              List<Follow> followList = await _getFollows();
-              if (eventList.more) lastTime = eventList.lasttime;
+        body: NotificationListener<ScrollNotification>(
+          onNotification: (ScrollNotification notification) {
+            notifier.value = notification.metrics.pixels;
+            return true;
+          },
+          child: Store.connect<PlaySongModel>(builder: (context, model, child) {
+            return EasyRefresh.custom(
+              controller: _controller,
+              header: MaterialHeader(),
+              footer: MaterialFooter(),
+              firstRefresh: true,
+              firstRefreshWidget: Container(
+                  width: double.infinity,
+                  // height: double.infinity,
+                  child: DataLoading()),
+              onRefresh: () async {
+                EventModel eventList = await _getEvent();
+                List<Follow> followList = await _getFollows();
+                if (eventList.more) lastTime = eventList.lasttime;
 
-              if (mounted) {
-                _event = eventList.event;
-                _followList = followList;
-              }
-              setState(() {});
-              _controller.finishLoad(noMore: !eventList.more);
-            },
-            onLoad: () async {
-              EventModel eventList = await _getEvent(lastTime: lastTime);
-              if (eventList.more) lastTime = eventList.lasttime;
-              if (mounted) {
-                _event.addAll(eventList.event);
-              }
-              setState(() {});
-              _controller.finishLoad(noMore: !eventList.more);
-            },
-            slivers: <Widget>[
-              SliverToBoxAdapter(
-                child: _follow(),
-              ),
-              SliverPadding(
-                padding: EdgeInsets.fromLTRB(
-                    ScreenUtil().setWidth(40.0),
-                    ScreenUtil().setWidth(20.0),
-                    ScreenUtil().setWidth(40.0),
-                    ScreenUtil().setWidth(40.0)),
-                sliver: SliverList(
-                  delegate: SliverChildBuilderDelegate((context, index) {
-                    return InkWell(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      EventDetailScreen(event: _event[index])));
-                        },
-                        child: _event[index].type == 33
-                            ? Container()
-                            : EventDescription(
-                                event: _event[index],
-                                model: model,
-                              ));
-                  }, childCount: _event.length),
+                if (mounted) {
+                  _event = eventList.event;
+                  _followList = followList;
+                }
+                setState(() {});
+                _controller.finishLoad(noMore: !eventList.more);
+              },
+              onLoad: () async {
+                EventModel eventList = await _getEvent(lastTime: lastTime);
+                if (eventList.more) lastTime = eventList.lasttime;
+                if (mounted) {
+                  _event.addAll(eventList.event);
+                }
+                setState(() {});
+                _controller.finishLoad(noMore: !eventList.more);
+              },
+              slivers: <Widget>[
+                SliverToBoxAdapter(
+                  child: _follow(),
                 ),
-              )
-            ],
-          );
-        }));
+                SliverPadding(
+                  padding: EdgeInsets.fromLTRB(
+                      ScreenUtil().setWidth(40.0),
+                      ScreenUtil().setWidth(20.0),
+                      ScreenUtil().setWidth(40.0),
+                      ScreenUtil().setWidth(40.0)),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      return InkWell(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => EventDetailScreen(
+                                        event: _event[index])));
+                          },
+                          child: _event[index].type == 33
+                              ? Container()
+                              : EventDescription(
+                                  event: _event[index],
+                                  model: model,
+                                  notifier: notifier,
+                                  index: index,
+                                ));
+                    }, childCount: _event.length),
+                  ),
+                )
+              ],
+            );
+          }),
+        ));
   }
 }

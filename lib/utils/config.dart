@@ -36,6 +36,20 @@ class Config {
     return artists;
   }
 
+  /// 返回对应的Rect区域...
+  static Rect getRectFromKey(BuildContext currentContext) {
+    var object = currentContext?.findRenderObject();
+    var translation = object?.getTransformTo(null)?.getTranslation();
+    var size = object?.semanticBounds?.size;
+
+    if (translation != null && size != null) {
+      return new Rect.fromLTWH(
+          translation.x, translation.y, size.width, size.height);
+    } else {
+      return null;
+    }
+  }
+
   static List<Tab> titleTabs = <Tab>[
     Tab(text: '我的'),
     Tab(text: '发现'),

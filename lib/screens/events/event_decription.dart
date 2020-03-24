@@ -13,15 +13,27 @@ import 'package:neteast_cloud_music/utils/config.dart';
 import 'package:neteast_cloud_music/utils/my_special_textspan_builder.dart';
 import 'package:neteast_cloud_music/utils/routes/navigator_util.dart';
 import 'package:neteast_cloud_music/widgets/fade_network_image.dart';
+import 'package:neteast_cloud_music/widgets/list_item_player.dart';
 import 'package:neteast_cloud_music/widgets/play_list_cover.dart';
 
-class EventDescription extends StatelessWidget {
+class EventDescription extends StatefulWidget {
   final Events event;
   final PlaySongModel model;
   final bool isDetail;
+  final ValueNotifier<double> notifier;
+  final int index;
   EventDescription(
-      {@required this.event, @required this.model, this.isDetail = false});
+      {@required this.event,
+      @required this.model,
+      @required this.notifier,
+      @required this.index,
+      this.isDetail = false});
 
+  @override
+  _EventDescriptionState createState() => _EventDescriptionState();
+}
+
+class _EventDescriptionState extends State<EventDescription> {
   Widget _defaultContent(
       {@required String url,
       @required String title,
@@ -147,7 +159,7 @@ class EventDescription extends StatelessWidget {
                       width: ScreenUtil().setWidth(5.0),
                     ),
                     Text(
-                      "${event.info.shareCount > 0 ? event.info.shareCount : '转发'}",
+                      "${widget.event.info.shareCount > 0 ? widget.event.info.shareCount : '转发'}",
                       style: TextStyle(
                           fontSize: ScreenUtil().setSp(23.0),
                           color: Colors.black54),
@@ -169,7 +181,7 @@ class EventDescription extends StatelessWidget {
                       width: ScreenUtil().setWidth(5.0),
                     ),
                     Text(
-                      "${event.info.commentCount > 0 ? event.info.commentCount : '评论'}",
+                      "${widget.event.info.commentCount > 0 ? widget.event.info.commentCount : '评论'}",
                       style: TextStyle(
                           fontSize: ScreenUtil().setSp(23.0),
                           color: Colors.black54),
@@ -191,7 +203,7 @@ class EventDescription extends StatelessWidget {
                       width: ScreenUtil().setWidth(5.0),
                     ),
                     Text(
-                      "${event.info.likedCount > 0 ? event.info.likedCount : '喜欢'}",
+                      "${widget.event.info.likedCount > 0 ? widget.event.info.likedCount : '喜欢'}",
                       style: TextStyle(
                           fontSize: ScreenUtil().setSp(23.0),
                           color: Colors.black54),
@@ -216,13 +228,13 @@ class EventDescription extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     EventContentModel _content =
-        EventContentModel.fromJson(json.decode(event.json));
+        EventContentModel.fromJson(json.decode(widget.event.json));
     Widget _picList;
     Widget _main = Container();
 
     String _subTitle = "";
 
-    switch (event.type) {
+    switch (widget.event.type) {
       case 13: //分享歌单
         _subTitle = "分享歌单";
         _main = InkWell(
@@ -247,7 +259,7 @@ class EventDescription extends StatelessWidget {
                 artists: Config().formateArtist(_content.song.artists),
                 picUrl: _content.song.album.picUrl);
             print(song);
-            model.playOneSong(song);
+            widget.model.playOneSong(song);
             NavigatorUtil.goAudioPage(context);
           },
           child: _defaultContent(
@@ -273,39 +285,40 @@ class EventDescription extends StatelessWidget {
         break;
       case 39: //发布视频
         _subTitle = "发布视频";
-        _main = Container(
-            height: ScreenUtil().setHeight(300.0),
-            child: ExtendedImage.network(_content.video.coverUrl,
-                shape: BoxShape.rectangle,
-                borderRadius: BorderRadius.all(Radius.circular(5.0))));
+        _main = ListItemPlayer(
+            index: widget.index,
+            notifier: widget.notifier,
+            videoContent: _content.video);
+
         break;
       default:
     }
 
     String _eventTime = DateUtil.yearIsEqual(
-            DateTime.fromMillisecondsSinceEpoch(event.showTime), DateTime.now())
-        ? DateUtil.isToday(event.showTime)
-            ? "${DateUtil.formatDateMs(event.showTime, format: DataFormats.h_m)}"
+            DateTime.fromMillisecondsSinceEpoch(widget.event.showTime),
+            DateTime.now())
+        ? DateUtil.isToday(widget.event.showTime)
+            ? "${DateUtil.formatDateMs(widget.event.showTime, format: DataFormats.h_m)}"
             : DateUtil.isYesterday(
-                    DateTime.fromMillisecondsSinceEpoch(event.showTime),
+                    DateTime.fromMillisecondsSinceEpoch(widget.event.showTime),
                     DateTime.now())
-                ? "昨天${DateUtil.formatDateMs(event.showTime, format: DataFormats.h_m)}"
-                : "${DateUtil.formatDateMs(event.showTime, format: 'M月dd日')}"
-        : "${DateUtil.formatDateMs(event.showTime, format: 'yyyy/M/d')}";
+                ? "昨天${DateUtil.formatDateMs(widget.event.showTime, format: DataFormats.h_m)}"
+                : "${DateUtil.formatDateMs(widget.event.showTime, format: 'M月dd日')}"
+        : "${DateUtil.formatDateMs(widget.event.showTime, format: 'yyyy/M/d')}";
 
-    switch (event.pics.length) {
+    switch (widget.event.pics.length) {
       case 0:
         _picList = Container();
         break;
       case 1:
         _picList = ExtendedImage.network(
-          event.pics.first.originUrl,
+          widget.event.pics.first.originUrl,
           shape: BoxShape.rectangle,
           borderRadius: BorderRadius.all(Radius.circular(5.0)),
-          width: event.pics.first.width > event.pics.first.height
+          width: widget.event.pics.first.width > widget.event.pics.first.height
               ? ScreenUtil().setWidth(338)
               : null,
-          height: event.pics.first.width > event.pics.first.height
+          height: widget.event.pics.first.width > widget.event.pics.first.height
               ? null
               : ScreenUtil().setHeight(338),
           fit: BoxFit.cover,
@@ -314,14 +327,14 @@ class EventDescription extends StatelessWidget {
         break;
       default:
         _picList = Container(
-          width: event.pics.length == 4
+          width: widget.event.pics.length == 4
               ? ScreenUtil().setWidth((2 * 180) + 5)
               : ScreenUtil().setWidth((3 * 180) + 10),
           child: GridView.builder(
               shrinkWrap: true,
-              itemCount: event.pics.length,
+              itemCount: widget.event.pics.length,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: event.pics.length == 4 ? 2 : 3,
+                  crossAxisCount: widget.event.pics.length == 4 ? 2 : 3,
                   mainAxisSpacing: ScreenUtil().setWidth(5.0),
                   crossAxisSpacing: ScreenUtil().setWidth(5.0),
                   childAspectRatio: 1.0),
@@ -333,7 +346,7 @@ class EventDescription extends StatelessWidget {
                   child: Container(
                     width: ScreenUtil().setWidth(180.0),
                     child: PlayListCoverWidget(
-                      event.pics[index].squareUrl,
+                      widget.event.pics[index].squareUrl,
                       width: 180.0,
                       fit: BoxFit.cover,
                     ),
@@ -341,6 +354,10 @@ class EventDescription extends StatelessWidget {
                 );
               }),
         );
+    }
+
+    if (mounted) {
+      print(Config.getRectFromKey(context));
     }
 
     return Padding(
@@ -356,19 +373,19 @@ class EventDescription extends StatelessWidget {
                   children: <Widget>[
                     ClipOval(
                       child: FadeNetWorkImage(
-                        event.user.avatarUrl,
+                        widget.event.user.avatarUrl,
                         fit: BoxFit.cover,
                         width: ScreenUtil().setWidth(70.0),
                       ),
                     ),
-                    event.pendantData != null
+                    widget.event.pendantData != null
                         ? Positioned(
                             top: -5.0,
                             right: -5.0,
                             child: FadeNetWorkImage(
-                              isDetail
-                                  ? event.pendantData.imageAndroidUrl
-                                  : event.pendantData.imageUrl,
+                              widget.isDetail
+                                  ? widget.event.pendantData.imageAndroidUrl
+                                  : widget.event.pendantData.imageUrl,
                               width: ScreenUtil().setWidth(100.0),
                             ),
                           )
@@ -382,7 +399,7 @@ class EventDescription extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Row(children: <Widget>[
-                      Text(event.user.nickname,
+                      Text(widget.event.user.nickname,
                           style: TextStyle(color: Colors.blue)),
                       SizedBox(
                         width: ScreenUtil().setWidth(10.0),
@@ -407,7 +424,7 @@ class EventDescription extends StatelessWidget {
             ],
           ),
           Padding(
-            padding: isDetail
+            padding: widget.isDetail
                 ? EdgeInsets.zero
                 : EdgeInsets.only(left: ScreenUtil().setWidth(90.0)),
             child: Column(
@@ -426,60 +443,12 @@ class EventDescription extends StatelessWidget {
                 _picList,
                 SizedBox(height: ScreenUtil().setHeight(8.0)),
                 _main,
-                isDetail ? Container() : _bottom(),
+                widget.isDetail ? Container() : _bottom(),
               ],
             ),
           )
         ],
       ),
     );
-  }
-}
-
-class MyFlowDelegate extends FlowDelegate {
-  final double boxSize;
-  MyFlowDelegate({@required this.boxSize});
-
-  @override
-  void paintChildren(FlowPaintingContext context) {
-    /*屏幕宽度*/
-    var screenW = context.size.width;
-
-    double padding = 3.0; //间距
-    double x = padding; //x坐标
-    double y = padding; //y坐标
-
-    int itemLength = 0;
-
-    //计算每一个子widget的位置
-    for (int i = 0; i < context.childCount; i++) {
-      var w = context.getChildSize(i).width + x;
-      if (w < context.size.width && itemLength < 2) {
-        context.paintChild(i,
-            transform: new Matrix4.translationValues(x, y, 0.0));
-        x = w + padding;
-        itemLength++;
-      } else {
-        x = padding;
-        y += context.getChildSize(i).height + padding;
-        //绘制子widget(有优化)
-        context.paintChild(i,
-            transform: new Matrix4.translationValues(x, y, 0.0));
-        x += context.getChildSize(i).width + padding;
-        itemLength = 0;
-      }
-    }
-  }
-
-  @override
-  bool shouldRepaint(FlowDelegate oldDelegate) {
-    return oldDelegate != this;
-  }
-
-  @override
-  Size getSize(BoxConstraints constraints) {
-    // TODO: implement getSize
-    double height = boxSize * 2 + 9.0;
-    return Size(double.infinity + 10, height);
   }
 }

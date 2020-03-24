@@ -72,6 +72,10 @@ class CommmonService {
         options: _getOptions());
   }
 
+  Future<Response> getVideoUrl(String id) async {
+    return await Dio().get("${Api.VIDEO_URL}?id=$id", options: _getOptions());
+  }
+
   Options _getOptions() {
     return Options(headers: Config().getHeader());
   }

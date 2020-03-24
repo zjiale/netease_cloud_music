@@ -134,6 +134,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.5.3"
+  fijkplayer:
+    dependency: "direct main"
+    description:
+      name: fijkplayer
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.7.0"
   fluro:
     dependency: "direct main"
     description:
@@ -153,13 +160,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.1.0"
-  flutter_ijkplayer:
-    dependency: "direct main"
-    description:
-      name: flutter_ijkplayer
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "0.3.5+1"
   flutter_page_indicator:
     dependency: transitive
     description:
