@@ -51,8 +51,8 @@ class _ListItemPlayerState extends State<ListItemPlayer> {
         }
       });
 
-      await _player?.setDataSource(_url);
-      await _player?.prepareAsync();
+      // await _player?.setDataSource(_url);
+      // await _player?.prepareAsync();
       scrollListener();
       if (mounted) {
         setState(() {});
@@ -69,30 +69,30 @@ class _ListItemPlayerState extends State<ListItemPlayer> {
     /// dividing a constant height simply
     double pixels = widget.notifier.value;
 
-    int x = (pixels / 200).ceil();
-    if (_player != null && widget.index == x) {
-      _expectStart = true;
-      _player.removeListener(pauseListener);
-      if (_start == false && _player.isPlayable()) {
-        // FijkLog.i("start from scroll listener $_player");
-        _player.start();
-        _start = true;
-      } else if (_start == false) {
-        // FijkLog.i("add start listener $_player");
-        _player.addListener(startListener);
-      }
-    } else if (_player != null) {
-      _expectStart = false;
-      _player.removeListener(startListener);
-      if (_player.isPlayable() && _start) {
-        // FijkLog.i("pause from scroll listener $_player");
-        _player.pause();
-        _start = false;
-      } else if (_start) {
-        // FijkLog.i("add pause listener $_player");
-        _player.addListener(pauseListener);
-      }
-    }
+    // int x = (pixels / 200).ceil();
+    // if (_player != null && widget.index == x) {
+    //   _expectStart = true;
+    //   _player.removeListener(pauseListener);
+    //   if (_start == false && _player.isPlayable()) {
+    //     // FijkLog.i("start from scroll listener $_player");
+    //     _player.start();
+    //     _start = true;
+    //   } else if (_start == false) {
+    //     // FijkLog.i("add start listener $_player");
+    //     _player.addListener(startListener);
+    //   }
+    // } else if (_player != null) {
+    //   _expectStart = false;
+    //   _player.removeListener(startListener);
+    //   if (_player.isPlayable() && _start) {
+    //     // FijkLog.i("pause from scroll listener $_player");
+    //     _player.pause();
+    //     _start = false;
+    //   } else if (_start) {
+    //     // FijkLog.i("add pause listener $_player");
+    //     _player.addListener(pauseListener);
+    //   }
+    // }
   }
 
   void startListener() {

@@ -15,6 +15,7 @@ import 'package:neteast_cloud_music/utils/routes/navigator_util.dart';
 import 'package:neteast_cloud_music/widgets/fade_network_image.dart';
 import 'package:neteast_cloud_music/widgets/list_item_player.dart';
 import 'package:neteast_cloud_music/widgets/play_list_cover.dart';
+import 'package:rect_getter/rect_getter.dart';
 
 class EventDescription extends StatefulWidget {
   final Events event;
@@ -22,11 +23,13 @@ class EventDescription extends StatefulWidget {
   final bool isDetail;
   final ValueNotifier<double> notifier;
   final int index;
+  final callback;
   EventDescription(
       {@required this.event,
       @required this.model,
       @required this.notifier,
       @required this.index,
+      @required this.callback,
       this.isDetail = false});
 
   @override
@@ -34,6 +37,8 @@ class EventDescription extends StatefulWidget {
 }
 
 class _EventDescriptionState extends State<EventDescription> {
+  var _keys = {};
+
   Widget _defaultContent(
       {@required String url,
       @required String title,
@@ -258,7 +263,6 @@ class _EventDescriptionState extends State<EventDescription> {
                 name: _content.song.name,
                 artists: Config().formateArtist(_content.song.artists),
                 picUrl: _content.song.album.picUrl);
-            print(song);
             widget.model.playOneSong(song);
             NavigatorUtil.goAudioPage(context);
           },
@@ -285,10 +289,16 @@ class _EventDescriptionState extends State<EventDescription> {
         break;
       case 39: //发布视频
         _subTitle = "发布视频";
-        _main = ListItemPlayer(
-            index: widget.index,
-            notifier: widget.notifier,
-            videoContent: _content.video);
+        _keys[widget.index] = RectGetter.createGlobalKey();
+
+        widget.callback(_keys);
+        _main = RectGetter(
+          key: _keys[widget.index],
+          child: ListItemPlayer(
+              index: widget.index,
+              notifier: widget.notifier,
+              videoContent: _content.video),
+        );
 
         break;
       default:
@@ -354,10 +364,6 @@ class _EventDescriptionState extends State<EventDescription> {
                 );
               }),
         );
-    }
-
-    if (mounted) {
-      print(Config.getRectFromKey(context));
     }
 
     return Padding(

@@ -57,6 +57,7 @@ dependencies:
   extended_nested_scroll_view: 0.4.0
   # 视频播放器
   fijkplayer: 0.7.0
+  rect_getter: 0.1.0
 
 dev_dependencies:
   flutter_test:
