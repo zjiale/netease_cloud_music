@@ -8,7 +8,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:neteast_cloud_music/model/event_content_model.dart';
 import 'package:neteast_cloud_music/model/event_model.dart';
 import 'package:neteast_cloud_music/model/music_song_model.dart';
+import 'package:neteast_cloud_music/store/index.dart';
 import 'package:neteast_cloud_music/store/model/play_song_model.dart';
+import 'package:neteast_cloud_music/store/model/play_video_model.dart';
 import 'package:neteast_cloud_music/utils/config.dart';
 import 'package:neteast_cloud_music/utils/my_special_textspan_builder.dart';
 import 'package:neteast_cloud_music/utils/routes/navigator_util.dart';
@@ -21,13 +23,11 @@ class EventDescription extends StatefulWidget {
   final Events event;
   final PlaySongModel model;
   final bool isDetail;
-  final ValueNotifier<double> notifier;
   final int index;
   final callback;
   EventDescription(
       {@required this.event,
       @required this.model,
-      @required this.notifier,
       @required this.index,
       @required this.callback,
       this.isDetail = false});
@@ -289,16 +289,20 @@ class _EventDescriptionState extends State<EventDescription> {
         break;
       case 39: //发布视频
         _subTitle = "发布视频";
-        _keys[widget.index] = RectGetter.createGlobalKey();
 
+        /// 返回生成的key在上一级中进行筛选
+        _keys[widget.index] = RectGetter.createGlobalKey();
         widget.callback(_keys);
-        _main = RectGetter(
-          key: _keys[widget.index],
-          child: ListItemPlayer(
-              index: widget.index,
-              notifier: widget.notifier,
-              videoContent: _content.video),
-        );
+        _main = Store.connect<PlayVideoModel>(
+            builder: (context, videoModel, child) {
+          return RectGetter(
+            key: _keys[widget.index],
+            child: ListItemPlayer(
+                videoModel: videoModel,
+                index: widget.index,
+                videoContent: _content.video),
+          );
+        });
 
         break;
       default:

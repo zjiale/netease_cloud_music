@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:neteast_cloud_music/store/model/play_video_model.dart';
 import 'package:provider/provider.dart';
 
 import 'package:neteast_cloud_music/store/model/play_song_model.dart';
@@ -17,6 +18,7 @@ class Store {
       providers: [
         ChangeNotifierProvider(create: (_) => PlaySongModel()..init()),
         ChangeNotifierProvider(create: (_) => TagModel()..init()),
+        ChangeNotifierProvider(create: (_) => PlayVideoModel())
       ],
       child: child,
     );
