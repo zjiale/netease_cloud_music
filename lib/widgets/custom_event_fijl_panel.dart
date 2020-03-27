@@ -108,6 +108,66 @@ class _CustomEventFijkPanelState extends State<CustomEventFijkPanel>
         min(widget.viewSize.width, widget.texturePos.right),
         min(widget.viewSize.height, widget.texturePos.bottom));
 
+    Widget cover;
+
+    switch (player.state) {
+      case FijkState.completed:
+        cover = Container(
+          height: ScreenUtil().setWidth(80.0),
+          width: ScreenUtil().setWidth(80.0),
+          decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.black26,
+              border: Border.all(color: Colors.white)),
+          child: Center(
+            child: Transform.rotate(
+              angle: -(pi / 2),
+              child: Icon(
+                Icons.replay,
+                size: ScreenUtil().setSp(50.0),
+                color: Colors.white,
+              ),
+            ),
+          ),
+        );
+        break;
+      case FijkState.error:
+        cover = Icon(
+          Icons.close,
+          size: ScreenUtil().setSp(50.0),
+          color: Colors.white,
+        );
+        break;
+      case FijkState.initialized:
+        cover = Container(
+          height: ScreenUtil().setWidth(80.0),
+          width: ScreenUtil().setWidth(80.0),
+          decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.black26,
+              border: Border.all(color: Colors.white)),
+          child: Center(
+            child: Transform.rotate(
+              angle: -(pi / 2),
+              child: Icon(
+                Icons.replay,
+                size: ScreenUtil().setSp(50.0),
+                color: Colors.white,
+              ),
+            ),
+          ),
+        );
+        break;
+      case FijkState.started:
+        cover = Container();
+        break;
+      default:
+        cover = CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation(Colors.white),
+          strokeWidth: 1.0,
+        );
+    }
+
     return Positioned.fromRect(
       rect: rect,
       child: Column(
@@ -123,60 +183,12 @@ class _CustomEventFijkPanelState extends State<CustomEventFijkPanel>
                     fontSize: 25,
                   ),
                 )
-              : (_prepared || player.state == FijkState.initialized)
-                  ? Offstage(
-                      offstage:
-                          player.state == FijkState.started ? true : false,
-                      child: Icon(
-                        Icons.play_arrow,
-                        size: ScreenUtil().setSp(50.0),
-                        color: Colors.white,
-                      ),
-                    )
-                  : Container(
-                      height: ScreenUtil().setWidth(80.0),
-                      width: ScreenUtil().setWidth(80.0),
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.black26,
-                          border: Border.all(color: Colors.white)),
-                      child: Center(
-                        child: Transform.rotate(
-                          angle: -(pi / 2),
-                          child: Icon(
-                            Icons.replay,
-                            size: ScreenUtil().setSp(50.0),
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
+              : cover,
           Padding(
-            padding: EdgeInsets.all(ScreenUtil().setWidth(10.0)),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                RichText(
-                  text: TextSpan(children: [
-                    WidgetSpan(
-                        alignment: PlaceholderAlignment.middle,
-                        child: Container(
-                          margin: EdgeInsets.only(
-                              right: ScreenUtil().setWidth(5.0)),
-                          child: Icon(
-                            Icons.play_arrow,
-                            size: ScreenUtil().setSp(25.0),
-                            color: Colors.white,
-                          ),
-                        )),
-                    TextSpan(
-                        text: "2375",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: ScreenUtil().setSp(23.0)))
-                  ]),
-                ),
-                Text(
+              padding: EdgeInsets.only(bottom: ScreenUtil().setWidth(10.0)),
+              child: Align(
+                alignment: Alignment.bottomRight,
+                child: Text(
                     _currentPos.inMilliseconds != _duration.inMilliseconds
                         ? DateUtil.formatDateMs(
                             _duration.inMilliseconds -
@@ -186,10 +198,8 @@ class _CustomEventFijkPanelState extends State<CustomEventFijkPanel>
                             format: "mm:ss"),
                     style: TextStyle(
                         color: Colors.white,
-                        fontSize: ScreenUtil().setSp(23.0)))
-              ],
-            ),
-          )
+                        fontSize: ScreenUtil().setSp(23.0))),
+              ))
         ],
       ),
     );

@@ -1,9 +1,11 @@
 import 'dart:async';
 
+import 'package:common_utils/common_utils.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:fijkplayer/fijkplayer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:neteast_cloud_music/store/model/play_video_model.dart';
 import 'package:neteast_cloud_music/widgets/custom_event_fijl_panel.dart';
 import 'package:neteast_cloud_music/model/event_content_model.dart';
@@ -37,7 +39,22 @@ class _ListItemPlayerState extends State<ListItemPlayer> {
   void initState() {
     super.initState();
 
-    if (widget.videoModel.canplay) {
+    widget.videoModel.canplay.addListener(() {
+      if (!widget.videoModel.canplay.value && _player != null) {
+        finalizer();
+        setState(() {});
+      }
+    });
+
+    widget.videoModel.index.addListener(() {
+      if (widget.videoModel.index.value != widget.index && _player != null) {
+        finalizer();
+        setState(() {});
+      }
+    });
+
+    if (widget.videoModel.canplay.value &&
+        widget.index == widget.videoModel.index.value) {
       int mills = 500;
       _timer = Timer(Duration(milliseconds: mills), () async {
         _player = FijkPlayer();
@@ -65,16 +82,14 @@ class _ListItemPlayerState extends State<ListItemPlayer> {
   void scrollListener() {
     if (!mounted) return;
 
-    if (_player != null && widget.index == widget.videoModel.index) {
+    if (_player != null) {
       _expectStart = true;
       _player.removeListener(pauseListener);
       if (_start == false && _player.isPlayable()) {
         _player.start();
         _start = true;
-        widget.videoModel.stopPlay();
       } else if (_start == false) {
         _player.addListener(startListener);
-        widget.videoModel.stopPlay();
       }
     }
   }
@@ -116,7 +131,6 @@ class _ListItemPlayerState extends State<ListItemPlayer> {
   void dispose() {
     super.dispose();
     _timer?.cancel();
-    finalizer();
   }
 
   @override
@@ -127,19 +141,49 @@ class _ListItemPlayerState extends State<ListItemPlayer> {
       alignment: Alignment.center,
     );
     return Container(
-        height: 180,
+        height: ScreenUtil().setWidth(300.0),
         child: Column(
           children: <Widget>[
             Expanded(
               child: _player != null
-                  ? Container(
-                      child: FijkView(
-                        color: Colors.black,
-                        player: _player,
-                        fit: fit,
-                        panelBuilder: _eventFijkPanelBuilder,
-                        cover: NetworkImage("${widget.videoContent.coverUrl}"),
-                      ),
+                  ? Stack(
+                      children: <Widget>[
+                        FijkView(
+                          height: ScreenUtil().setWidth(300.0),
+                          color: Colors.black,
+                          player: _player,
+                          fit: FijkFit.contain,
+                          panelBuilder: _eventFijkPanelBuilder,
+                          cover:
+                              NetworkImage("${widget.videoContent.coverUrl}"),
+                        ),
+                        Align(
+                            alignment: Alignment.bottomLeft,
+                            child: Padding(
+                              padding:
+                                  EdgeInsets.all(ScreenUtil().setWidth(10.0)),
+                              child: RichText(
+                                text: TextSpan(children: [
+                                  WidgetSpan(
+                                      alignment: PlaceholderAlignment.middle,
+                                      child: Container(
+                                        margin: EdgeInsets.only(
+                                            right: ScreenUtil().setWidth(5.0)),
+                                        child: Icon(
+                                          Icons.play_arrow,
+                                          size: ScreenUtil().setSp(25.0),
+                                          color: Colors.white,
+                                        ),
+                                      )),
+                                  TextSpan(
+                                      text: "${widget.videoContent.playTime}",
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: ScreenUtil().setSp(23.0)))
+                                ]),
+                              ),
+                            ))
+                      ],
                     )
                   : Container(
                       width: double.infinity,
@@ -147,8 +191,60 @@ class _ListItemPlayerState extends State<ListItemPlayer> {
                           color: Colors.black,
                           shape: BoxShape.rectangle,
                           borderRadius: BorderRadius.all(Radius.circular(5.0))),
-                      child: ExtendedImage.network(
-                          "${widget.videoContent.coverUrl}"),
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: <Widget>[
+                          ExtendedImage.network(
+                              "${widget.videoContent.coverUrl}",
+                              colorBlendMode: BlendMode.srcOver,
+                              color: Colors.black26),
+                          Icon(
+                            Icons.play_arrow,
+                            size: ScreenUtil().setSp(70.0),
+                            color: Colors.white70,
+                          ),
+                          Align(
+                            alignment: Alignment.bottomLeft,
+                            child: Padding(
+                              padding:
+                                  EdgeInsets.all(ScreenUtil().setWidth(10.0)),
+                              child: RichText(
+                                text: TextSpan(children: [
+                                  WidgetSpan(
+                                      alignment: PlaceholderAlignment.middle,
+                                      child: Container(
+                                        margin: EdgeInsets.only(
+                                            right: ScreenUtil().setWidth(5.0)),
+                                        child: Icon(
+                                          Icons.play_arrow,
+                                          size: ScreenUtil().setSp(25.0),
+                                          color: Colors.white,
+                                        ),
+                                      )),
+                                  TextSpan(
+                                      text: "${widget.videoContent.playTime}",
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: ScreenUtil().setSp(23.0)))
+                                ]),
+                              ),
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment.bottomRight,
+                            child: Padding(
+                                padding:
+                                    EdgeInsets.all(ScreenUtil().setWidth(10.0)),
+                                child: Text(
+                                    DateUtil.formatDateMs(
+                                        widget.videoContent.duration * 1000,
+                                        format: "mm:ss"),
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: ScreenUtil().setSp(23.0)))),
+                          ),
+                        ],
+                      ),
                     ),
             )
           ],

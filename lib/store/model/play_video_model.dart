@@ -1,30 +1,37 @@
 import 'dart:async';
 
+import 'package:fijkplayer/fijkplayer.dart';
 import 'package:flutter/material.dart';
 
 class PlayVideoModel with ChangeNotifier {
   /// 定义初始的视频下标
-  int _currentIndex = 0;
+  ValueNotifier<int> _currentIndex = ValueNotifier(0);
 
   /// 获取到视窗第一个视频，判断是否能够开始播放了
-  bool _canPlay = false;
+  ValueNotifier<bool> _canPlay = ValueNotifier(false);
 
   /// 判断当前是否播放视频
   bool _isPlaying = false;
 
-  int get index => _currentIndex;
-  bool get canplay => _canPlay;
+  ValueNotifier<int> get index => _currentIndex;
+  ValueNotifier<bool> get canplay => _canPlay;
   bool get isplay => _isPlaying;
 
   void changeIndex(int _newIndex) {
-    _currentIndex = _newIndex;
-    _canPlay = true;
+    if (_currentIndex.value == _newIndex) return;
+    _currentIndex.value = _newIndex;
+    _canPlay.value = true;
     notifyListeners();
   }
 
+  void resetIndex() {
+    if (_currentIndex.value == 0) return;
+    _currentIndex.value = 0;
+  }
+
   void stopPlay() {
-    _canPlay = false;
-    _currentIndex = 0;
+    if (!_canPlay.value) return;
+    _canPlay.value = false;
     // notifyListeners();
   }
 

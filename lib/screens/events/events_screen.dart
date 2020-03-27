@@ -31,8 +31,6 @@ class _EventsScreenState extends State<EventsScreen>
 
   EasyRefreshController _controller = EasyRefreshController();
 
-  final ValueNotifier<double> notifier = ValueNotifier(-1);
-
   var _keys = {};
   var _scrollViewKey = RectGetter.createGlobalKey();
 
@@ -65,8 +63,6 @@ class _EventsScreenState extends State<EventsScreen>
   }
 
   List<int> getVisible() {
-    int _delete = 0;
-
     /// 先获取整个ListView的rect信息，然后遍历map
     /// 利用map中的key获取每个item的rect,如果该rect与ListView的rect存在交集
     /// 则将对应的index加入到返回的index集合中
@@ -79,7 +75,7 @@ class _EventsScreenState extends State<EventsScreen>
       /// 当整个视频显示出来的时候才会加入进items中
       if (itemRect != null &&
           !(itemRect.top > rect.bottom - itemRect.size.height ||
-              itemRect.bottom - kToolbarHeight < rect.top) &&
+              itemRect.bottom < kToolbarHeight + (itemRect.size.height / 2)) &&
           _event[index].type == 39) _items.add(index);
     });
 
@@ -179,10 +175,11 @@ class _EventsScreenState extends State<EventsScreen>
             onNotification: (notification) {
               if (getVisible().length > 0) {
                 /// 滚动时实时打印当前可视条目的index
-                if (videoModel.index == getVisible().first) return true;
-                videoModel.changeIndex(getVisible().first);
-                return true;
+                if (videoModel.index != getVisible().first) {
+                  videoModel.changeIndex(getVisible().first);
+                }
               } else {
+                videoModel.resetIndex();
                 videoModel.stopPlay();
               }
               return true;
