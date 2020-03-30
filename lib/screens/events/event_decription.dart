@@ -27,9 +27,9 @@ class EventDescription extends StatefulWidget {
   final callback;
   EventDescription(
       {@required this.event,
-      @required this.model,
-      @required this.index,
-      @required this.callback,
+      this.model,
+      this.index,
+      this.callback,
       this.isDetail = false});
 
   @override
@@ -292,12 +292,17 @@ class _EventDescriptionState extends State<EventDescription> {
 
         /// 返回生成的key在上一级中进行筛选
         _keys[widget.index] = RectGetter.createGlobalKey();
-        widget.callback(_keys);
+        if (widget.isDetail) {
+          widget.callback(_keys[widget.index]);
+        } else {
+          widget.callback(_keys);
+        }
         _main = Store.connect<PlayVideoModel>(
             builder: (context, videoModel, child) {
           return RectGetter(
             key: _keys[widget.index],
             child: ListItemPlayer(
+                isDetail: widget.isDetail,
                 videoModel: videoModel,
                 index: widget.index,
                 videoContent: _content.video),
@@ -340,34 +345,28 @@ class _EventDescriptionState extends State<EventDescription> {
         );
         break;
       default:
-        _picList = Container(
-          width: widget.event.pics.length == 4
-              ? ScreenUtil().setWidth((2 * 180) + 5)
-              : ScreenUtil().setWidth((3 * 180) + 10),
-          child: GridView.builder(
-              shrinkWrap: true,
-              itemCount: widget.event.pics.length,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: widget.event.pics.length == 4 ? 2 : 3,
-                  mainAxisSpacing: ScreenUtil().setWidth(5.0),
-                  crossAxisSpacing: ScreenUtil().setWidth(5.0),
-                  childAspectRatio: 1.0),
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () {
-                    print("");
-                  },
-                  child: Container(
-                    width: ScreenUtil().setWidth(180.0),
-                    child: PlayListCoverWidget(
-                      widget.event.pics[index].squareUrl,
-                      width: 180.0,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                );
-              }),
-        );
+        _picList = GridView.builder(
+            physics: ClampingScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: widget.event.pics.length,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: widget.event.pics.length == 4 ? 2 : 3,
+                mainAxisSpacing: ScreenUtil().setWidth(5.0),
+                crossAxisSpacing: ScreenUtil().setWidth(5.0),
+                childAspectRatio: 1.0),
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: () {
+                  print("");
+                },
+                child: PlayListCoverWidget(
+                  widget.event.pics[index].squareUrl,
+                  width: 190.0,
+                  fit: BoxFit.cover,
+                  circular: 5.0,
+                ),
+              );
+            });
     }
 
     return Padding(

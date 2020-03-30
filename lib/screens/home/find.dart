@@ -264,7 +264,9 @@ class _FindState extends State<Find> with AutomaticKeepAliveClientMixin {
           scrollDirection: Axis.vertical,
           padding: EdgeInsets.all(10.0),
           children: <Widget>[
-            SizedBox(height: ScreenUtil().setHeight(60.0)),
+            SizedBox(
+                height: ScreenUtil().setHeight(60.0) +
+                    MediaQuery.of(context).padding.top),
             HomeBanner(bannerList), //banner
             SizedBox(height: ScreenUtil().setHeight(20.0)),
             playType(), // 首页按钮

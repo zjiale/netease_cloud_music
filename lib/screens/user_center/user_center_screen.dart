@@ -132,7 +132,8 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
             pinned: true,
             elevation: 0,
             iconTheme: IconThemeData(color: Colors.transparent),
-            expandedHeight: ScreenUtil().setHeight(380.0),
+            expandedHeight: ScreenUtil().setHeight(380.0) +
+                MediaQuery.of(context).padding.top,
             brightness: Brightness.dark,
             flexibleSpace: FlexibleDetailBar(
                 content: SafeArea(

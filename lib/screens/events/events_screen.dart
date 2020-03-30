@@ -75,7 +75,10 @@ class _EventsScreenState extends State<EventsScreen>
       /// 当整个视频显示出来的时候才会加入进items中
       if (itemRect != null &&
           !(itemRect.top > rect.bottom - itemRect.size.height ||
-              itemRect.bottom < kToolbarHeight + (itemRect.size.height / 2)) &&
+              itemRect.bottom <
+                  kToolbarHeight +
+                      MediaQuery.of(context).padding.top +
+                      (itemRect.size.height / 2)) &&
           _event[index].type == 39) _items.add(index);
     });
 
@@ -89,7 +92,8 @@ class _EventsScreenState extends State<EventsScreen>
   Widget _follow() {
     return Container(
       padding: EdgeInsets.only(
-          top: ScreenUtil().setWidth(130), bottom: ScreenUtil().setWidth(40.0)),
+          top: ScreenUtil().setWidth(130) + MediaQuery.of(context).padding.top,
+          bottom: ScreenUtil().setWidth(40.0)),
       child: Column(
         children: <Widget>[
           Row(
@@ -179,8 +183,11 @@ class _EventsScreenState extends State<EventsScreen>
                   videoModel.changeIndex(getVisible().first);
                 }
               } else {
-                videoModel.resetIndex();
-                videoModel.stopPlay();
+                if (notification.metrics.pixels <= 0) {
+                  videoModel.resetIndex();
+                } else {
+                  videoModel.resetIndex(resetIndex: -1);
+                }
               }
               return true;
             },
@@ -232,11 +239,11 @@ class _EventsScreenState extends State<EventsScreen>
                     delegate: SliverChildBuilderDelegate((context, index) {
                       return InkWell(
                           onTap: () {
-                            // Navigator.push(
-                            //     context,
-                            //     MaterialPageRoute(
-                            //         builder: (context) => EventDetailScreen(
-                            //             event: _event[index])));
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => EventDetailScreen(
+                                        event: _event[index], index: index)));
                           },
                           child: EventDescription(
                               event: _event[index],

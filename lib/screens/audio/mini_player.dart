@@ -1,7 +1,6 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:neteast_cloud_music/screens/audio/audio_player_screen.dart';
 import 'package:neteast_cloud_music/store/model/play_song_model.dart';
 import 'package:neteast_cloud_music/utils/routes/navigator_util.dart';
 
@@ -55,21 +54,28 @@ class MiniPlayer extends StatelessWidget {
                               child: Stack(
                                   alignment: Alignment.center,
                                   children: <Widget>[
-                                    CircularProgressIndicator(
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                          Colors.red),
-                                      value: (int.parse(
-                                                  '${snapshot.data == null ? 0 : snapshot.data}') /
-                                              model.curSong.totalTime)
-                                          .toDouble(),
-                                      strokeWidth: 1.0,
+                                    Container(
+                                      width: ScreenUtil().setWidth(50.0),
+                                      height: ScreenUtil().setWidth(50.0),
+                                      child: CircularProgressIndicator(
+                                        backgroundColor: Colors.black54,
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                                Colors.red),
+                                        value: (int.parse(
+                                                    '${snapshot.data == null ? 0 : snapshot.data}') /
+                                                model.curSong.totalTime)
+                                            .toDouble(),
+                                        strokeWidth: 1.0,
+                                      ),
                                     ),
                                     Icon(
-                                        model.curState ==
-                                                AudioPlayerState.PLAYING
-                                            ? Icons.pause
-                                            : Icons.play_arrow,
-                                        size: ScreenUtil().setWidth(40.0))
+                                      model.curState == AudioPlayerState.PLAYING
+                                          ? Icons.pause
+                                          : Icons.play_arrow,
+                                      size: ScreenUtil().setWidth(35.0),
+                                      color: Colors.black54,
+                                    )
                                   ])),
                           IconButton(
                               icon: Icon(Icons.list,

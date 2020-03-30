@@ -17,11 +17,13 @@ class ListItemPlayer extends StatefulWidget {
   final PlayVideoModel videoModel;
   final int index;
   final Video videoContent;
+  final bool isDetail;
 
   ListItemPlayer(
       {@required this.videoModel,
       @required this.index,
-      @required this.videoContent});
+      @required this.videoContent,
+      this.isDetail = false});
 
   @override
   _ListItemPlayerState createState() => _ListItemPlayerState();
@@ -39,22 +41,29 @@ class _ListItemPlayerState extends State<ListItemPlayer> {
   void initState() {
     super.initState();
 
-    widget.videoModel.canplay.addListener(() {
-      if (!widget.videoModel.canplay.value && _player != null) {
-        finalizer();
-        setState(() {});
-      }
-    });
-
+    /// 判断list中的视频
     widget.videoModel.index.addListener(() {
       if (widget.videoModel.index.value != widget.index && _player != null) {
         finalizer();
-        setState(() {});
+        if (mounted) {
+          setState(() {});
+        }
       }
     });
 
-    if (widget.videoModel.canplay.value &&
-        widget.index == widget.videoModel.index.value) {
+    /// 用于判断详情里面的视频是否能够播放
+    widget.videoModel.canplay.addListener(() {
+      if (!widget.videoModel.canplay.value && _player != null) {
+        finalizer();
+        widget.videoModel.stopPlay();
+        if (mounted) {
+          setState(() {});
+        }
+      }
+    });
+
+    if (widget.index == widget.videoModel.index.value ||
+        (widget.videoModel.canplay.value && widget.isDetail)) {
       int mills = 500;
       _timer = Timer(Duration(milliseconds: mills), () async {
         _player = FijkPlayer();
@@ -69,6 +78,7 @@ class _ListItemPlayerState extends State<ListItemPlayer> {
           }
         });
 
+        await _player?.setVolume(0.0);
         await _player?.setDataSource(_url);
         await _player?.prepareAsync();
         scrollListener();

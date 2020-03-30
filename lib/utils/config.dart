@@ -57,7 +57,7 @@ class Config {
     Tab(text: '视频')
   ];
 
-  static List<String> title = ['我的', '发现', '动态', '视频'];
+  static List<String> title = ['我的', '发现', '云村', '视频'];
 
   static List type = [
     {"image": "assets/icon_daily.png", "text": "每日推荐", "index": 0},

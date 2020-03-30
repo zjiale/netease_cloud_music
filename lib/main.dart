@@ -1,6 +1,8 @@
 import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
+import 'package:neteast_cloud_music/store/model/play_video_model.dart';
 import 'package:neteast_cloud_music/utils/config.dart';
 import 'package:neteast_cloud_music/utils/fluro/fluro.dart';
 import 'package:neteast_cloud_music/utils/routes/routes.dart';
@@ -8,6 +10,7 @@ import 'package:oktoast/oktoast.dart';
 import 'package:neteast_cloud_music/store/index.dart' show Store;
 import 'package:neteast_cloud_music/screens/home/home_screen.dart';
 import 'package:neteast_cloud_music/utils/cache.dart';
+import 'dart:io';
 
 Future<void> main() async {
   debugPaintSizeEnabled = false;
@@ -41,7 +44,10 @@ class MyApp extends StatelessWidget {
           ),
           home: Builder(builder: (context) {
             Store.widgetCtx = context;
-            return HomeScreen();
+            return Store.connect<PlayVideoModel>(
+                builder: (context, videoModel, child) {
+              return HomeScreen(model: videoModel);
+            });
           }),
         ),
       ),
