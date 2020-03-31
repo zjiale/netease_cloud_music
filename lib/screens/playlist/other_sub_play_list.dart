@@ -67,10 +67,12 @@ class _OtherSubPlayListState extends State<OtherSubPlayList>
     _controller = EasyRefreshController();
   }
 
+  /// 获取轮播图当前index
   void getCurrentIndex(index) {
     widget.indexCallback(index);
   }
 
+  /// 将轮播图第一涨图设置背景图
   void putBgImage(List<Playlists> list) {
     List<String> imgUrl = [];
     list.forEach((playlist) {
@@ -121,7 +123,7 @@ class _OtherSubPlayListState extends State<OtherSubPlayList>
                 child: DataLoading()),
             slivers: <Widget>[
               SliverToBoxAdapter(
-                child: widget.index == 0
+                child: widget.tag == ""
                     ? TopDisc(
                         source: _top,
                         callback: (index) => getCurrentIndex(index))

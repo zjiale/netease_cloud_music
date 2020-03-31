@@ -39,7 +39,16 @@ class _PlayListGroundScreenState extends State<PlayListGroundScreen>
     super.initState();
 
     _tabController =
-        TabController(vsync: this, length: widget.tagModel.allTags.length);
+        TabController(vsync: this, length: widget.tagModel.allTags.length)
+          ..addListener(() {
+            if (_tabController.index.toDouble() ==
+                _tabController.animation.value) {
+              if (_tabIndex == _tabController.index) return;
+              setState(() {
+                _tabIndex = _tabController.index;
+              });
+            }
+          });
   }
 
   @override
@@ -71,12 +80,12 @@ class _PlayListGroundScreenState extends State<PlayListGroundScreen>
       headerSliverBuilder: (context, innerBoxIsScrolled) =>
           <Widget>[SliverToBoxAdapter()],
       body: TabBarView(
-        physics: NeverScrollableScrollPhysics(),
+        // physics: NeverScrollableScrollPhysics(),
         controller: _tabController,
         children: widget.tagModel.allTags.map((tag) {
           return OtherSubPlayList(
             tag: tag == "推荐" ? "" : tag,
-            index: _tabController.index,
+            index: _tabIndex,
             indexCallback: (index) => _getImageIndex(index),
             imgCallback: (val) => _getBgImage(val),
           );

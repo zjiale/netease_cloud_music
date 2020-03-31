@@ -7,16 +7,23 @@ import 'package:neteast_cloud_music/utils/numbers_convert.dart';
 
 class HomeRecommend extends StatelessWidget {
   final List recommendList;
+  final ScrollController controller;
+  final ScrollPhysics physics;
 
-  HomeRecommend(this.recommendList);
+  HomeRecommend(
+      {@required this.recommendList,
+      @required this.controller,
+      @required this.physics});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       height: ScreenUtil().setHeight(280.0),
       child: ListView.builder(
-        padding: EdgeInsets.only(top: 10.0, left: 10.0),
+        padding: EdgeInsets.symmetric(horizontal: ScreenUtil().setWidth(40.0)),
+        controller: controller,
         scrollDirection: Axis.horizontal,
+        physics: physics,
         itemCount: 6,
         itemBuilder: (BuildContext context, int index) {
           return InkWell(

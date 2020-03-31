@@ -59,6 +59,7 @@ class _HomeScreenState extends State<HomeScreen>
       pageCall(pos);
     }
     if (pos != 2) {
+      if (widget.model.index.value == -1) return;
       widget.model.changeIndex(-1);
     } else {
       widget.model.changeIndex(0);

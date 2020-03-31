@@ -42,7 +42,7 @@ class MySpecialTextSpanBuilder extends SpecialTextSpanBuilder {
 }
 
 class AtText extends SpecialText {
-  static const String flag = "@s";
+  static const String flag = "@start";
   final int start;
 
   /// whether show background for @somebody
@@ -60,7 +60,7 @@ class AtText extends SpecialText {
   InlineSpan finishText() {
     TextStyle textStyle = this
         .textStyle
-        ?.copyWith(fontSize: ScreenUtil().setSp(20.0), color: Colors.grey);
+        ?.copyWith(fontSize: ScreenUtil().setSp(20.0), color: Colors.white70);
 
     final String atText = getContent();
 
@@ -109,7 +109,7 @@ class NumText extends SpecialText {
   InlineSpan finishText() {
     TextStyle textStyle = this.textStyle?.copyWith(
         fontSize: ScreenUtil().setSp(28.0),
-        color: Colors.black,
+        color: Colors.white,
         fontWeight: FontWeight.bold);
 
     final String atText = getContent();
