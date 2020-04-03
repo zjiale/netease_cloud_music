@@ -345,28 +345,32 @@ class _EventDescriptionState extends State<EventDescription> {
         );
         break;
       default:
-        _picList = GridView.builder(
-            physics: ClampingScrollPhysics(),
-            shrinkWrap: true,
-            itemCount: widget.event.pics.length,
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: widget.event.pics.length == 4 ? 2 : 3,
-                mainAxisSpacing: ScreenUtil().setWidth(5.0),
-                crossAxisSpacing: ScreenUtil().setWidth(5.0),
-                childAspectRatio: 1.0),
-            itemBuilder: (context, index) {
-              return GestureDetector(
-                onTap: () {
-                  print("");
-                },
-                child: PlayListCoverWidget(
-                  widget.event.pics[index].squareUrl,
-                  width: 190.0,
-                  fit: BoxFit.cover,
-                  circular: 5.0,
-                ),
-              );
-            });
+        _picList = Container(
+          width:
+              widget.event.pics.length == 4 ? ScreenUtil().setWidth(400) : null,
+          child: GridView.builder(
+              physics: ClampingScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: widget.event.pics.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: widget.event.pics.length == 4 ? 2 : 3,
+                  mainAxisSpacing: ScreenUtil().setWidth(5.0),
+                  crossAxisSpacing: ScreenUtil().setWidth(5.0),
+                  childAspectRatio: 1.0),
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  onTap: () {
+                    print("");
+                  },
+                  child: PlayListCoverWidget(
+                    widget.event.pics[index].squareUrl,
+                    width: 190.0,
+                    fit: BoxFit.cover,
+                    circular: 5.0,
+                  ),
+                );
+              }),
+        );
     }
 
     return Padding(

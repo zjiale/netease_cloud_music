@@ -158,10 +158,10 @@ class _FindState extends State<Find> with AutomaticKeepAliveClientMixin {
         RecommendSongListModel _bean =
             RecommendSongListModel.fromJson(res.data);
         if (_bean.code == _code) {
-          _bean.recommend
+          List recommendSongList = _bean.recommend
             ..shuffle()
+            ..removeWhere((song) => song.status == -200 || song.fee == 1)
             ..removeRange(9, _bean.recommend.length);
-          List recommendSongList = _bean.recommend;
           String reason = _bean.recommend.first.reason;
           var filter =
               _bean.recommend.takeWhile((item) => item.reason == reason);

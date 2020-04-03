@@ -34,12 +34,6 @@ class HomeRank extends StatelessWidget {
               margin: EdgeInsets.only(right: 10.0),
               padding: EdgeInsets.all(10.0),
               decoration: BoxDecoration(
-                  // color: Color(0xfff1f1f1),
-                  backgroundBlendMode: BlendMode.srcIn,
-                  gradient: LinearGradient(colors: [
-                    list[index].bgColor.withOpacity(0.9),
-                    list[index].bgColor
-                  ]),
                   borderRadius: BorderRadius.circular(10.0),
                   image: DecorationImage(
                       alignment: Alignment.bottomCenter,

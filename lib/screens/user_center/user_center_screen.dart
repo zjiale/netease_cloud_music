@@ -279,26 +279,28 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: _initPlayList(),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        switch (snapshot.connectionState) {
-          case ConnectionState.waiting:
-            return Center(
-                child: SpinKitChasingDots(
-                    color: Theme.of(context).primaryColor, size: 30.0));
-          case ConnectionState.done:
-            // List loveList = snapshot.data;
-            List subscribedList = List.from(snapshot.data);
-            List unSubscribedList = List.from(snapshot.data);
-            subscribedList.retainWhere((item) => item.subscribed == true);
-            unSubscribedList.retainWhere(
-                (item) => item.subscribed == false && item.specialType != 5);
-            return userCenter(subscribedList, unSubscribedList);
-          default:
-            return null;
-        }
-      },
+    return Material(
+      child: FutureBuilder(
+        future: _initPlayList(),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.waiting:
+              return Center(
+                  child: SpinKitChasingDots(
+                      color: Theme.of(context).primaryColor, size: 30.0));
+            case ConnectionState.done:
+              // List loveList = snapshot.data;
+              List subscribedList = List.from(snapshot.data);
+              List unSubscribedList = List.from(snapshot.data);
+              subscribedList.retainWhere((item) => item.subscribed == true);
+              unSubscribedList.retainWhere(
+                  (item) => item.subscribed == false && item.specialType != 5);
+              return userCenter(subscribedList, unSubscribedList);
+            default:
+              return null;
+          }
+        },
+      ),
     );
   }
 }

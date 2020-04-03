@@ -1,9 +1,6 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:neteast_cloud_music/utils/config.dart';
 import 'package:neteast_cloud_music/store/model/play_song_model.dart';
 import 'package:neteast_cloud_music/widgets/image_button.dart';
 

@@ -6,12 +6,16 @@ import 'package:common_utils/common_utils.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:neteast_cloud_music/api/CommonService.dart';
+import 'package:neteast_cloud_music/model/comment_model.dart';
 import 'package:neteast_cloud_music/screens/audio/play_button.dart';
 import 'package:neteast_cloud_music/screens/audio/slider_time.dart';
+import 'package:neteast_cloud_music/screens/audio/song_comment.dart';
 import 'package:neteast_cloud_music/store/index.dart';
 import 'package:neteast_cloud_music/utils/config.dart';
 
 import 'package:neteast_cloud_music/store/model/play_song_model.dart';
+import 'package:neteast_cloud_music/utils/numbers_convert.dart';
 
 class AudioPlayerScreen extends StatefulWidget {
   @override
@@ -23,6 +27,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
   final List<String> _key = [
     "dislike",
     "song_download",
+    "bfc",
     "song_comment",
     "song_more"
   ];
@@ -76,37 +81,51 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: _key.asMap().entries.map((MapEntry map) {
               return GestureDetector(
-                onTap: () {
-                  switch (map.key) {
-                    case 0:
-                      setState(() {
-                        if (isLike) {
-                          isLike = false;
-                          _key.replaceRange(0, 1, ['dislike']);
-                        } else {
-                          isLike = true;
-                          _key.replaceRange(0, 1, ['liked']);
-                        }
-                      });
-                      break;
-                    default:
-                  }
-                },
-                child: Stack(overflow: Overflow.visible, children: <Widget>[
-                  Image.asset("${Config().prefixImg(_key[map.key])}",
-                      width: ScreenUtil().setWidth(80.0)),
-                  map.key == 2
-                      ? Positioned(
-                          right: -6.0,
-                          top: 5.0,
-                          child: Text('999+',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: ScreenUtil().setSp(18.0))),
-                        )
-                      : Container()
-                ]),
-              );
+                  onTap: () {
+                    switch (map.key) {
+                      case 0:
+                        setState(() {
+                          if (isLike) {
+                            isLike = false;
+                            _key.replaceRange(0, 1, ['dislike']);
+                          } else {
+                            isLike = true;
+                            _key.replaceRange(0, 1, ['liked']);
+                          }
+                        });
+                        break;
+                      case 3:
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => SongComment(
+                                      songModel: model,
+                                    )));
+                        break;
+                      default:
+                    }
+                  },
+                  child: Container(
+                    width: ScreenUtil().setWidth(80.0),
+                    height: ScreenUtil().setWidth(80.0),
+                    decoration: BoxDecoration(
+                        image: DecorationImage(
+                            image: AssetImage(
+                      "${Config().prefixImg(_key[map.key])}",
+                    ))),
+                    child: map.key == 3
+                        ? Align(
+                            alignment: model.comment.total < 100
+                                ? Alignment(0.5, -0.6)
+                                : Alignment(1.2, -0.7),
+                            child: Text(
+                                NumberUtils.formatNum(model.comment.total),
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: ScreenUtil().setSp(18.0))),
+                          )
+                        : Container(),
+                  ));
             }).toList()));
   }
 
@@ -183,7 +202,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
         _imgController.stop();
         _controller.forward();
       }
-      return Stack(children: <Widget>[
+      return Stack(alignment: AlignmentDirectional.center, children: <Widget>[
         Image.network(
           model.curSong.picUrl,
           fit: BoxFit.cover,

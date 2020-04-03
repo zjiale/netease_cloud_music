@@ -28,7 +28,7 @@ class MiniPlayer extends StatelessWidget {
                               child: Container(
                                   width: ScreenUtil().setWidth(75.0),
                                   height: ScreenUtil().setWidth(75.0),
-                                  color: Colors.orange,
+                                  color: Colors.white,
                                   child: Image.network(model.curSong.picUrl))),
                           SizedBox(width: ScreenUtil().setWidth(10.0)),
                           Expanded(

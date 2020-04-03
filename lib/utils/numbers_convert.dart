@@ -1,4 +1,5 @@
 class NumberUtils {
+  static const double THOUNSAND = 1000.0;
   static const double MILLION = 10000.0;
   static const double MILLIONS = 1000000.0;
   static const double BILLION = 100000000.0;
@@ -32,6 +33,8 @@ class NumberUtils {
     if (n >= MILLION) {
       var r = n ~/ MILLION;
       return '${r >= 10 ? 10 : r}w+';
+    } else if (n > THOUNSAND && n < MILLION) {
+      return '999+';
     } else {
       return '$n';
     }

@@ -2,6 +2,9 @@ import 'dart:async';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:neteast_cloud_music/api/CommonService.dart';
+import 'package:neteast_cloud_music/model/comment_model.dart';
+import 'package:neteast_cloud_music/utils/config.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:neteast_cloud_music/model/music_song_model.dart';
 import 'package:neteast_cloud_music/utils/cache.dart';
@@ -10,6 +13,9 @@ import 'package:neteast_cloud_music/utils/fluro_convert_util.dart';
 class PlaySongModel with ChangeNotifier {
   static const String _SongKey = 'PLAYING_SONG';
   static const String _IndexKey = 'SONG_INDEX';
+  int _code = Config.SUCCESS_CODE;
+
+  CommentModel _commentModel;
   AudioPlayer _audioPlayer = AudioPlayer();
   StreamController<String> _curPositionController =
       StreamController<String>.broadcast();
@@ -32,6 +38,7 @@ class PlaySongModel with ChangeNotifier {
   int get mode => _mode; // 播放模式
   List<MusicSong> get curList => _curList; // 当前播放列表
   MusicSong get curSong => _curList[_curIndex]; // 当前播放歌曲
+  CommentModel get comment => _commentModel;
   AudioPlayerState get curState => _curState; //当前播放器状态
   Stream<String> get curPositionStream =>
       _curPositionController.stream; // SteamController的出口
@@ -91,6 +98,7 @@ class PlaySongModel with ChangeNotifier {
 
   void playOneSong(MusicSong song) {
     _curList.insert(0, song);
+    _sequenceList = _curList;
     play();
   }
 
@@ -104,6 +112,7 @@ class PlaySongModel with ChangeNotifier {
   }
 
   void play() {
+    getSongComment();
     _audioPlayer
         .setUrl(
             'https://music.163.com/song/media/outer/url?id=${_curList[_curIndex].id}.mp3')
@@ -202,6 +211,19 @@ class PlaySongModel with ChangeNotifier {
     }
     _sequenceIndex = _curIndex;
     play();
+  }
+
+  void getSongComment({int offset = 0}) {
+    CommmonService()
+        .getSongComment(_curList[_curIndex].id, offset: offset)
+        .then((res) {
+      if (res.statusCode == 200) {
+        CommentModel _bean = CommentModel.fromJson(res.data);
+        if (_bean.code == _code) {
+          _commentModel = _bean;
+        }
+      }
+    });
   }
 
   void save2sp() {

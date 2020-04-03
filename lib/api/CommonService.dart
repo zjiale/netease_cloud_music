@@ -76,6 +76,11 @@ class CommmonService {
     return await Dio().get("${Api.VIDEO_URL}?id=$id", options: _getOptions());
   }
 
+  Future<Response> getSongComment(int id, {int offset = 0}) async {
+    return await Dio().get("${Api.SONG_COMMENT}?id=$id&offset=$offset",
+        options: _getOptions());
+  }
+
   Options _getOptions() {
     return Options(headers: Config().getHeader());
   }

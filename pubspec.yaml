@@ -58,6 +58,8 @@ dependencies:
   # 视频播放器
   fijkplayer: 0.7.0
   rect_getter: 0.1.0
+  # 列表动画
+  flutter_staggered_animations: 0.1.2
 
 dev_dependencies:
   flutter_test:

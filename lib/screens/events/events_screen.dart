@@ -91,6 +91,15 @@ class _EventsScreenState extends State<EventsScreen>
 
   Widget _follow() {
     return Container(
+      decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFFfbab66), Color(0xFFf7418c)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+          borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(50.0),
+              bottomRight: Radius.circular(50.0))),
       padding: EdgeInsets.only(
           top: ScreenUtil().setWidth(130) + MediaQuery.of(context).padding.top,
           bottom: ScreenUtil().setWidth(40.0)),
@@ -100,7 +109,7 @@ class _EventsScreenState extends State<EventsScreen>
             mainAxisAlignment: MainAxisAlignment.center,
             children: _followList.map((follower) {
               return Container(
-                width: ScreenUtil().setWidth(130.0),
+                width: ScreenUtil().setWidth(120.0),
                 padding: EdgeInsets.only(
                     left: ScreenUtil().setWidth(40.0),
                     right: ScreenUtil().setWidth(10.0)),
@@ -149,7 +158,7 @@ class _EventsScreenState extends State<EventsScreen>
                       follower.nickname,
                       style: TextStyle(
                           fontSize: ScreenUtil().setSp(22.0),
-                          color: Colors.black54),
+                          color: Colors.white),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     )
@@ -161,7 +170,6 @@ class _EventsScreenState extends State<EventsScreen>
           SizedBox(
             height: ScreenUtil().setHeight(20.0),
           ),
-          Divider(color: Colors.black54, height: 1.0)
         ],
       ),
     );

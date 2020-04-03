@@ -2,6 +2,7 @@ class MusicSong {
   int id; // 歌曲id
   int mvid; //mv id
   int totalTime; //歌曲总时长
+  int commentCount; //评论数量
   String name; // 歌曲名称
   String subName; // 歌曲翻译
   String artists; // 演唱者
@@ -14,6 +15,7 @@ class MusicSong {
   MusicSong(this.id,
       {this.mvid,
       this.totalTime,
+      this.commentCount,
       this.name,
       this.subName = '',
       this.artists,
