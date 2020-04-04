@@ -6,7 +6,7 @@ import 'package:neteast_cloud_music/utils/routes/navigator_util.dart';
 
 class MiniPlayer extends StatelessWidget {
   final PlaySongModel model;
-  MiniPlayer(this.model);
+  MiniPlayer({this.model});
 
   @override
   Widget build(BuildContext context) {

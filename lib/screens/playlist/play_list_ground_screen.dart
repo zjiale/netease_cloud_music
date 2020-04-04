@@ -174,7 +174,8 @@ class _PlayListGroundScreenState extends State<PlayListGroundScreen>
                       child: Store.connect<PlaySongModel>(
                           builder: (context, model, child) {
                         return Offstage(
-                            offstage: model.show, child: MiniPlayer(model));
+                            offstage: model.show,
+                            child: MiniPlayer(model: model));
                       }))
                 ],
               ))

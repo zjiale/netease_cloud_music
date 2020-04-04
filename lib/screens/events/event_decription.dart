@@ -258,7 +258,8 @@ class _EventDescriptionState extends State<EventDescription> {
         _subTitle = "分享歌曲";
         _main = InkWell(
           onTap: () {
-            MusicSong song = MusicSong(_content.song.id,
+            MusicSong song = MusicSong(
+                id: _content.song.id,
                 totalTime: _content.song.duration,
                 name: _content.song.name,
                 artists: Config().formateArtist(_content.song.artists),

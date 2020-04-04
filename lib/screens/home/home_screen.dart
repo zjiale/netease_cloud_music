@@ -26,9 +26,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
-  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  final Duration _duration = Duration(milliseconds: 200);
-
   List<String> _title = Config.title;
   List<Widget> _pages;
 
@@ -145,7 +142,8 @@ class _HomeScreenState extends State<HomeScreen>
               bottom: 0.0,
               child: Store.connect<PlaySongModel>(
                   builder: (context, model, child) {
-                return Offstage(offstage: model.show, child: MiniPlayer(model));
+                return Offstage(
+                    offstage: model.show, child: MiniPlayer(model: model));
               }))
         ]));
   }

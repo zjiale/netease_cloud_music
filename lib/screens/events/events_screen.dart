@@ -109,10 +109,7 @@ class _EventsScreenState extends State<EventsScreen>
             mainAxisAlignment: MainAxisAlignment.center,
             children: _followList.map((follower) {
               return Container(
-                width: ScreenUtil().setWidth(120.0),
-                padding: EdgeInsets.only(
-                    left: ScreenUtil().setWidth(40.0),
-                    right: ScreenUtil().setWidth(10.0)),
+                width: ScreenUtil().setWidth(150.0),
                 child: Column(
                   children: <Widget>[
                     Stack(

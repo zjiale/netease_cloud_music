@@ -118,7 +118,8 @@ class _PlayListScreenState extends State<PlayListScreen> {
                   List<SubscribersModel> _suscribers = [];
                   PlayListDetailModel playList = snapshot.data;
                   playList.playlist.tracks.forEach((song) {
-                    _list.add(MusicSong(song.id,
+                    _list.add(MusicSong(
+                        id: song.id,
                         mvid: song.mv,
                         totalTime: song.dt,
                         name: song.name,
@@ -156,7 +157,8 @@ class _PlayListScreenState extends State<PlayListScreen> {
                           child: Store.connect<PlaySongModel>(
                               builder: (context, model, child) {
                             return Offstage(
-                                offstage: model.show, child: MiniPlayer(model));
+                                offstage: model.show,
+                                child: MiniPlayer(model: model));
                           }))
                     ],
                   );

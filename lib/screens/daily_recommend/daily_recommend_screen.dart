@@ -94,7 +94,8 @@ class _DailyRecommendScreenState extends State<DailyRecommendScreen> {
                 List<Recommend> recommendList = snapshot.data;
                 List<MusicSong> _list = [];
                 recommendList.forEach((song) {
-                  _list.add(MusicSong(song.id,
+                  _list.add(MusicSong(
+                      id: song.id,
                       mvid: song.mvid,
                       totalTime: song.duration,
                       name: song.name,

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
@@ -48,7 +49,16 @@ class PlaySongModel with ChangeNotifier {
     _audioPlayer.setReleaseMode(ReleaseMode.STOP);
 
     var songList = SpUtil.preferences.get(_SongKey);
-    if (songList == null) _isShow = true;
+    if (songList == null) {
+      _isShow = true;
+    } else {
+      // 将list字符串转成json list，然后再将json list转成转成字符串就可以获取列表第一个值
+      // List<String> _list = json.decode(json.encode(songList));
+      var jsonStr = json.decode(json.encode(songList)).first;
+      MusicSong song = MusicSong.fromJson(json.decode(jsonStr));
+
+      _curList.insert(0, song);
+    }
 
     // 播放状态监听
     _audioPlayer.onPlayerStateChanged.listen((state) {
@@ -89,7 +99,9 @@ class PlaySongModel with ChangeNotifier {
   }
 
   void togglePlay() {
-    if (_curState == AudioPlayerState.PAUSED) {
+    if (_curState == null) {
+      play();
+    } else if (_curState == AudioPlayerState.PAUSED) {
       resume();
     } else {
       pause();
@@ -119,7 +131,6 @@ class PlaySongModel with ChangeNotifier {
         .then((result) {
       resume();
       if (_isShow) _isShow = false;
-      save2sp();
     }).catchError((error) async {
       showToast(
         '正在加载音乐,请稍等!!!',
@@ -130,6 +141,7 @@ class PlaySongModel with ChangeNotifier {
         textStyle: TextStyle(fontSize: 15.0),
       );
     });
+    save2sp();
   }
 
   void pause() {
@@ -229,8 +241,8 @@ class PlaySongModel with ChangeNotifier {
   void save2sp() {
     SpUtil.preferences.remove(_SongKey);
     SpUtil.preferences.setInt(_IndexKey, _curIndex);
-    SpUtil.preferences.setStringList(_SongKey,
-        _curList.map((s) => FluroConvertUtils.object2string(s)).toList());
+    SpUtil.preferences
+        .setStringList(_SongKey, _curList.map((s) => s.toString()).toList());
   }
 
   @override

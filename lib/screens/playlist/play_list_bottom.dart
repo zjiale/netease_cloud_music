@@ -21,7 +21,8 @@ class PlayListBottom extends StatelessWidget implements PreferredSizeWidget {
     for (int i = 0; i <= detail.playlist.tracks.length - 1; i++) {
       if (detail.playlist.tracks[i].fee == 1 || detail.privileges[i].st == -200)
         continue;
-      list.add(MusicSong(detail.playlist.tracks[i].id,
+      list.add(MusicSong(
+          id: detail.playlist.tracks[i].id,
           totalTime: detail.playlist.tracks[i].dt,
           name: detail.playlist.tracks[i].name,
           artists: detail.playlist.tracks[i].ar.first.name,

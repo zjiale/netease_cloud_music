@@ -20,20 +20,20 @@ class Routes {
 
     /// 第一个参数是路由地址，第二个参数是页面跳转和传参
     router.define(root,
-        handler: rootHandler, transitionType: TransitionType.fadeIn);
+        handler: rootHandler, transitionType: TransitionType.native);
     router.define(login,
-        handler: loginHandler, transitionType: TransitionType.fadeIn);
+        handler: loginHandler, transitionType: TransitionType.native);
     router.define(playList,
-        handler: playListHandler, transitionType: TransitionType.fadeIn);
+        handler: playListHandler, transitionType: TransitionType.native);
     router.define(playListDetail,
-        handler: playListDetailHandler, transitionType: TransitionType.fadeIn);
+        handler: playListDetailHandler, transitionType: TransitionType.native);
     router.define(subscribers,
-        handler: subscribersHandler, transitionType: TransitionType.fadeIn);
+        handler: subscribersHandler, transitionType: TransitionType.native);
     router.define(daily,
-        handler: dailyHandler, transitionType: TransitionType.fadeIn);
+        handler: dailyHandler, transitionType: TransitionType.native);
     router.define(rank,
-        handler: rankHandler, transitionType: TransitionType.fadeIn);
+        handler: rankHandler, transitionType: TransitionType.native);
     router.define(audio,
-        handler: audioHandler, transitionType: TransitionType.fadeIn);
+        handler: audioHandler, transitionType: TransitionType.native);
   }
 }

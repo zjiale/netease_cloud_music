@@ -28,7 +28,8 @@ class _HomeMusicListState extends State<HomeMusicList> {
   _play(int index, PlaySongModel model) {
     MusicSong song;
     if (widget.isAlbum != true) {
-      song = MusicSong(widget.list[index].id,
+      song = MusicSong(
+          id: widget.list[index].id,
           totalTime: widget.list[index].duration,
           name: widget.list[index].name,
           artists: widget.list[index].artists.first.name,
