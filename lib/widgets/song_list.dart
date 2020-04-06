@@ -9,7 +9,8 @@ import 'package:neteast_cloud_music/model/play_list.detail.dart';
 import 'package:neteast_cloud_music/model/subscribers_model.dart';
 import 'package:neteast_cloud_music/screens/playlist/play_list_bottom.dart';
 import 'package:neteast_cloud_music/screens/playlist/play_list_description.dart';
-import 'package:neteast_cloud_music/screens/playlist/subscriber_screen.dart';
+import 'package:neteast_cloud_music/store/index.dart';
+import 'package:neteast_cloud_music/store/model/play_song_model.dart';
 import 'package:neteast_cloud_music/utils/numbers_convert.dart';
 import 'package:neteast_cloud_music/utils/routes/navigator_util.dart';
 import 'package:neteast_cloud_music/widgets/fade_network_image.dart';
@@ -182,121 +183,131 @@ class _SongListState extends State<SongList> {
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(controller: _controller, slivers: <Widget>[
-      SliverAppBarCustom(
-          expandedHeight: widget.expandedHeight,
-          title: _marquee
-              ? Container(
-                  height: ScreenUtil().setHeight(80),
-                  child: MarqueeWidget(
-                    text: widget.detail.playlist.name,
-                    scrollAxis: Axis.horizontal,
-                  ),
-                )
-              : Text('歌单'),
-          actions: [
-            IconButton(
-              icon: Icon(
-                Icons.search,
-                color: Colors.white,
-              ),
-            ),
-            IconButton(
-              icon: Icon(
-                Icons.more_vert,
-                color: Colors.white,
-              ),
-            )
-          ],
-          content: SafeArea(
-            child: Padding(
-              padding: EdgeInsets.only(
-                left: ScreenUtil().setWidth(35),
-                right: ScreenUtil().setWidth(35),
-                top: ScreenUtil().setWidth(120),
-              ),
-              child: Column(children: <Widget>[
-                !widget.official ? _normalDesc() : _officialDesc(),
-                SizedBox(height: ScreenUtil().setHeight(30.0)),
-                widget.playlistbutton
-              ]),
-            ),
-          ),
-          background: Stack(
-            children: <Widget>[
-              FadeNetWorkImage(widget.detail.playlist.coverImgUrl,
-                  fit: BoxFit.fitWidth),
-              BackdropFilter(
-                filter: ImageFilter.blur(
-                  sigmaY: widget.official ? 1 : 20,
-                  sigmaX: widget.official ? 1 : 20,
-                ),
-                child: Container(
-                  color: Colors.black54,
-                  width: double.infinity,
-                  height: double.infinity,
-                ),
-              ),
-            ],
-          ),
-          bottom: PlayListBottom(detail: widget.detail)),
-      SliverPadding(
-        padding: EdgeInsets.only(left: ScreenUtil().setWidth(20.0)),
-        sliver: SliverFixedExtentList(
-          itemExtent: ScreenUtil().setHeight(100.0),
-          delegate:
-              SliverChildBuilderDelegate((BuildContext context, int index) {
-            return SongItem(
-              index: index,
-              showIndex: false,
-              showPic: widget.list[index].picUrl == null ? false : true,
-              detail: widget.list[index],
-            );
-          }, childCount: widget.detail.playlist.trackCount),
-        ),
-      ),
-      SliverToBoxAdapter(
-          child: widget.suscribers.length > 0
-              ? GestureDetector(
-                  onTap: () =>
-                      NavigatorUtil.goSubscribersPage(context, id: widget.id),
-                  child: Container(
-                    color: Colors.transparent,
-                    padding: EdgeInsets.only(
-                        left: ScreenUtil().setWidth(30.0),
-                        right: ScreenUtil().setWidth(20.0)),
-                    height: ScreenUtil().setHeight(100.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Expanded(
-                          child: Row(
-                              children: widget.suscribers
-                                  .sublist(0, 5)
-                                  .map((subscriber) {
-                            return Container(
-                              width: ScreenUtil().setWidth(60.0),
-                              height: ScreenUtil().setWidth(60.0),
-                              margin: EdgeInsets.only(
-                                  right: ScreenUtil().setWidth(20.0)),
-                              child: ClipOval(
-                                child:
-                                    ExtendedImage.network(subscriber.avatarUrl),
-                              ),
-                            );
-                          }).toList()),
-                        ),
-                        Text(
-                          "${NumberUtils.amountConversion(widget.detail.playlist.subscribedCount)}人收藏",
-                          style: TextStyle(color: Colors.grey),
-                        )
-                      ],
+    return Store.connect<PlaySongModel>(builder: (context, model, child) {
+      return CustomScrollView(controller: _controller, slivers: <Widget>[
+        SliverAppBarCustom(
+            expandedHeight: widget.expandedHeight,
+            title: _marquee
+                ? Container(
+                    height: ScreenUtil().setHeight(80),
+                    child: MarqueeWidget(
+                      text: widget.detail.playlist.name,
+                      scrollAxis: Axis.horizontal,
                     ),
+                  )
+                : Text('歌单'),
+            actions: [
+              IconButton(
+                icon: Icon(
+                  Icons.search,
+                  color: Colors.white,
+                ),
+              ),
+              IconButton(
+                icon: Icon(
+                  Icons.more_vert,
+                  color: Colors.white,
+                ),
+              )
+            ],
+            content: SafeArea(
+              child: Padding(
+                padding: EdgeInsets.only(
+                  left: ScreenUtil().setWidth(35),
+                  right: ScreenUtil().setWidth(35),
+                  top: ScreenUtil().setWidth(120),
+                ),
+                child: Column(children: <Widget>[
+                  !widget.official ? _normalDesc() : _officialDesc(),
+                  SizedBox(height: ScreenUtil().setHeight(30.0)),
+                  widget.playlistbutton
+                ]),
+              ),
+            ),
+            background: Stack(
+              children: <Widget>[
+                FadeNetWorkImage(widget.detail.playlist.coverImgUrl,
+                    fit: BoxFit.fitWidth),
+                BackdropFilter(
+                  filter: ImageFilter.blur(
+                    sigmaY: widget.official ? 1 : 20,
+                    sigmaX: widget.official ? 1 : 20,
                   ),
-                )
-              : Container()),
-      SliverToBoxAdapter(
-          child: Container(height: ScreenUtil().setHeight(100.0)))
-    ]);
+                  child: Container(
+                    color: Colors.black54,
+                    width: double.infinity,
+                    height: double.infinity,
+                  ),
+                ),
+              ],
+            ),
+            bottom: PlayListBottom(detail: widget.detail, model: model)),
+        SliverPadding(
+          padding: EdgeInsets.only(left: ScreenUtil().setWidth(20.0)),
+          sliver: SliverFixedExtentList(
+            itemExtent: ScreenUtil().setHeight(100.0),
+            delegate:
+                SliverChildBuilderDelegate((BuildContext context, int index) {
+              return GestureDetector(
+                onTap: () => model.playOneSong(MusicSong(
+                    id: widget.detail.playlist.tracks[index].id,
+                    totalTime: widget.detail.playlist.tracks[index].dt,
+                    name: widget.detail.playlist.tracks[index].name,
+                    artists: widget.detail.playlist.tracks[index].ar.first.name,
+                    picUrl: widget.detail.playlist.tracks[index].al.picUrl)),
+                child: SongItem(
+                  index: index,
+                  showIndex: false,
+                  showPic: widget.list[index].picUrl == null ? false : true,
+                  detail: widget.list[index],
+                ),
+              );
+            }, childCount: widget.detail.playlist.trackCount),
+          ),
+        ),
+        SliverToBoxAdapter(
+            child: widget.suscribers.length > 0
+                ? GestureDetector(
+                    onTap: () =>
+                        NavigatorUtil.goSubscribersPage(context, id: widget.id),
+                    child: Container(
+                      color: Colors.transparent,
+                      padding: EdgeInsets.only(
+                          left: ScreenUtil().setWidth(30.0),
+                          right: ScreenUtil().setWidth(20.0)),
+                      height: ScreenUtil().setHeight(100.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Expanded(
+                            child: Row(
+                                children: widget.suscribers
+                                    .sublist(0, 5)
+                                    .map((subscriber) {
+                              return Container(
+                                width: ScreenUtil().setWidth(60.0),
+                                height: ScreenUtil().setWidth(60.0),
+                                margin: EdgeInsets.only(
+                                    right: ScreenUtil().setWidth(20.0)),
+                                child: ClipOval(
+                                  child: ExtendedImage.network(
+                                      subscriber.avatarUrl),
+                                ),
+                              );
+                            }).toList()),
+                          ),
+                          Text(
+                            "${NumberUtils.amountConversion(widget.detail.playlist.subscribedCount)}人收藏",
+                            style: TextStyle(color: Colors.grey),
+                          )
+                        ],
+                      ),
+                    ),
+                  )
+                : Container()),
+        SliverToBoxAdapter(
+            child: Container(height: ScreenUtil().setHeight(100.0)))
+      ]);
+    });
   }
 }

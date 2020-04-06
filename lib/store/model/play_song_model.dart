@@ -53,11 +53,12 @@ class PlaySongModel with ChangeNotifier {
       _isShow = true;
     } else {
       // 将list字符串转成json list，然后再将json list转成转成字符串就可以获取列表第一个值
-      // List<String> _list = json.decode(json.encode(songList));
-      var jsonStr = json.decode(json.encode(songList)).first;
-      MusicSong song = MusicSong.fromJson(json.decode(jsonStr));
-
-      _curList.insert(0, song);
+      List jsonStr = json.decode(json.encode(songList));
+      for (int i = 0; i < jsonStr.length; i++) {
+        _curList.insert(i, MusicSong.fromJson(json.decode(jsonStr[i])));
+        getSongComment();
+      }
+      _sequenceList = _curList;
     }
 
     // 播放状态监听
@@ -132,6 +133,7 @@ class PlaySongModel with ChangeNotifier {
       resume();
       if (_isShow) _isShow = false;
     }).catchError((error) async {
+      print(error);
       showToast(
         '正在加载音乐,请稍等!!!',
         position: ToastPosition.bottom,
@@ -177,7 +179,8 @@ class PlaySongModel with ChangeNotifier {
     _audioPlayer.seek(Duration(milliseconds: milliseconds));
   }
 
-  void next() {
+  // 0为顺序播放，2为随机播放
+  void playLogic({int i}) {
     if (_curList.length == 1) {
       showToast(
         '当前歌曲为最后一首，请添加歌曲！！！！',
@@ -189,40 +192,30 @@ class PlaySongModel with ChangeNotifier {
       );
       return;
     }
-    _curList = _mode == 0 ? _sequenceList : _randomList;
-    _curIndex =
-        _mode == 0 && _sequenceIndex != null ? _sequenceIndex : _curIndex;
+    // 播放模式判断
+    if (_mode == 0) {
+      _curList = _sequenceList;
+      _curIndex = _sequenceIndex != null ? _sequenceIndex : _curIndex;
+    } else if (_mode == 2) {
+      _curList = _randomList;
+    }
+
+    // 临界判断
     if (_curIndex == _curList.length) {
-      _curIndex = 0;
+      _curIndex = i == 0 ? 0 : _curList.length - 1;
     } else {
-      _curIndex++;
+      i == 0 ? _curIndex++ : _curIndex--;
     }
     _sequenceIndex = _curIndex;
     play();
   }
 
+  void next() {
+    playLogic(i: 0);
+  }
+
   void previous() {
-    if (_curList.length == 1) {
-      showToast(
-        '当前歌曲为最后一首，请添加歌曲！！！！',
-        position: ToastPosition.bottom,
-        duration: Duration(seconds: 2),
-        backgroundColor: Colors.grey,
-        radius: 13.0,
-        textStyle: TextStyle(fontSize: 15.0),
-      );
-      return;
-    }
-    _curList = _mode == 0 ? _sequenceList : _randomList;
-    _curIndex =
-        _mode == 0 && _sequenceIndex != null ? _sequenceIndex : _curIndex;
-    if (_curIndex == 0) {
-      _curIndex = _curList.length - 1;
-    } else {
-      _curIndex--;
-    }
-    _sequenceIndex = _curIndex;
-    play();
+    playLogic(i: 2);
   }
 
   void getSongComment({int offset = 0}) {
@@ -239,6 +232,7 @@ class PlaySongModel with ChangeNotifier {
   }
 
   void save2sp() {
+    if (!_curList.any((song) => song.id == _curList[_curIndex].id)) return;
     SpUtil.preferences.remove(_SongKey);
     SpUtil.preferences.setInt(_IndexKey, _curIndex);
     SpUtil.preferences
