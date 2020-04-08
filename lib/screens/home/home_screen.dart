@@ -7,6 +7,7 @@ import 'package:netease_cloud_music/screens/audio/mini_player.dart';
 import 'package:netease_cloud_music/screens/home/find.dart';
 import 'package:netease_cloud_music/screens/home/tab_title.dart';
 import 'package:netease_cloud_music/screens/events/events_screen.dart';
+import 'package:netease_cloud_music/screens/search/search_screens.dart';
 import 'package:netease_cloud_music/screens/user_center/user_center_screen.dart';
 import 'package:netease_cloud_music/screens/video/video_screen.dart';
 import 'package:netease_cloud_music/store/index.dart';
@@ -82,14 +83,145 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget drawerContent() {
-    return ListView(
-      padding: EdgeInsets.zero,
-      children: <Widget>[
-        DrawerHeader(
-          child: Text('朱嘉乐'),
-          curve: Curves.linear,
-        )
-      ],
+    return Material(
+      color: Colors.white,
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: <Widget>[
+          Stack(
+            alignment: Alignment.center,
+            children: <Widget>[
+              ClipPath(
+                clipper: HeaderCustomClipper(),
+                child: Container(
+                  width: double.infinity,
+                  height: 200.0,
+                  color: Colors.orangeAccent,
+                ),
+              ),
+              Positioned(
+                bottom: 0.0,
+                child: ClipOval(
+                  child: SizedBox(
+                    height: 80.0,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: Colors.blue,
+                          image: DecorationImage(
+                              image: AssetImage('assets/creator.jpg'))),
+                      width: 80.0,
+                      height: 80.0,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Container(
+            margin: EdgeInsets.symmetric(vertical: 30.0, horizontal: 20.0),
+            child: Card(
+              color: Colors.lightBlueAccent,
+              elevation: 3.0,
+              child: ListTile(
+                leading: Icon(
+                  Icons.http,
+                  color: Colors.white,
+                  size: 30.0,
+                ),
+                title: Text(
+                  'GitHub',
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text(
+                  'https://github.com/zjiale/',
+                  style: TextStyle(color: Colors.white, fontSize: 12.0),
+                ),
+              ),
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: 20.0),
+            child: Card(
+              color: Colors.lightGreen,
+              elevation: 3.0,
+              child: ListTile(
+                leading: Icon(
+                  Icons.person,
+                  color: Colors.white,
+                  size: 30.0,
+                ),
+                title: Text(
+                  '姓名',
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text(
+                  '朱嘉乐',
+                  style: TextStyle(color: Colors.white, fontSize: 12.0),
+                ),
+              ),
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: 20.0, vertical: 30.0),
+            child: Card(
+                color: Colors.pink,
+                elevation: 3.0,
+                child: Column(
+                  children: <Widget>[
+                    ListTile(
+                      leading: Icon(
+                        Icons.email,
+                        color: Colors.white,
+                        size: 30.0,
+                      ),
+                      title: Text(
+                        '邮箱',
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Text(
+                        '514137975@qq.com',
+                        style: TextStyle(color: Colors.white, fontSize: 12.0),
+                      ),
+                    ),
+                    ListTile(
+                      leading: Icon(
+                        Icons.phone,
+                        color: Colors.white,
+                        size: 30.0,
+                      ),
+                      title: Text(
+                        '电话',
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Text(
+                        '15602295985',
+                        style: TextStyle(color: Colors.white, fontSize: 12.0),
+                      ),
+                    )
+                  ],
+                )),
+          ),
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: 20.0),
+            child: Card(
+              elevation: 0.0,
+              color: Colors.purple,
+              child: ListTile(
+                leading: Text(
+                  '退出登录',
+                  style: TextStyle(color: Colors.white),
+                ),
+                trailing: Icon(Icons.keyboard_arrow_right,
+                    size: 20.0, color: Colors.white),
+              ),
+            ),
+          )
+        ],
+      ),
     );
   }
 
@@ -143,7 +275,10 @@ class _HomeScreenState extends State<HomeScreen>
                       icon: Icon(Icons.search,
                           color:
                               _currentIndex == 0 ? Colors.white : Colors.black),
-                      onPressed: () {})
+                      onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => SearchScreens())))
                 ]),
           ),
           Positioned(
@@ -158,20 +293,25 @@ class _HomeScreenState extends State<HomeScreen>
 }
 
 // 顶部栏裁剪
-class TopBarClipper extends CustomClipper<Path> {
-  // 宽高
-  double width;
-  double height;
-
-  TopBarClipper(this.width, this.height);
-
+class HeaderCustomClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
-    Path path = new Path();
-    path.moveTo(0.0, 0.0);
-    path.lineTo(width, 0.0);
-    path.lineTo(width, height / 2);
-    path.lineTo(0.0, height);
+    Path path = Path();
+    path.lineTo(0.0, size.height);
+    Offset firstControlPoint = Offset(size.width / 4, size.height - 40);
+    Offset firstPoint = Offset(size.width / 2, size.height - 40);
+    path.quadraticBezierTo(firstControlPoint.dx, firstControlPoint.dy,
+        firstPoint.dx, firstPoint.dy);
+
+    Offset secondControlPoint =
+        Offset(size.width - (size.width / 4), size.height - 40);
+    Offset secondPoint = Offset(size.width, size.height);
+    path.quadraticBezierTo(secondControlPoint.dx, secondControlPoint.dy,
+        secondPoint.dx, secondPoint.dy);
+
+    path.lineTo(size.width, 0.0);
+    path.close();
+
     return path;
   }
 

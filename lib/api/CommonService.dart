@@ -93,6 +93,14 @@ class CommmonService {
         options: _getOptions());
   }
 
+  Future<Response> getSearchDefault() async {
+    return _dio.get(Api.SEARCH_DEFAULT, options: _getOptions());
+  }
+
+  Future<Response> getSearchHotDetail() async {
+    return _dio.get(Api.SEARCH_HOT_DETAIL, options: _getOptions());
+  }
+
   Options _getOptions() {
     return Options(headers: Config().getHeader());
   }
