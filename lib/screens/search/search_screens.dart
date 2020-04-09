@@ -1,9 +1,14 @@
+import 'dart:convert';
+
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:netease_cloud_music/api/CommonService.dart';
 import 'package:netease_cloud_music/model/search_default_model.dart';
 import 'package:netease_cloud_music/model/search_hot_detail_model.dart';
+import 'package:netease_cloud_music/model/search_suggest_model.dart';
 import 'package:netease_cloud_music/screens/search/search_history.dart';
+import 'package:netease_cloud_music/utils/cache.dart';
 import 'package:netease_cloud_music/utils/config.dart';
 import 'package:netease_cloud_music/widgets/data_loading.dart';
 import 'package:netease_cloud_music/widgets/song_item.dart';
@@ -15,21 +20,33 @@ class SearchScreens extends StatefulWidget {
 }
 
 class _SearchScreensState extends State<SearchScreens> {
-  GlobalKey textFieldKey;
-  OverlayEntry searchTips;
-  double height, width, xPosition, yPosition;
-  bool isDropdownOpened = false;
+  TextEditingController _searchController = TextEditingController();
+  FocusNode _searchFocus = FocusNode();
 
-  List<String> _items = ["a", "b", "c"];
+  GlobalKey textFieldKey;
+  OverlayEntry searchSuggest;
+  double height, width, xPosition, yPosition;
 
   int _code = Config.SUCCESS_CODE;
   bool _isInit = false;
+  List<String> _searchHistory = [];
+  List<AllMatch> _keywords = [];
   SearchData _searchDefault;
   List<SearchDetail> _hotDetail = [];
+
+  static const String SEARCH_KEY = 'SearchHistory';
 
   @override
   void initState() {
     textFieldKey = GlobalKey();
+    var history = SpUtil.preferences.get(SEARCH_KEY);
+    if (history != null) {
+      List jsonStr = json.decode(json.encode(history));
+      for (int i = 0; i < jsonStr.length; i++) {
+        _searchHistory.insert(i, jsonStr[i]);
+      }
+      setState(() {});
+    }
     super.initState();
   }
 
@@ -55,30 +72,53 @@ class _SearchScreensState extends State<SearchScreens> {
     });
   }
 
-  OverlayEntry _buildSearchTips() {
+  Future _getSearcSuggest(String keywords) {
+    return CommmonService().getSearchSuggest(keywords).then((res) {
+      if (res.statusCode == 200) {
+        SearchSuggestModel _bean = SearchSuggestModel.fromJson(res.data);
+        if (_bean.code == _code) {
+          return _bean.result.allMatch;
+        }
+      }
+    });
+  }
+
+  OverlayEntry _buildSearchSuggest() {
     // 需要添加头部后退的iconbutton 24.0 + 16.0
     return OverlayEntry(builder: (context) {
       return Positioned(
         left: xPosition - 40.0,
         width: width + 40.0,
         top: yPosition + height + 10,
-        height: _items.length * height,
+        height: _keywords.length * height,
         child: Material(
           child: Container(
-            height: _items.length * height,
-            decoration: BoxDecoration(color: Colors.white, boxShadow: [
-              BoxShadow(
-                color: Colors.black54,
-                blurRadius: 5.0,
-              ),
-            ]),
-            child: ListView.builder(
-              itemBuilder: (context, index) {
-                return Text('${_items[index]}');
-              },
-              itemCount: _items.length,
-            ),
-          ),
+              height: _keywords.length * height,
+              decoration: BoxDecoration(color: Colors.white, boxShadow: [
+                BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 5.0,
+                ),
+              ]),
+              child: ListView.builder(
+                  padding: EdgeInsets.zero,
+                  itemBuilder: (context, index) {
+                    return InkWell(
+                        onTap: () {
+                          _searchController.text = _keywords[index].keyword;
+                          _searchFocus.unfocus();
+                          searchSuggest.remove();
+                          searchSuggest = null;
+                          setState(() {});
+                        },
+                        child: SearchItem(
+                          text: _keywords[index].keyword,
+                          itemHeight: height,
+                          isLastItem: false,
+                        ));
+                  },
+                  // separatorBuilder: (context, index) => Divider(),
+                  itemCount: _keywords.length)),
         ),
       );
     });
@@ -93,6 +133,18 @@ class _SearchScreensState extends State<SearchScreens> {
     yPosition = offset.dy;
   }
 
+  void removeOverlay() {
+    searchSuggest.remove();
+    searchSuggest = null;
+  }
+
+  @override
+  void dispose() {
+    _searchController?.dispose();
+    _searchFocus.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -105,34 +157,47 @@ class _SearchScreensState extends State<SearchScreens> {
         backgroundColor: Color(0xfff1f1f1),
         title: TextField(
           key: textFieldKey,
+          controller: _searchController,
+          focusNode: _searchFocus,
           cursorColor: Colors.black,
           decoration: InputDecoration(
               hintText:
                   _searchDefault != null ? _searchDefault.showKeyword : '',
-              suffixIcon: Icon(
-                Icons.close,
-                color: Colors.black,
-              ),
+              suffixIcon: !_searchFocus.hasFocus
+                  ? null
+                  : _searchController.text.isEmpty
+                      ? null
+                      : IconButton(
+                          icon: Icon(
+                            Icons.close,
+                            color: Colors.black,
+                          ),
+                          onPressed: () {
+                            WidgetsBinding.instance.addPostFrameCallback(
+                                (_) => _searchController.clear());
+                            if (searchSuggest != null) removeOverlay();
+                            setState(() {});
+                          },
+                        ),
               focusedBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: Colors.black))),
-          onTap: () {},
-          onChanged: (value) {
-            setState(() {
-              if (isDropdownOpened) {
-                searchTips.remove();
-              } else {
-                findDropdownPosition();
-                OverlayState overlayState = Overlay.of(context);
-                searchTips = _buildSearchTips();
-                overlayState.insert(searchTips);
-              }
-
-              isDropdownOpened = !isDropdownOpened;
-            });
+          onTap: () {
+            findDropdownPosition();
+            setState(() {});
           },
-          // onSubmitted: (value) {
-          //   print(value);
-          // },
+          onChanged: (value) async {
+            if (value.isNotEmpty) {
+              _keywords = await _getSearcSuggest(value);
+              if (searchSuggest != null) removeOverlay();
+
+              searchSuggest = _buildSearchSuggest();
+              OverlayState overlayState = Overlay.of(context);
+              overlayState.insert(searchSuggest);
+            } else {
+              if (searchSuggest != null) removeOverlay();
+            }
+            setState(() {});
+          },
         ),
         actions: <Widget>[
           IconButton(
@@ -147,6 +212,7 @@ class _SearchScreensState extends State<SearchScreens> {
               width: double.infinity,
               // height: double.infinity,
               child: DataLoading()),
+          topBouncing: !_isInit,
           onRefresh: !_isInit
               ? () async {
                   SearchDefaultModel searchDefault = await _getSearchDefault();
@@ -168,7 +234,7 @@ class _SearchScreensState extends State<SearchScreens> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    SearchHistory(),
+                    SearchHistory(list: _searchHistory),
                     Text(
                       '热搜榜',
                       style: TextStyle(
@@ -180,49 +246,140 @@ class _SearchScreensState extends State<SearchScreens> {
             ),
             SliverList(
               delegate: SliverChildBuilderDelegate((context, index) {
-                return Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Row(
-                    children: <Widget>[
-                      Container(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text(
-                          '${index + 1}',
+                return InkWell(
+                  onTap: () {
+                    _searchController.text = _hotDetail[index].searchWord;
+                    int s = _searchHistory.lastIndexWhere(
+                        (item) => item == _hotDetail[index].searchWord);
+                    if (s != -1) {
+                      _searchHistory.removeAt(s);
+                      _searchHistory.insert(0, _hotDetail[index].searchWord);
+                      SpUtil.preferences
+                          .setStringList(SEARCH_KEY, _searchHistory);
+                    }
+
+                    _searchFocus.unfocus();
+                    setState(() {});
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20.0),
+                    child: Row(
+                      children: <Widget>[
+                        Container(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text(
+                            '${index + 1}',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: 18.0,
+                                color: index < 3 ? Colors.red : Colors.black),
+                          ),
+                        ),
+                        Expanded(
+                          child: ListTile(
+                            dense: true,
+                            contentPadding:
+                                EdgeInsets.symmetric(horizontal: 20.0),
+                            title: RichText(
+                                text: TextSpan(
+                                    text: '${_hotDetail[index].searchWord}',
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: index < 3
+                                            ? FontWeight.w600
+                                            : FontWeight.normal),
+                                    children: [
+                                  WidgetSpan(
+                                      alignment: PlaceholderAlignment.middle,
+                                      child: _hotDetail[index].iconType != 0
+                                          ? Container(
+                                              margin:
+                                                  EdgeInsets.only(left: 5.0),
+                                              child: ExtendedImage.network(
+                                                _hotDetail[index].iconUrl,
+                                                width: _hotDetail[index]
+                                                            .iconType !=
+                                                        5
+                                                    ? 30.0
+                                                    : 12.0,
+                                              ),
+                                            )
+                                          : Container())
+                                ])),
+                            subtitle: Text(
+                              '${_hotDetail[index].content}',
+                              style: TextStyle(
+                                  color: Colors.black54, fontSize: 11.0),
+                            ),
+                          ),
+                        ),
+                        Text(
+                          '${_hotDetail[index].score}',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                              color: index < 3 ? Colors.red : Colors.black),
+                              color: Color(0xffcdcdcd), fontSize: 11.0),
                         ),
-                      ),
-                      Expanded(
-                        child: ListTile(
-                          contentPadding:
-                              EdgeInsets.symmetric(horizontal: 20.0),
-                          title: Text(
-                            '${_hotDetail[index].searchWord}',
-                            style: TextStyle(
-                                fontWeight: index < 3
-                                    ? FontWeight.w600
-                                    : FontWeight.normal),
-                          ),
-                          subtitle: Text(
-                            '${_hotDetail[index].content}',
-                            style: TextStyle(
-                                color: Colors.black54, fontSize: 11.0),
-                          ),
-                        ),
-                      ),
-                      Text(
-                        '${_hotDetail[index].score}',
-                        textAlign: TextAlign.center,
-                        style:
-                            TextStyle(color: Color(0xffcdcdcd), fontSize: 11.0),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 );
               }, childCount: _hotDetail.length),
             )
           ]),
+    );
+  }
+}
+
+class SearchItem extends StatelessWidget {
+  final String text;
+  final double itemHeight;
+  final bool isLastItem;
+
+  SearchItem({
+    Key key,
+    this.text,
+    this.itemHeight,
+    this.isLastItem,
+  }) : super(key: key);
+
+  factory SearchItem.last({String text, bool isLastItem}) {
+    return SearchItem(
+      text: text,
+      isLastItem: true,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: itemHeight,
+      decoration: BoxDecoration(
+          border: Border(
+              bottom: isLastItem
+                  ? BorderSide.none
+                  : BorderSide(color: Theme.of(context).dividerColor))),
+      child: Row(
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8.0),
+            child: Icon(
+              Icons.search,
+              color: Colors.black54,
+              size: 18.0,
+            ),
+          ),
+          Flexible(
+              child: Text(
+            text,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 15.0,
+              color: Colors.black54,
+            ),
+          ))
+        ],
+      ),
     );
   }
 }

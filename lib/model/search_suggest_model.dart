@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 
 dynamic convertValueByType(value, Type type, {String stack: ""}) {
   if (value == null) {
-    debugPrint("$stack : value is null");
+    // debugPrint("$stack : value is null");
     if (type == String) {
       return "";
     } else if (type == int) {
@@ -20,7 +20,7 @@ dynamic convertValueByType(value, Type type, {String stack: ""}) {
     return value;
   }
   var valueS = value.toString();
-  debugPrint("$stack : ${value.runtimeType} is not $type type");
+  // debugPrint("$stack : ${value.runtimeType} is not $type type");
   if (type == String) {
     return valueS;
   } else if (type == int) {

@@ -14,9 +14,7 @@ class CommmonService {
     Directory tempDir = await getTemporaryDirectory();
     String tempPath = tempDir.path;
     CookieJar cj = PersistCookieJar(dir: tempPath);
-    _dio = Dio()
-      ..interceptors.add(CookieManager(cj))
-      ..interceptors.add(LogInterceptor(responseBody: false)); // 开启请求日志
+    _dio = Dio()..interceptors.add(CookieManager(cj)); // 开启请求日志
   }
 
   Future<Response> getBanner(int type) async {
@@ -99,6 +97,12 @@ class CommmonService {
 
   Future<Response> getSearchHotDetail() async {
     return _dio.get(Api.SEARCH_HOT_DETAIL, options: _getOptions());
+  }
+
+  Future<Response> getSearchSuggest(String keywords) async {
+    return await _dio.get(
+        "${Api.SEARCH_SUGGEST}?keywords=$keywords&type=mobile",
+        options: _getOptions());
   }
 
   Options _getOptions() {
