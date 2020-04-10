@@ -1,16 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:netease_cloud_music/utils/cache.dart';
 
 class SearchHistory extends StatefulWidget {
   final List<String> list;
+  final callback;
 
-  SearchHistory({Key key, this.list}) : super(key: key);
+  SearchHistory({Key key, this.list, this.callback}) : super(key: key);
 
   @override
   _SearchHistoryState createState() => _SearchHistoryState();
 }
 
 class _SearchHistoryState extends State<SearchHistory> {
+  static const String SEARCH_KEY = 'SearchHistory';
+
   void showDeleteDialog(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final DialogTheme dialogTheme = DialogTheme.of(context);
+    EdgeInsetsGeometry contentPadding =
+        EdgeInsets.fromLTRB(15.0, 15.0, 24.0, 10.0);
+
     showGeneralDialog(
         context: context,
         barrierLabel:
@@ -22,12 +31,57 @@ class _SearchHistoryState extends State<SearchHistory> {
             Animation<double> secondAnimation) {
           return Center(
             child: Container(
-              height: 100.0,
+              height: 110.0,
               margin: EdgeInsets.symmetric(horizontal: 30.0),
+              padding: EdgeInsets.all(10.0),
               decoration: BoxDecoration(
                   color: Colors.white,
                   shape: BoxShape.rectangle,
                   borderRadius: BorderRadius.all(Radius.circular(10.0))),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  Padding(
+                    padding: contentPadding,
+                    child: DefaultTextStyle(
+                      style: dialogTheme.contentTextStyle ??
+                          theme.textTheme.subhead,
+                      child: Text(
+                        '确定清空全部历史纪录?',
+                        style: TextStyle(color: Colors.grey, fontSize: 14.0),
+                      ),
+                    ),
+                  ),
+                  Flexible(
+                    child: ButtonBar(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        FlatButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Text(
+                            "取消",
+                            style: TextStyle(color: Colors.red),
+                          ),
+                        ),
+                        FlatButton(
+                          onPressed: () {
+                            SpUtil.preferences.remove(SEARCH_KEY);
+                            widget.callback(true);
+                            Navigator.of(context).pop();
+                          },
+                          child: Text(
+                            "清空",
+                            style: TextStyle(color: Colors.red),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           );
         });

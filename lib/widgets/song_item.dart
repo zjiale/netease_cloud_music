@@ -7,11 +7,16 @@ import 'package:netease_cloud_music/widgets/play_list_cover.dart';
 class SongItem extends StatelessWidget {
   final bool showIndex;
   final bool showPic;
+  final bool isSearch;
   final MusicSong detail;
   final int index;
 
   SongItem(
-      {this.showIndex = false, this.showPic = false, this.detail, this.index});
+      {this.showIndex = false,
+      this.showPic = false,
+      this.isSearch = false,
+      this.detail,
+      this.index = 0});
 
   @override
   Widget build(BuildContext context) {
@@ -115,13 +120,15 @@ class SongItem extends StatelessWidget {
                       ),
                     ),
                   ),
-                  IconButton(
-                    icon: Icon(
-                      Icons.more_vert,
-                      color: Colors.grey,
-                    ),
-                    onPressed: () {},
-                  )
+                  isSearch
+                      ? Container()
+                      : IconButton(
+                          icon: Icon(
+                            Icons.more_vert,
+                            color: Colors.grey,
+                          ),
+                          onPressed: () {},
+                        )
                 ],
               )))
     ]);

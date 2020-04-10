@@ -105,6 +105,11 @@ class CommmonService {
         options: _getOptions());
   }
 
+  Future<Response> getSearchDetail(String keywords, int type) async {
+    return await _dio.get("${Api.SEARCH_DETAIL}?keywords=$keywords&type=$type",
+        options: _getOptions());
+  }
+
   Options _getOptions() {
     return Options(headers: Config().getHeader());
   }

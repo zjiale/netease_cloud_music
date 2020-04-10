@@ -7,6 +7,7 @@ import 'package:netease_cloud_music/api/CommonService.dart';
 import 'package:netease_cloud_music/model/suscribers_list_model.dart';
 import 'package:netease_cloud_music/utils/config.dart';
 import 'package:netease_cloud_music/widgets/data_loading.dart';
+import 'package:netease_cloud_music/widgets/subscriber_item.dart';
 
 class SubscriberScreen extends StatefulWidget {
   final int id;
@@ -93,60 +94,13 @@ class _SubscriberScreenState extends State<SubscriberScreen> {
           slivers: <Widget>[
             SliverList(
               delegate: SliverChildBuilderDelegate((context, index) {
-                return Padding(
-                  padding: EdgeInsets.only(
-                      left: ScreenUtil().setWidth(20.0),
-                      right: ScreenUtil().setWidth(20.0),
-                      bottom: ScreenUtil().setWidth(20.0)),
-                  child: Row(
-                    children: <Widget>[
-                      ClipOval(
-                          child: ExtendedImage.network(
-                        _subscribers[index].avatarUrl,
-                        fit: BoxFit.cover,
-                        width: ScreenUtil().setWidth(100.0),
-                        height: ScreenUtil().setWidth(100.0),
-                      )),
-                      Expanded(
-                        child: ListTile(
-                          dense: true,
-                          contentPadding: EdgeInsets.only(
-                              left: ScreenUtil().setWidth(20.0)),
-                          title: Row(
-                            children: <Widget>[
-                              Text(_subscribers[index].nickname,
-                                  style: TextStyle(
-                                      fontSize: ScreenUtil().setSp(28.0))),
-                              SizedBox(
-                                width: ScreenUtil().setWidth(5.0),
-                              ),
-                              _subscribers[index].gender != 0
-                                  ? Image.asset(
-                                      "assets/${_subscribers[index].gender == 1 ? 'male' : 'female'}.png",
-                                      width: ScreenUtil().setWidth(20.0))
-                                  : Container()
-                            ],
-                          ),
-                          subtitle: _subscribers[index].signature != ''
-                              ? Row(
-                                  children: <Widget>[
-                                    Flexible(
-                                      child: Text(
-                                          "${_subscribers[index].signature}",
-                                          style: TextStyle(
-                                              color: Colors.black54,
-                                              fontSize:
-                                                  ScreenUtil().setSp(20.0)),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis),
-                                    ),
-                                  ],
-                                )
-                              : null,
-                        ),
-                      )
-                    ],
-                  ),
+                return SubscriberItem(
+                  avatarUrl: _subscribers[index].avatarUrl,
+                  name: _subscribers[index].nickname,
+                  showGender: true,
+                  gender: _subscribers[index].gender,
+                  showSignature: true,
+                  signature: _subscribers[index].signature,
                 );
               }, childCount: _subscribers.length),
             )

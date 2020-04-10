@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:netease_cloud_music/model/center_area_model.dart';
+import 'package:netease_cloud_music/model/search_type.dart';
 import 'package:netease_cloud_music/utils/cache.dart';
 import 'package:netease_cloud_music/utils/fluro/src/router.dart';
 
@@ -36,28 +37,31 @@ class Config {
     return artists;
   }
 
-  /// 返回对应的Rect区域...
-  static Rect getRectFromKey(BuildContext currentContext) {
-    var object = currentContext?.findRenderObject();
-    var translation = object?.getTransformTo(null)?.getTranslation();
-    var size = object?.semanticBounds?.size;
+  // /// 返回对应的Rect区域...
+  // static Rect getRectFromKey(BuildContext currentContext) {
+  //   var object = currentContext?.findRenderObject();
+  //   var translation = object?.getTransformTo(null)?.getTranslation();
+  //   var size = object?.semanticBounds?.size;
 
-    if (translation != null && size != null) {
-      return new Rect.fromLTWH(
-          translation.x, translation.y, size.width, size.height);
-    } else {
-      return null;
-    }
-  }
-
-  static List<Tab> titleTabs = <Tab>[
-    Tab(text: '我的'),
-    Tab(text: '发现'),
-    Tab(text: '云村'),
-    Tab(text: '视频')
-  ];
+  //   if (translation != null && size != null) {
+  //     return new Rect.fromLTWH(
+  //         translation.x, translation.y, size.width, size.height);
+  //   } else {
+  //     return null;
+  //   }
+  // }
 
   static List<String> title = ['我的', '发现', '云村', '视频'];
+
+  static List<SearchType> searchType = [
+    SearchType(name: '综合', type: 1018),
+    SearchType(name: '单曲', type: 1),
+    SearchType(name: '视频', type: 1014),
+    SearchType(name: '歌手', type: 100),
+    SearchType(name: '专辑', type: 10),
+    SearchType(name: '歌单', type: 1000),
+    SearchType(name: '用户', type: 1002),
+  ];
 
   static List type = [
     {"image": "assets/icon_daily.png", "text": "每日推荐", "index": 0},
