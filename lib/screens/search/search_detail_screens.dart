@@ -130,7 +130,7 @@ class _SearchDetailScreensState extends State<SearchDetailScreens>
               MusicSong song = MusicSong(
                   id: _source[index].id,
                   mvid: _source[index].mvid,
-                  totalTime: _source[index].duration,
+                  total: _source[index].duration,
                   name: _source[index].name,
                   subName: _source[index].alias.length > 0
                       ? _source[index].alias.first
@@ -144,6 +144,37 @@ class _SearchDetailScreensState extends State<SearchDetailScreens>
                 showIndex: true,
                 detail: song,
                 isSearch: true,
+              );
+            }
+            if (type == 10 || type == 1000) {
+              MusicSong song = MusicSong(
+                  id: _source[index].id,
+                  name: _source[index].name,
+                  subName: type == 10
+                      ? _source[index].alias.length > 0
+                          ? _source[index].alias.first
+                          : ''
+                      : '',
+                  artists: type == 10
+                      ? _source[index].artist.name
+                      : _source[index].creator.nickname,
+                  artistsTrans: type == 10
+                      ? _source[index].artist.trans != null
+                          ? _source[index].artist.trans
+                          : ''
+                      : '',
+                  picUrl: type == 10
+                      ? _source[index].blurPicUrl
+                      : _source[index].coverImgUrl,
+                  total: type == 10 ? -1 : _source[index].trackCount,
+                  count: type == 10 ? -1 : _source[index].playCount,
+                  publishTime: type == 10 ? _source[index].publishTime : -1);
+              _content = SongItem(
+                showIndex: true,
+                showPic: true,
+                detail: song,
+                isSearch: true,
+                type: type == 10 ? 1 : 2,
               );
             }
             return _content;
@@ -173,8 +204,16 @@ class _SearchDetailScreensState extends State<SearchDetailScreens>
                       case 1:
                         _source = searchDetail.songs;
                         break;
+                      case 10:
+                        _source = searchDetail.albums;
+                        break;
                       case 100:
                         _source = searchDetail.artists;
+                        break;
+                      case 1000:
+                        _source = searchDetail.playlists;
+                        String data = _source.first.name;
+                        print(data.contains(widget.keyword));
                         break;
                       case 1002:
                         _source = searchDetail.userprofiles;

@@ -1,36 +1,68 @@
 import "package:flutter/material.dart";
 
 class MusicSong {
-  int id; // 歌曲id
-  int mvid; //mv id
-  int totalTime; //歌曲总时长
-  int commentCount; //评论数量
-  String name; // 歌曲名称
-  String subName; // 歌曲翻译
-  String artists; // 演唱者
-  String album; // 专辑名
-  String picUrl; // 歌曲图片
-  int st; //歌曲状态
-  bool isHighQuality; //是否高清
-  bool isVip; //是否需要vip
+  /// 歌曲id
+  int id;
+
+  /// mv id
+  int mvid;
+
+  /// 歌曲总时长或者歌单总数量
+  int total;
+
+  /// 评论数量或者播放数量
+  int count;
+
+  /// 歌曲名称
+  String name;
+
+  /// 歌曲翻译
+  String subName;
+
+  /// 演唱者
+  String artists;
+
+  /// 演唱者名字翻译
+  String artistsTrans;
+
+  /// 专辑名
+  String album;
+
+  /// 图片
+  String picUrl;
+
+  ///歌曲状态
+  int st;
+
+  ///是否高清
+  bool isHighQuality;
+
+  ///是否需要vip
+
+  bool isVip;
+
+  /// 专辑发行时间
+  int publishTime;
 
   MusicSong(
       {this.id,
-      this.mvid,
-      this.totalTime,
-      this.commentCount,
+      this.mvid = 0,
+      this.total,
+      this.count,
       this.name,
       this.subName = "",
       this.artists,
+      this.artistsTrans,
       this.album,
       this.picUrl,
+      this.publishTime = 0,
       this.st = 0,
       this.isHighQuality = false,
       this.isVip = false});
 
   @override
   String toString() {
-    return '{"id": $id, "mvid": $mvid, "totalTime": $totalTime, "commentCount": $commentCount, "name": "$name", "subName": "$subName", "artists": "$artists", "album": "$album", "picUrl": "$picUrl", "st": $st, "isHighQuality": $isHighQuality, "isVip": $isVip}';
+    return '{"id": $id, "mvid": $mvid, "total": $total, "count": $count, "name": "$name", "subName": "$subName", "artists": "$artists", "artistsTrans": "$artistsTrans", "album": "$album", "picUrl": "$picUrl", "publishTime": "$publishTime", "st": $st, "isHighQuality": $isHighQuality, "isVip": $isVip}';
   }
 
   factory MusicSong.fromJson(jsonRes) => jsonRes == null
@@ -38,30 +70,34 @@ class MusicSong {
       : MusicSong(
           album: jsonRes['album'],
           artists: jsonRes['artists'],
-          commentCount: jsonRes['commentCount'],
+          artistsTrans: jsonRes['artistsTrans'],
+          count: jsonRes['count'],
           id: jsonRes['id'],
           isHighQuality: jsonRes['isHighQuality'],
           isVip: jsonRes['isVip'],
           mvid: jsonRes['mvid'],
           name: jsonRes['name'],
           picUrl: jsonRes['picUrl'],
+          publishTime: jsonRes['publishTime'],
           st: jsonRes['st'],
           subName: jsonRes['subName'],
-          totalTime: jsonRes['totalTime'],
+          total: jsonRes['total'],
         );
   Map<String, dynamic> toJson() => {
         'album': album,
         'artists': artists,
-        'commentCount': commentCount,
+        'artistsTrans': artistsTrans,
+        'count': count,
         'id': id,
         'isHighQuality': isHighQuality,
         'isVip': isVip,
         'mvid': mvid,
         'name': name,
         'picUrl': picUrl,
+        'publishTime': publishTime,
         'st': st,
         'subName': subName,
-        'totalTime': totalTime,
+        'total': total,
       };
 
   void tryCatch(Function f) {

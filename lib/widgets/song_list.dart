@@ -251,7 +251,7 @@ class _SongListState extends State<SongList> {
               return GestureDetector(
                 onTap: () => model.playOneSong(MusicSong(
                     id: widget.detail.playlist.tracks[index].id,
-                    totalTime: widget.detail.playlist.tracks[index].dt,
+                    total: widget.detail.playlist.tracks[index].dt,
                     name: widget.detail.playlist.tracks[index].name,
                     artists: widget.detail.playlist.tracks[index].ar.first.name,
                     picUrl: widget.detail.playlist.tracks[index].al.picUrl)),

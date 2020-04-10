@@ -249,7 +249,6 @@ class _SearchScreensState extends State<SearchScreens>
                 indicatorColor: Theme.of(context).primaryColor,
                 indicatorSize: TabBarIndicatorSize.label,
                 onTap: (index) {
-                  print(_searchType[index].type);
                   // if (_tabIndex == index) return;
                   // setState(() {
                   //   _tabIndex = index;

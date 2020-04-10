@@ -120,7 +120,7 @@ class _PlayListScreenState extends State<PlayListScreen> {
                     _list.add(MusicSong(
                         id: song.id,
                         mvid: song.mv,
-                        totalTime: song.dt,
+                        total: song.dt,
                         name: song.name,
                         subName: song.alia.length > 0 ? song.alia.first : '',
                         artists: song.ar.length == 1

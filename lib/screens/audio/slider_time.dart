@@ -55,7 +55,7 @@ class _SliderTimeState extends State<SliderTime> {
                     )),
                 child: Slider(
                   value: double.parse('$curTime'),
-                  max: double.parse('${widget.model.curSong.totalTime}'),
+                  max: double.parse('${widget.model.curSong.total}'),
                   min: 0.0,
                   onChangeStart: (data) {
                     widget.model.stopProgress();
@@ -73,7 +73,7 @@ class _SliderTimeState extends State<SliderTime> {
             SizedBox(width: ScreenUtil().setWidth(5.0)),
             Text(
                 DateUtil.formatDateMs(
-                    int.parse('${widget.model.curSong.totalTime}'),
+                    int.parse('${widget.model.curSong.total}'),
                     format: "mm:ss"),
                 style: TextStyle(
                     fontSize: ScreenUtil().setSp(20.0), color: Colors.grey))

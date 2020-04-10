@@ -78,8 +78,8 @@ class PlaySongModel with ChangeNotifier {
     // 当前播放进度监听
     _audioPlayer.onAudioPositionChanged.listen((Duration p) {
       !isChange
-          ? sinkProgress(p.inMilliseconds >= curSong.totalTime
-              ? curSong.totalTime
+          ? sinkProgress(p.inMilliseconds >= curSong.total
+              ? curSong.total
               : p.inMilliseconds)
           : _curPositionController.sink.done;
     });

@@ -260,7 +260,7 @@ class _EventDescriptionState extends State<EventDescription> {
           onTap: () {
             MusicSong song = MusicSong(
                 id: _content.song.id,
-                totalTime: _content.song.duration,
+                total: _content.song.duration,
                 name: _content.song.name,
                 artists: Config().formateArtist(_content.song.artists),
                 picUrl: _content.song.album.picUrl);

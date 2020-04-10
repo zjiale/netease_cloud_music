@@ -5,8 +5,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class MySpecialTextSpanBuilder extends SpecialTextSpanBuilder {
   /// whether show background for @somebody
+  final bool isSearch;
+  final String keyword;
   final bool showAtBackground;
-  MySpecialTextSpanBuilder({this.showAtBackground: false});
+  MySpecialTextSpanBuilder({
+    this.isSearch = false,
+    this.keyword = '',
+    this.showAtBackground: false,
+  });
 
   @override
   TextSpan build(String data, {TextStyle textStyle, onTap}) {
@@ -18,6 +24,8 @@ class MySpecialTextSpanBuilder extends SpecialTextSpanBuilder {
   SpecialText createSpecialText(String flag,
       {TextStyle textStyle, SpecialTextGestureTapCallback onTap, int index}) {
     if (flag == null || flag == "") return null;
+
+    if (isSearch) {}
 
     ///index is end index of start flag, so text start index should be index-(flag.length-1)
     if (isStart(flag, AtText.flag)) {
@@ -37,6 +45,20 @@ class MySpecialTextSpanBuilder extends SpecialTextSpanBuilder {
           start: index - (UrlText.flag.length - 1),
           showAtBackground: showAtBackground);
     }
+    return null;
+  }
+}
+
+class SearchText extends SpecialText {
+  static const String flag = "@start";
+
+  SearchText(String startFlag, String endFlag, TextStyle textStyle)
+      : super(startFlag, endFlag, textStyle);
+
+  @override
+  InlineSpan finishText() {
+    final String keyword = getContent();
+
     return null;
   }
 }

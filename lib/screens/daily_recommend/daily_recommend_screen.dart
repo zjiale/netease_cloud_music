@@ -97,7 +97,7 @@ class _DailyRecommendScreenState extends State<DailyRecommendScreen> {
                   _list.add(MusicSong(
                       id: song.id,
                       mvid: song.mvid,
-                      totalTime: song.duration,
+                      total: song.duration,
                       name: song.name,
                       subName: song.transName != null
                           ? song.transName
