@@ -56,7 +56,7 @@ class _PlayListCoverWidgetState extends State<PlayListCoverWidget>
                         fit: widget.fit,
                       )
                     : Container(),
-                widget.playCount == null
+                widget.playCount == '' || widget.playCount == null
                     ? Container()
                     : Padding(
                         padding: EdgeInsets.only(

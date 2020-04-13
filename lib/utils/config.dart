@@ -25,13 +25,13 @@ class Config {
     return "assets/icon_$key.png";
   }
 
-  String formateArtist(List _list) {
+  String formatArtist(List _list) {
     String artists = '';
     for (var i = 0; i <= _list.length - 1; i++) {
       if (i == _list.length - 1) {
-        artists = '$artists${_list[i].name}';
+        artists = '$artists${_list[i]}';
       } else {
-        artists = '$artists${_list[i].name}\/';
+        artists = '$artists${_list[i]}\/';
       }
     }
     return artists;

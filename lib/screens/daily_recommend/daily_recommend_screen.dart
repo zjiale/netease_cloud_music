@@ -10,6 +10,8 @@ import 'package:netease_cloud_music/screens/playlist/play_list_bottom.dart';
 import 'package:netease_cloud_music/utils/config.dart';
 import 'package:netease_cloud_music/widgets/sliver_appbar_custom.dart';
 import 'package:netease_cloud_music/widgets/song_item.dart';
+import 'package:netease_cloud_music/widgets/song_subtitle.dart';
+import 'package:netease_cloud_music/widgets/song_title.dart';
 
 class DailyRecommendScreen extends StatefulWidget {
   @override
@@ -97,7 +99,7 @@ class _DailyRecommendScreenState extends State<DailyRecommendScreen> {
                   _list.add(MusicSong(
                       id: song.id,
                       mvid: song.mvid,
-                      total: song.duration,
+                      duration: song.duration,
                       name: song.name,
                       subName: song.transName != null
                           ? song.transName
@@ -178,10 +180,20 @@ class _DailyRecommendScreenState extends State<DailyRecommendScreen> {
                         delegate: SliverChildBuilderDelegate(
                             (BuildContext context, int index) {
                           return SongItem(
+                            title: SongTitle(
+                              name: _list[index].name,
+                              transName: _list[index].subName,
+                              status: _list[index].st,
+                            ),
+                            subTitle: SongSubTitle(
+                              artists: _list[index].artists,
+                              album: _list[index].album,
+                              isHighQuality: _list[index].isHighQuality,
+                              isVip: _list[index].isVip,
+                            ),
                             index: index,
                             showIndex: true,
-                            showPic: true,
-                            detail: _list[index],
+                            picUrl: _list[index].picUrl,
                           );
                         }, childCount: recommendList.length),
                       ),

@@ -64,7 +64,7 @@ class MiniPlayer extends StatelessWidget {
                                                 Colors.red),
                                         value: (int.parse(
                                                     '${snapshot.data == null ? 0 : snapshot.data}') /
-                                                model.curSong.total)
+                                                model.curSong.duration)
                                             .toDouble(),
                                         strokeWidth: 1.0,
                                       ),

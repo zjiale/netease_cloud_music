@@ -7,11 +7,11 @@ class MusicSong {
   /// mv id
   int mvid;
 
-  /// 歌曲总时长或者歌单总数量
-  int total;
+  /// 歌曲总时长
+  int duration;
 
-  /// 评论数量或者播放数量
-  int count;
+  /// 评论数量
+  int commentCount;
 
   /// 歌曲名称
   String name;
@@ -21,9 +21,6 @@ class MusicSong {
 
   /// 演唱者
   String artists;
-
-  /// 演唱者名字翻译
-  String artistsTrans;
 
   /// 专辑名
   String album;
@@ -41,28 +38,23 @@ class MusicSong {
 
   bool isVip;
 
-  /// 专辑发行时间
-  int publishTime;
-
   MusicSong(
       {this.id,
       this.mvid = 0,
-      this.total,
-      this.count,
+      this.duration,
+      this.commentCount,
       this.name,
       this.subName = "",
       this.artists,
-      this.artistsTrans,
       this.album,
       this.picUrl,
-      this.publishTime = 0,
       this.st = 0,
       this.isHighQuality = false,
       this.isVip = false});
 
   @override
   String toString() {
-    return '{"id": $id, "mvid": $mvid, "total": $total, "count": $count, "name": "$name", "subName": "$subName", "artists": "$artists", "artistsTrans": "$artistsTrans", "album": "$album", "picUrl": "$picUrl", "publishTime": "$publishTime", "st": $st, "isHighQuality": $isHighQuality, "isVip": $isVip}';
+    return '{"id": $id, "mvid": $mvid, "duration": $duration, "commentCount": $commentCount, "name": "$name", "subName": "$subName", "artists": "$artists", "album": "$album", "picUrl": "$picUrl",  "st": $st, "isHighQuality": $isHighQuality, "isVip": $isVip}';
   }
 
   factory MusicSong.fromJson(jsonRes) => jsonRes == null
@@ -70,34 +62,30 @@ class MusicSong {
       : MusicSong(
           album: jsonRes['album'],
           artists: jsonRes['artists'],
-          artistsTrans: jsonRes['artistsTrans'],
-          count: jsonRes['count'],
+          commentCount: jsonRes['commentCount'],
           id: jsonRes['id'],
           isHighQuality: jsonRes['isHighQuality'],
           isVip: jsonRes['isVip'],
           mvid: jsonRes['mvid'],
           name: jsonRes['name'],
           picUrl: jsonRes['picUrl'],
-          publishTime: jsonRes['publishTime'],
           st: jsonRes['st'],
           subName: jsonRes['subName'],
-          total: jsonRes['total'],
+          duration: jsonRes['duration'],
         );
   Map<String, dynamic> toJson() => {
         'album': album,
         'artists': artists,
-        'artistsTrans': artistsTrans,
-        'count': count,
+        'commentCount': commentCount,
         'id': id,
         'isHighQuality': isHighQuality,
         'isVip': isVip,
         'mvid': mvid,
         'name': name,
         'picUrl': picUrl,
-        'publishTime': publishTime,
         'st': st,
         'subName': subName,
-        'total': total,
+        'duration': duration,
       };
 
   void tryCatch(Function f) {

@@ -255,14 +255,18 @@ class _EventDescriptionState extends State<EventDescription> {
         );
         break;
       case 18: //分享歌曲
+        List _list = [];
+        _content.song.artists.forEach((artist) {
+          _list.add(artist.name);
+        });
         _subTitle = "分享歌曲";
         _main = InkWell(
           onTap: () {
             MusicSong song = MusicSong(
                 id: _content.song.id,
-                total: _content.song.duration,
+                duration: _content.song.duration,
                 name: _content.song.name,
-                artists: Config().formateArtist(_content.song.artists),
+                artists: Config().formatArtist(_list),
                 picUrl: _content.song.album.picUrl);
             widget.model.playOneSong(song);
             NavigatorUtil.goAudioPage(context);
@@ -270,7 +274,7 @@ class _EventDescriptionState extends State<EventDescription> {
           child: _defaultContent(
               url: _content.song.album.blurPicUrl,
               title: _content.song.name,
-              creator: Config().formateArtist(_content.song.artists),
+              creator: Config().formatArtist(_list),
               isSong: true),
         );
         break;

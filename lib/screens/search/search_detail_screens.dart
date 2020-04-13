@@ -1,8 +1,10 @@
+import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart'
     as extended;
 import 'package:flutter_easyrefresh/ball_pulse_footer.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:netease_cloud_music/api/CommonService.dart';
 import 'package:netease_cloud_music/model/music_song_model.dart';
 import 'package:netease_cloud_music/model/search_album_detail_model.dart'
@@ -20,8 +22,11 @@ import 'package:netease_cloud_music/model/search_user_detail_model.dart'
 import 'package:netease_cloud_music/model/search_video_detail_model.dart'
     as video;
 import 'package:netease_cloud_music/utils/config.dart';
+import 'package:netease_cloud_music/utils/numbers_convert.dart';
 import 'package:netease_cloud_music/widgets/data_loading.dart';
 import 'package:netease_cloud_music/widgets/song_item.dart';
+import 'package:netease_cloud_music/widgets/song_subtitle.dart';
+import 'package:netease_cloud_music/widgets/song_title.dart';
 import 'package:netease_cloud_music/widgets/subscriber_item.dart';
 
 class SearchDetailScreens extends StatefulWidget {
@@ -42,6 +47,8 @@ class _SearchDetailScreensState extends State<SearchDetailScreens>
 
   bool _isInit = false;
   List _source = [];
+
+  String _notFound = '';
 
   @override
   bool get wantKeepAlive => true;
@@ -104,6 +111,8 @@ class _SearchDetailScreensState extends State<SearchDetailScreens>
   Widget _buildDetail() {
     int type = widget.type;
     Widget _content;
+    Widget _title;
+    Widget _subTitle;
     switch (type) {
       case 1018:
         return SliverToBoxAdapter(
@@ -111,75 +120,128 @@ class _SearchDetailScreensState extends State<SearchDetailScreens>
         );
         break;
       default:
-        return SliverList(
-          delegate: SliverChildBuilderDelegate((context, index) {
-            if (type == 100 || type == 1002) {
-              _content = SubscriberItem(
-                avatarUrl: type == 100
-                    ? _source[index].img1v1Url
-                    : _source[index].avatarUrl,
-                name:
-                    type == 100 ? _source[index].name : _source[index].nickname,
-                showGender: type == 100 ? false : true,
-                gender: type == 100 ? -1 : _source[index].gender,
-                showSignature: type == 100 ? false : true,
-                signature: type == 100 ? '' : _source[index].signature,
+        return _source.length > 0
+            ? SliverList(
+                delegate: SliverChildBuilderDelegate((context, index) {
+                  var item = _source[index];
+                  if (type == 100 || type == 1002) {
+                    _content = SubscriberItem(
+                      avatarUrl: type == 100 ? item.img1v1Url : item.avatarUrl,
+                      name: type == 100 ? item.name : item.nickname,
+                      showGender: type == 100 ? false : true,
+                      gender: type == 100 ? -1 : item.gender,
+                      showSignature: type == 100 ? false : true,
+                      signature: type == 100 ? '' : item.signature,
+                    );
+                  } else if (type == 1) {
+                    String transName =
+                        item.alias.length > 0 ? item.alias.first : '';
+                    List _list = [];
+                    item.artists.forEach((artist) {
+                      _list.add(artist.name);
+                    });
+                    _title = SongTitle(
+                      name: item.name,
+                      status: item.status,
+                      transName: transName,
+                    );
+                    _subTitle = SongSubTitle(
+                      artists: item.artists.length == 1
+                          ? item.artists.first.name
+                          : Config().formatArtist(_list),
+                      album: item.album.name,
+                      isVip: item.fee == 1 ? false : true,
+                      status: item.status,
+                    );
+
+                    _content = SongItem(
+                      showIndex: true,
+                      isSearch: true,
+                      title: _title,
+                      subTitle: _subTitle,
+                    );
+                  } else if (type == 10 || type == 1000) {
+                    String transName = type == 10
+                        ? item.alias.length > 0 ? item.alias.first : ''
+                        : '';
+                    String artistsTransName = type == 10
+                        ? item.artist.trans != null ? item.artist.trans : ''
+                        : '';
+                    _title = SongTitle(
+                      name: item.name,
+                      transName: transName,
+                    );
+                    _subTitle = type == 10
+                        ? Text(
+                            '${item.artist.name}($artistsTransName) ${DateUtil.formatDateMs(item.publishTime, format: "yyyy-MM-dd")}',
+                            style: TextStyle(
+                                fontSize: ScreenUtil().setSp(20.0),
+                                color: Colors.black54),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis)
+                        : Text(
+                            '${item.trackCount}首 by ${item.creator.nickname}, 播放${NumberUtils.formatNum(item.playCount)}次',
+                            style: TextStyle(
+                                fontSize: ScreenUtil().setSp(20.0),
+                                color: Colors.black54),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis);
+
+                    _content = SongItem(
+                      showIndex: true,
+                      title: _title,
+                      subTitle: _subTitle,
+                      picUrl: type == 10 ? item.blurPicUrl : item.coverImgUrl,
+                      isSearch: true,
+                      type: type == 10 ? 1 : 2,
+                    );
+                  } else if (type == 1014) {
+                    List _list = [];
+                    item.creator.forEach((creator) {
+                      _list.add(creator.userName);
+                    });
+                    String creator = Config().formatArtist(_list);
+                    _title = SongTitle(
+                      name: item.title,
+                      isMv: true,
+                      type: item.type,
+                    );
+                    _subTitle = Text(
+                        '${DateUtil.formatDateMs(item.durationms, format: "mm:ss")} ${item.type == 0 ? creator : "by $creator"}',
+                        style: TextStyle(
+                            fontSize: ScreenUtil().setSp(20.0),
+                            color: Colors.black54),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis);
+
+                    _content = Padding(
+                      padding: EdgeInsets.only(bottom: 10.0),
+                      child: SongItem(
+                        title: _title,
+                        subTitle: _subTitle,
+                        picUrl: item.coverUrl,
+                        isSearch: true,
+                        showIndex: true,
+                        type: 4,
+                        height: 120.0,
+                        playCount: item.playTime,
+                      ),
+                    );
+                  }
+                  return _content;
+                }, childCount: _source.length),
+              )
+            : SliverToBoxAdapter(
+                child: Container(
+                  padding: EdgeInsets.only(top: 50.0),
+                  child: Center(
+                    child: Text(
+                      _notFound,
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  ),
+                ),
               );
-            }
-            if (type == 1) {
-              MusicSong song = MusicSong(
-                  id: _source[index].id,
-                  mvid: _source[index].mvid,
-                  total: _source[index].duration,
-                  name: _source[index].name,
-                  subName: _source[index].alias.length > 0
-                      ? _source[index].alias.first
-                      : '',
-                  artists: _source[index].artists.length == 1
-                      ? _source[index].artists.first.name
-                      : Config().formateArtist(_source[index].artists),
-                  album: _source[index].album.name,
-                  isVip: _source[index].fee == 1 ? true : false);
-              _content = SongItem(
-                showIndex: true,
-                detail: song,
-                isSearch: true,
-              );
-            }
-            if (type == 10 || type == 1000) {
-              MusicSong song = MusicSong(
-                  id: _source[index].id,
-                  name: _source[index].name,
-                  subName: type == 10
-                      ? _source[index].alias.length > 0
-                          ? _source[index].alias.first
-                          : ''
-                      : '',
-                  artists: type == 10
-                      ? _source[index].artist.name
-                      : _source[index].creator.nickname,
-                  artistsTrans: type == 10
-                      ? _source[index].artist.trans != null
-                          ? _source[index].artist.trans
-                          : ''
-                      : '',
-                  picUrl: type == 10
-                      ? _source[index].blurPicUrl
-                      : _source[index].coverImgUrl,
-                  total: type == 10 ? -1 : _source[index].trackCount,
-                  count: type == 10 ? -1 : _source[index].playCount,
-                  publishTime: type == 10 ? _source[index].publishTime : -1);
-              _content = SongItem(
-                showIndex: true,
-                showPic: true,
-                detail: song,
-                isSearch: true,
-                type: type == 10 ? 1 : 2,
-              );
-            }
-            return _content;
-          }, childCount: _source.length),
-        );
     }
   }
 
@@ -202,24 +264,41 @@ class _SearchDetailScreensState extends State<SearchDetailScreens>
                     var searchDetail = await _getSearcDetail();
                     switch (type) {
                       case 1:
-                        _source = searchDetail.songs;
+                        _source = searchDetail.songCount != 0 ||
+                                searchDetail.songs.length > 0
+                            ? searchDetail.songs
+                            : [];
                         break;
                       case 10:
-                        _source = searchDetail.albums;
+                        _source = searchDetail.albumCount != 0
+                            ? searchDetail.albums
+                            : [];
                         break;
                       case 100:
-                        _source = searchDetail.artists;
+                        _source = searchDetail.artistCount != 0
+                            ? searchDetail.artists
+                            : [];
                         break;
                       case 1000:
-                        _source = searchDetail.playlists;
-                        String data = _source.first.name;
-                        print(data.contains(widget.keyword));
+                        _source = searchDetail.playlistCount != 0
+                            ? searchDetail.playlists
+                            : [];
                         break;
                       case 1002:
-                        _source = searchDetail.userprofiles;
+                        _source = searchDetail.userprofileCount != 0
+                            ? searchDetail.userprofiles
+                            : [];
+                        break;
+                      case 1014:
+                        _source = searchDetail.videoCount != 0
+                            ? searchDetail.videos
+                            : [];
                         break;
                       default:
                     }
+                    _notFound = _source.length == 0
+                        ? '未找到与"${widget.keyword}"相关的内容'
+                        : '';
                     setState(() {});
                   },
             onLoad: () async {},

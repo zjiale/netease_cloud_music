@@ -25,7 +25,10 @@ class MySpecialTextSpanBuilder extends SpecialTextSpanBuilder {
       {TextStyle textStyle, SpecialTextGestureTapCallback onTap, int index}) {
     if (flag == null || flag == "") return null;
 
-    if (isSearch) {}
+    if (isSearch) {
+      return SearchText(
+          startFlag: keyword[0], endFlag: keyword[keyword.length - 1]);
+    }
 
     ///index is end index of start flag, so text start index should be index-(flag.length-1)
     if (isStart(flag, AtText.flag)) {
@@ -50,16 +53,36 @@ class MySpecialTextSpanBuilder extends SpecialTextSpanBuilder {
 }
 
 class SearchText extends SpecialText {
-  static const String flag = "@start";
+  final int start;
 
-  SearchText(String startFlag, String endFlag, TextStyle textStyle)
+  /// whether show background for @somebody
+  final bool showAtBackground;
+
+  SearchText(
+      {@required String startFlag,
+      @required String endFlag,
+      TextStyle textStyle,
+      this.start,
+      this.showAtBackground})
       : super(startFlag, endFlag, textStyle);
 
   @override
   InlineSpan finishText() {
+    TextStyle textStyle = this
+        .textStyle
+        ?.copyWith(fontSize: ScreenUtil().setSp(20.0), color: Colors.blue[800]);
+
     final String keyword = getContent();
 
-    return null;
+    return SpecialTextSpan(
+        text: keyword,
+        actualText: keyword,
+        start: start,
+        style: textStyle,
+        recognizer: (TapGestureRecognizer()
+          ..onTap = () {
+            if (onTap != null) onTap(keyword);
+          }));
   }
 }
 

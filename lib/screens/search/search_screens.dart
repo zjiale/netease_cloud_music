@@ -114,12 +114,9 @@ class _SearchScreensState extends State<SearchScreens>
                   itemBuilder: (context, index) {
                     return InkWell(
                         onTap: () {
-                          _searchController.text = _keywords[index];
-                          add2history(_keywords[index]);
-                          _searchFocus.unfocus();
                           searchSuggest.remove();
                           searchSuggest = null;
-                          setState(() {});
+                          search2detail(_keywords[index]);
                         },
                         child: SearchItem(
                           text: _keywords[index],
@@ -157,8 +154,20 @@ class _SearchScreensState extends State<SearchScreens>
     SpUtil.preferences.setStringList(SEARCH_KEY, _searchHistory);
   }
 
+  void selectedCallback(val) {
+    search2detail(val, isHistory: true);
+  }
+
   void clearCallback(val) {
     if (val) _searchHistory.clear();
+    setState(() {});
+  }
+
+  void search2detail(String searchWord, {bool isHistory = false}) {
+    _searchController.text = searchWord;
+    _isSearching = true;
+    if (!isHistory) add2history(searchWord);
+    _searchFocus.unfocus();
     setState(() {});
   }
 
@@ -229,6 +238,11 @@ class _SearchScreensState extends State<SearchScreens>
             }
             setState(() {});
           },
+          onSubmitted: (value) {
+            searchSuggest.remove();
+            searchSuggest = null;
+            search2detail(value);
+          },
         ),
         actions: !_isSearching
             ? <Widget>[
@@ -294,7 +308,10 @@ class _SearchScreensState extends State<SearchScreens>
                           _searchHistory.length > 0
                               ? SearchHistory(
                                   list: _searchHistory,
-                                  callback: (val) => clearCallback(val))
+                                  callback: (val) => clearCallback(val),
+                                  selectedCallback: (val) =>
+                                      selectedCallback(val),
+                                )
                               : SizedBox(height: 40.0),
                           Text(
                             '热搜榜',
@@ -309,13 +326,8 @@ class _SearchScreensState extends State<SearchScreens>
                   SliverList(
                     delegate: SliverChildBuilderDelegate((context, index) {
                       return InkWell(
-                        onTap: () {
-                          _searchController.text = _hotDetail[index].searchWord;
-                          _isSearching = true;
-                          add2history(_hotDetail[index].searchWord);
-                          _searchFocus.unfocus();
-                          setState(() {});
-                        },
+                        onTap: () =>
+                            search2detail(_hotDetail[index].searchWord),
                         child: Padding(
                           padding: EdgeInsets.symmetric(horizontal: 20.0),
                           child: Row(
@@ -387,24 +399,36 @@ class _SearchScreensState extends State<SearchScreens>
                     }, childCount: _hotDetail.length),
                   )
                 ])
-          : extended.NestedScrollView(
-              pinnedHeaderSliverHeightBuilder: () {
-                return MediaQuery.of(context).padding.top + kToolbarHeight;
+          : WillPopScope(
+              onWillPop: () async {
+                if (_isSearching) {
+                  setState(() {
+                    _isSearching = false;
+                  });
+                  return false;
+                } else {
+                  return true;
+                }
               },
-              innerScrollPositionKeyBuilder: () {
-                return Key("Tag${_tabController.index}");
-              },
-              headerSliverBuilder: (context, innerBoxIsScrolled) =>
-                  <Widget>[SliverToBoxAdapter()],
-              body: TabBarView(
-                // physics: NeverScrollableScrollPhysics(),
-                controller: _tabController,
-                children: _searchType.map((key) {
-                  return SearchDetailScreens(
-                    keyword: _searchController.text,
-                    type: key.type,
-                  );
-                }).toList(),
+              child: extended.NestedScrollView(
+                pinnedHeaderSliverHeightBuilder: () {
+                  return MediaQuery.of(context).padding.top + kToolbarHeight;
+                },
+                innerScrollPositionKeyBuilder: () {
+                  return Key("Tag${_tabController.index}");
+                },
+                headerSliverBuilder: (context, innerBoxIsScrolled) =>
+                    <Widget>[SliverToBoxAdapter()],
+                body: TabBarView(
+                  // physics: NeverScrollableScrollPhysics(),
+                  controller: _tabController,
+                  children: _searchType.map((key) {
+                    return SearchDetailScreens(
+                      keyword: _searchController.text,
+                      type: key.type,
+                    );
+                  }).toList(),
+                ),
               ),
             ),
     );

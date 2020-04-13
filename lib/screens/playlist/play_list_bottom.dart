@@ -26,7 +26,7 @@ class PlayListBottom extends StatelessWidget implements PreferredSizeWidget {
         continue;
       list.add(MusicSong(
           id: detail.playlist.tracks[i].id,
-          total: detail.playlist.tracks[i].dt,
+          duration: detail.playlist.tracks[i].dt,
           name: detail.playlist.tracks[i].name,
           artists: detail.playlist.tracks[i].ar.first.name,
           picUrl: detail.playlist.tracks[i].al.picUrl));

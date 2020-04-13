@@ -4,8 +4,10 @@ import 'package:netease_cloud_music/utils/cache.dart';
 class SearchHistory extends StatefulWidget {
   final List<String> list;
   final callback;
+  final selectedCallback;
 
-  SearchHistory({Key key, this.list, this.callback}) : super(key: key);
+  SearchHistory({Key key, this.list, this.callback, this.selectedCallback})
+      : super(key: key);
 
   @override
   _SearchHistoryState createState() => _SearchHistoryState();
@@ -120,8 +122,10 @@ class _SearchHistoryState extends State<SearchHistory> {
             itemBuilder: (context, index) {
               return Padding(
                 padding: EdgeInsets.only(left: 5.0),
-                child: Chip(
+                child: ActionChip(
+                  backgroundColor: Color(0xfff1f1f1),
                   label: Text(widget.list[index]),
+                  onPressed: () => widget.selectedCallback(widget.list[index]),
                 ),
               );
             },

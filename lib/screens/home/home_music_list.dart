@@ -30,7 +30,7 @@ class _HomeMusicListState extends State<HomeMusicList> {
     if (widget.isAlbum != true) {
       song = MusicSong(
           id: widget.list[index].id,
-          total: widget.list[index].duration,
+          duration: widget.list[index].duration,
           name: widget.list[index].name,
           artists: widget.list[index].artists.first.name,
           picUrl: widget.list[index].album.blurPicUrl);
