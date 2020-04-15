@@ -6,21 +6,7 @@ import 'package:flutter_easyrefresh/ball_pulse_footer.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:netease_cloud_music/api/CommonService.dart';
-import 'package:netease_cloud_music/model/music_song_model.dart';
-import 'package:netease_cloud_music/model/search_album_detail_model.dart'
-    as album;
-import 'package:netease_cloud_music/model/search_artists_detail_model.dart'
-    as artists;
-import 'package:netease_cloud_music/model/search_general_detail_model.dart'
-    as general;
-import 'package:netease_cloud_music/model/search_playlist_detail_model.dart'
-    as playlist;
-import 'package:netease_cloud_music/model/search_song_detail_model.dart'
-    as song;
-import 'package:netease_cloud_music/model/search_user_detail_model.dart'
-    as user;
-import 'package:netease_cloud_music/model/search_video_detail_model.dart'
-    as video;
+
 import 'package:netease_cloud_music/utils/config.dart';
 import 'package:netease_cloud_music/utils/numbers_convert.dart';
 import 'package:netease_cloud_music/widgets/data_loading.dart';
@@ -43,7 +29,7 @@ class _SearchDetailScreensState extends State<SearchDetailScreens>
   ScrollController _scrollController;
   EasyRefreshController _controller;
 
-  int _code = Config.SUCCESS_CODE;
+  CommmonService api = CommmonService();
 
   bool _isInit = false;
   List _source = [];
@@ -61,51 +47,11 @@ class _SearchDetailScreensState extends State<SearchDetailScreens>
     _controller = EasyRefreshController();
   }
 
-  Future _getSearcDetail() {
-    return CommmonService()
-        .getSearchDetail(widget.keyword, widget.type)
-        .then((res) {
-      if (res.statusCode == 200) {
-        switch (widget.type) {
-          case 1018: // 综合
-            general.SearchGeneralDetailModel _bean =
-                general.SearchGeneralDetailModel.fromJson(res.data);
-            if (_bean.code == _code) return _bean.result;
-            break;
-          case 1: // 单曲
-            song.SearchSongDetailModel _bean =
-                song.SearchSongDetailModel.fromJson(res.data);
-            if (_bean.code == _code) return _bean.result;
-            break;
-          case 1014: // 视频
-            video.SearchVideoDetailModel _bean =
-                video.SearchVideoDetailModel.fromJson(res.data);
-            if (_bean.code == _code) return _bean.result;
-            break;
-          case 100: // 歌手
-            artists.SearchArtistsDetailModel _bean =
-                artists.SearchArtistsDetailModel.fromJson(res.data);
-            if (_bean.code == _code) return _bean.result;
-            break;
-          case 10: // 专辑
-            album.SearchAlbumDetailModel _bean =
-                album.SearchAlbumDetailModel.fromJson(res.data);
-            if (_bean.code == _code) return _bean.result;
-            break;
-          case 1000: // 歌单
-            playlist.SearchPlaylistDetailModel _bean =
-                playlist.SearchPlaylistDetailModel.fromJson(res.data);
-            if (_bean.code == _code) return _bean.result;
-            break;
-          case 1002: // 用户
-            user.SearchUserDetailModel _bean =
-                user.SearchUserDetailModel.fromJson(res.data);
-            if (_bean.code == _code) return _bean.result;
-            break;
-          default:
-        }
-      }
-    });
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _controller?.dispose();
+    super.dispose();
   }
 
   Widget _buildDetail() {
@@ -261,7 +207,8 @@ class _SearchDetailScreensState extends State<SearchDetailScreens>
                 ? null
                 : () async {
                     int type = widget.type;
-                    var searchDetail = await _getSearcDetail();
+                    var searchDetail =
+                        await api.getSeachDetail(widget.keyword, widget.type);
                     switch (type) {
                       case 1:
                         _source = searchDetail.songCount != 0 ||

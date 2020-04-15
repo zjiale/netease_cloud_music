@@ -34,11 +34,11 @@ class SongTitle extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                         color: Colors.red[400])),
               )
-            : Container(),
+            : SizedBox(),
         Flexible(
           child: RichText(
               overflow: TextOverflow.ellipsis,
-              maxLines: 2,
+              maxLines: isMv ? 2 : 1,
               text: TextSpan(
                   text: name,
                   style: TextStyle(

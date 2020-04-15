@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:ff_annotation_route/ff_annotation_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -7,12 +8,16 @@ import 'package:netease_cloud_music/api/CommonService.dart';
 import 'package:netease_cloud_music/model/music_song_model.dart';
 import 'package:netease_cloud_music/model/recommend_song_list_model.dart';
 import 'package:netease_cloud_music/screens/playlist/play_list_bottom.dart';
-import 'package:netease_cloud_music/utils/config.dart';
 import 'package:netease_cloud_music/widgets/sliver_appbar_custom.dart';
 import 'package:netease_cloud_music/widgets/song_item.dart';
 import 'package:netease_cloud_music/widgets/song_subtitle.dart';
 import 'package:netease_cloud_music/widgets/song_title.dart';
 
+@FFRoute(
+    name: "neteasecloudmusic://dailyrecommendscreen",
+    routeName: "DailyRecommendScreen",
+    pageRouteType: PageRouteType.transparent,
+    description: "日常推荐歌曲")
 class DailyRecommendScreen extends StatefulWidget {
   @override
   _DailyRecommendScreenState createState() => _DailyRecommendScreenState();
@@ -23,13 +28,11 @@ class _DailyRecommendScreenState extends State<DailyRecommendScreen> {
   ScrollController _controller = new ScrollController();
   String _title = '';
 
-  int _code = Config.SUCCESS_CODE;
-
   Future _initData;
 
   @override
   void initState() {
-    _initData = _initDailyRecommend();
+    _initData = CommmonService().getRecommendSongList();
 
     double ratio = (window.physicalSize.width / window.devicePixelRatio) /
         750; // 将px转为dp然后再除以750获取像素比，相关文档看screenutil转换原理
@@ -48,18 +51,6 @@ class _DailyRecommendScreenState extends State<DailyRecommendScreen> {
       }
     });
     super.initState();
-  }
-
-  Future _initDailyRecommend() {
-    return CommmonService().getRecommendSongList().then((res) {
-      if (res.statusCode == 200) {
-        RecommendSongListModel _bean =
-            RecommendSongListModel.fromJson(res.data);
-        if (_bean.code == _code) {
-          return _bean.recommend;
-        }
-      }
-    });
   }
 
   String _formateArtist(List<Artists> _list) {

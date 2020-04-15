@@ -27,6 +27,13 @@ class _LoginScreenState extends State<LoginScreen> {
     super.initState();
   }
 
+  @override
+  void dispose() {
+    _phoneFocus.dispose();
+    _pwFocus.dispose();
+    super.dispose();
+  }
+
   Widget inputInfo() {
     return Form(
       key: _inputInfo,

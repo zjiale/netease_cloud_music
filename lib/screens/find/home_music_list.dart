@@ -7,7 +7,7 @@ import 'package:netease_cloud_music/store/model/play_song_model.dart';
 import 'package:netease_cloud_music/utils/my_special_textspan_builder.dart';
 import 'package:netease_cloud_music/widgets/play_list_cover.dart';
 
-class HomeMusicList extends StatefulWidget {
+class HomeMusicList extends StatelessWidget {
   final ScrollController controller;
   final ScrollPhysics physics;
   final List list;
@@ -20,20 +20,16 @@ class HomeMusicList extends StatefulWidget {
       @required this.list,
       @required this.ratio,
       this.isAlbum = false});
-  @override
-  _HomeMusicListState createState() => _HomeMusicListState();
-}
 
-class _HomeMusicListState extends State<HomeMusicList> {
   _play(int index, PlaySongModel model) {
     MusicSong song;
-    if (widget.isAlbum != true) {
+    if (isAlbum != true) {
       song = MusicSong(
-          id: widget.list[index].id,
-          duration: widget.list[index].duration,
-          name: widget.list[index].name,
-          artists: widget.list[index].artists.first.name,
-          picUrl: widget.list[index].album.blurPicUrl);
+          id: list[index].id,
+          duration: list[index].duration,
+          name: list[index].name,
+          artists: list[index].artists.first.name,
+          picUrl: list[index].album.blurPicUrl);
       model.playOneSong(song);
     } else {
       return;
@@ -48,9 +44,9 @@ class _HomeMusicListState extends State<HomeMusicList> {
           padding:
               EdgeInsets.symmetric(horizontal: ScreenUtil().setWidth(40.0)),
           scrollDirection: Axis.horizontal,
-          controller: widget.controller,
-          itemCount: widget.list.length,
-          physics: widget.physics,
+          controller: controller,
+          itemCount: list.length,
+          physics: physics,
           //SliverGridDelegateWithFixedCrossAxisCount 构建一个横轴固定数量Widget
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               //横轴元素个数
@@ -58,7 +54,7 @@ class _HomeMusicListState extends State<HomeMusicList> {
               //横轴间距
               crossAxisSpacing: ScreenUtil().setWidth(25.0),
               //子组件宽高长度比例
-              childAspectRatio: widget.ratio),
+              childAspectRatio: ratio),
           itemBuilder: (BuildContext context, int index) {
             //Widget Function(BuildContext context, int index)
             return Store.connect<PlaySongModel>(
@@ -70,11 +66,11 @@ class _HomeMusicListState extends State<HomeMusicList> {
                     margin: EdgeInsets.only(right: ScreenUtil().setWidth(10.0)),
                     child: Row(children: <Widget>[
                       PlayListCoverWidget(
-                        widget.isAlbum != true
-                            ? widget.list[index].album.blurPicUrl
-                            : widget.list[index].blurPicUrl,
+                        isAlbum != true
+                            ? list[index].album.blurPicUrl
+                            : list[index].blurPicUrl,
                         width: 100,
-                        isAlbum: widget.isAlbum,
+                        isAlbum: isAlbum,
                       ),
                       SizedBox(width: ScreenUtil().setWidth(10.0)),
                       Expanded(
@@ -82,7 +78,7 @@ class _HomeMusicListState extends State<HomeMusicList> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                             ExtendedText(
-                                '${widget.list[index].name} @start- ${widget.list[index].artists.first.name}@',
+                                '${list[index].name} @start- ${list[index].artists.first.name}@',
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 1,
                                 specialTextSpanBuilder:
@@ -92,14 +88,14 @@ class _HomeMusicListState extends State<HomeMusicList> {
                                   TextSpan(text: '\u2026  '),
                                   TextSpan(
                                       text:
-                                          "- ${widget.list[index].artists.first.name}",
+                                          "- ${list[index].artists.first.name}",
                                       style: TextStyle(
                                           fontSize: ScreenUtil().setSp(20.0),
                                           color: Colors.grey))
                                 ])),
                             SizedBox(height: ScreenUtil().setHeight(8.0)),
-                            !widget.isAlbum
-                                ? Text('${widget.list[index].album.name}',
+                            !isAlbum
+                                ? Text('${list[index].album.name}',
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
@@ -108,11 +104,11 @@ class _HomeMusicListState extends State<HomeMusicList> {
                                 : Container()
                           ])),
                       SizedBox(width: ScreenUtil().setWidth(13.0)),
-                      !widget.isAlbum
+                      !isAlbum
                           ? Padding(
                               padding: EdgeInsets.only(right: 20.0),
                               child: model.curList.length > 0 &&
-                                      model.curSong.id == widget.list[index].id
+                                      model.curSong.id == list[index].id
                                   ? Icon(Icons.volume_up,
                                       size: ScreenUtil().setWidth(40.0),
                                       color: Theme.of(context).primaryColor)

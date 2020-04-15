@@ -15,21 +15,21 @@ import 'package:netease_cloud_music/store/model/play_song_model.dart';
 import 'package:netease_cloud_music/utils/config.dart';
 import 'package:netease_cloud_music/widgets/song_list.dart';
 
-class PlayListScreen extends StatefulWidget {
+class PlayListDetailScreen extends StatefulWidget {
   final double expandedHeight;
   final int id;
   final bool official;
 
-  PlayListScreen(
+  PlayListDetailScreen(
       {@required this.expandedHeight,
       @required this.id,
       this.official = false});
 
   @override
-  _PlayListScreenState createState() => _PlayListScreenState();
+  _PlayListDetailScreenState createState() => _PlayListDetailScreenState();
 }
 
-class _PlayListScreenState extends State<PlayListScreen> {
+class _PlayListDetailScreenState extends State<PlayListDetailScreen> {
   List _button = Config.button;
   int _code = Config.SUCCESS_CODE;
 
@@ -67,7 +67,7 @@ class _PlayListScreenState extends State<PlayListScreen> {
     });
   }
 
-  Widget playButton(int shareCount, int commentCount) {
+  Widget _playButton(int shareCount, int commentCount) {
     return Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: _button.asMap().entries.map((MapEntry map) {
@@ -147,7 +147,8 @@ class _PlayListScreenState extends State<PlayListScreen> {
                         list: _list,
                         suscribers: _suscribers,
                         bgColor: bgColor,
-                        playlistbutton: playButton(playList.playlist.shareCount,
+                        playlistbutton: _playButton(
+                            playList.playlist.shareCount,
                             playList.playlist.commentCount),
                         official: widget.official,
                       ),

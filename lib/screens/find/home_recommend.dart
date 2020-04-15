@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:netease_cloud_music/screens/playlist/play_list_screen.dart';
 import 'package:netease_cloud_music/utils/routes/navigator_util.dart';
 import 'package:netease_cloud_music/widgets/play_list_cover.dart';
 import 'package:netease_cloud_music/utils/numbers_convert.dart';

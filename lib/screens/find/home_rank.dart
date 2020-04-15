@@ -1,3 +1,4 @@
+import 'package:extended_image/extended_image.dart';
 import 'package:extended_text/extended_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -41,8 +42,9 @@ class HomeRank extends StatelessWidget {
                       colorFilter: ColorFilter.mode(
                           list[index].bgColor.withOpacity(0.9),
                           BlendMode.srcOver),
-                      image:
-                          NetworkImage(list[index].content.first.al.picUrl))),
+                      image: ExtendedNetworkImageProvider(
+                          list[index].content.first.al.picUrl,
+                          cache: true))),
               child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,

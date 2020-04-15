@@ -1,3 +1,4 @@
+import 'package:ff_annotation_route/ff_annotation_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_easyrefresh/material_footer.dart';
@@ -10,6 +11,12 @@ import 'package:netease_cloud_music/widgets/comment_item.dart';
 import 'package:netease_cloud_music/widgets/data_loading.dart';
 import 'package:netease_cloud_music/widgets/play_list_cover.dart';
 
+@FFRoute(
+    name: "neteasecloudmusic://songcomment",
+    routeName: "DailyRecommendScreen",
+    argumentNames: ["songModel"],
+    pageRouteType: PageRouteType.transparent,
+    description: "歌曲评论页面,参数songModel主要是获取里面的评论信息")
 class SongComment extends StatefulWidget {
   final PlaySongModel songModel;
 
@@ -28,6 +35,12 @@ class _SongCommentState extends State<SongComment> {
   int pageSize = 0;
   String hotTitle = "";
   String title = "";
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   Future getComment(List comments) async {
     List<CommentListModel> _list = [];

@@ -4,7 +4,7 @@ import 'package:netease_cloud_music/screens/daily_recommend/daily_recommend_scre
 import 'package:netease_cloud_music/screens/home/home_screen.dart';
 import 'package:netease_cloud_music/screens/login/login_screen.dart';
 import 'package:netease_cloud_music/screens/playlist/play_list_ground_screen.dart';
-import 'package:netease_cloud_music/screens/playlist/play_list_screen.dart';
+import 'package:netease_cloud_music/screens/playlist/play_list_detail_screen.dart';
 import 'package:netease_cloud_music/screens/playlist/subscriber_screen.dart';
 import 'package:netease_cloud_music/screens/rank/rank_list_screens.dart';
 import 'package:netease_cloud_music/utils/fluro/fluro.dart';
@@ -30,7 +30,7 @@ var playListDetailHandler = Handler(
   double expandedHeight = double.parse(params["expandedHeight"]?.first);
   int id = int.parse(params["id"]?.first);
   bool official = FluroConvertUtils.string2bool(params["official"]?.first);
-  return PlayListScreen(
+  return PlayListDetailScreen(
       expandedHeight: expandedHeight, id: id, official: official);
 });
 

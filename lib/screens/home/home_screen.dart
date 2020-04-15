@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:netease_cloud_music/screens/audio/mini_player.dart';
-import 'package:netease_cloud_music/screens/home/find.dart';
+import 'package:netease_cloud_music/screens/find/find_screen.dart';
 import 'package:netease_cloud_music/screens/home/tab_title.dart';
 import 'package:netease_cloud_music/screens/events/events_screen.dart';
+import 'package:netease_cloud_music/screens/login/login_screen.dart';
 import 'package:netease_cloud_music/screens/search/search_screens.dart';
 import 'package:netease_cloud_music/screens/user_center/user_center_screen.dart';
 import 'package:netease_cloud_music/screens/video/video_screen.dart';
@@ -14,8 +15,17 @@ import 'package:netease_cloud_music/store/index.dart';
 
 import 'package:netease_cloud_music/store/model/play_song_model.dart';
 import 'package:netease_cloud_music/store/model/play_video_model.dart';
+import 'package:netease_cloud_music/utils/cache.dart';
 import 'package:netease_cloud_music/utils/config.dart';
 
+import 'package:ff_annotation_route/ff_annotation_route.dart';
+
+@FFRoute(
+    name: "neteasecloudmusic://homescreen",
+    routeName: "HomeScreen",
+    argumentNames: ["model"],
+    pageRouteType: PageRouteType.transparent,
+    description: "登录成功之后主页面，接收的model参数是用于判断视频播放状态")
 class HomeScreen extends StatefulWidget {
   final PlayVideoModel model;
   HomeScreen({this.model});
@@ -33,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen>
   PageController _pageController;
   void Function(int) pageCall;
 
-  ColorTween _colorTween;
+  ColorTween _colorTween; // 导航栏颜色
   double _offset = 1;
 
   //title设置回来的回调  当body页面变化时，会调用参数中的函数，将结果传递到title界面
@@ -54,6 +64,7 @@ class _HomeScreenState extends State<HomeScreen>
       });
       pageCall(pos);
     }
+    //判断当前页面位置，如果为动态页面则将inde何止为0，若不设置由动态切换回发现页面视频还是会继续播放
     if (pos != 2) {
       if (widget.model.index.value == -1) return;
       widget.model.changeIndex(-1);
@@ -69,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen>
     _currentIndex = 1;
     _pages = List()
       ..add(UserCenterScreen())
-      ..add(Find())
+      ..add(FindScreen())
       ..add(EventsScreen())
       ..add(VideoScreen());
     _pageController = PageController(initialPage: _currentIndex)
@@ -82,7 +93,7 @@ class _HomeScreenState extends State<HomeScreen>
         begin: Colors.white, end: Colors.transparent); //根据偏移量来设置tabbar背景色
   }
 
-  Widget drawerContent() {
+  Widget _drawerContent() {
     return Material(
       color: Colors.white,
       child: ListView(
@@ -211,6 +222,12 @@ class _HomeScreenState extends State<HomeScreen>
               elevation: 0.0,
               color: Colors.purple,
               child: ListTile(
+                onTap: () {
+                  SpUtil.preferences.clear();
+                  Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (context) => LoginScreen()),
+                      (Route<dynamic> route) => false);
+                },
                 leading: Text(
                   '退出登录',
                   style: TextStyle(color: Colors.white),
@@ -236,7 +253,7 @@ class _HomeScreenState extends State<HomeScreen>
     }
 
     return Scaffold(
-        drawer: Drawer(child: drawerContent()),
+        drawer: Drawer(child: _drawerContent()),
         body: Stack(children: <Widget>[
           PageView.builder(
               controller: _pageController,
@@ -255,7 +272,6 @@ class _HomeScreenState extends State<HomeScreen>
                 backgroundColor: _colorTween.lerp(1 - _offset),
                 elevation: 0,
                 iconTheme: IconThemeData(color: Colors.transparent),
-                //因为tittle准备放置一个listview，设置这个属性title横向填满
                 titleSpacing: 0.0,
                 centerTitle: true,
                 title: TabTitle(
@@ -292,7 +308,7 @@ class _HomeScreenState extends State<HomeScreen>
   }
 }
 
-// 顶部栏裁剪
+// 抽屉裁剪
 class HeaderCustomClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {

@@ -23,6 +23,8 @@ class SearchScreens extends StatefulWidget {
 
 class _SearchScreensState extends State<SearchScreens>
     with SingleTickerProviderStateMixin {
+  CommmonService api = CommmonService();
+
   TextEditingController _searchController = TextEditingController();
   TabController _tabController;
   FocusNode _searchFocus = FocusNode();
@@ -59,37 +61,12 @@ class _SearchScreensState extends State<SearchScreens>
     super.initState();
   }
 
-  Future _getSearchDefault() {
-    return CommmonService().getSearchDefault().then((res) {
-      if (res.statusCode == 200) {
-        SearchDefaultModel _bean = SearchDefaultModel.fromJson(res.data);
-        if (_bean.code == _code) {
-          return _bean;
-        }
-      }
-    });
-  }
-
-  Future _getSearcHotDetail() {
-    return CommmonService().getSearchHotDetail().then((res) {
-      if (res.statusCode == 200) {
-        SearchHotDetailModel _bean = SearchHotDetailModel.fromJson(res.data);
-        if (_bean.code == _code) {
-          return _bean;
-        }
-      }
-    });
-  }
-
-  Future _getSearcSuggest(String keywords) {
-    return CommmonService().getSearchSuggest(keywords).then((res) {
-      if (res.statusCode == 200) {
-        SearchSuggestModel _bean = SearchSuggestModel.fromJson(res.data);
-        if (_bean.code == _code) {
-          return _bean;
-        }
-      }
-    });
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _tabController.dispose();
+    _searchFocus.dispose();
+    super.dispose();
   }
 
   OverlayEntry _buildSearchSuggest() {
@@ -172,13 +149,6 @@ class _SearchScreensState extends State<SearchScreens>
   }
 
   @override
-  void dispose() {
-    _searchController?.dispose();
-    _searchFocus.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
@@ -220,7 +190,7 @@ class _SearchScreensState extends State<SearchScreens>
           },
           onChanged: (value) async {
             if (value.isNotEmpty) {
-              SearchSuggestModel search = await _getSearcSuggest(value);
+              SearchSuggestModel search = await api.getSearchSuggest(value);
               if (search.result.allMatch != null) {
                 _keywords.clear();
                 search.result.allMatch.forEach((searchWord) {
@@ -286,9 +256,9 @@ class _SearchScreensState extends State<SearchScreens>
               onRefresh: !_isInit
                   ? () async {
                       SearchDefaultModel searchDefault =
-                          await _getSearchDefault();
+                          await api.getSearchDefault();
                       SearchHotDetailModel searchDetail =
-                          await _getSearcHotDetail();
+                          await api.getSearchHotDetail();
 
                       if (mounted) {
                         _isInit = true;

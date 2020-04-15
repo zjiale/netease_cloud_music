@@ -218,17 +218,9 @@ class PlaySongModel with ChangeNotifier {
     playLogic(i: 2);
   }
 
-  void getSongComment({int offset = 0}) {
-    CommmonService()
-        .getSongComment(_curList[_curIndex].id, offset: offset)
-        .then((res) {
-      if (res.statusCode == 200) {
-        CommentModel _bean = CommentModel.fromJson(res.data);
-        if (_bean.code == _code) {
-          _commentModel = _bean;
-        }
-      }
-    });
+  void getSongComment({int offset = 0}) async {
+    _commentModel = await CommmonService()
+        .getSongComment(_curList[_curIndex].id, offset: offset);
   }
 
   void save2sp() {

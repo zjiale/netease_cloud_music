@@ -33,7 +33,8 @@ class _OtherSubPlayListState extends State<OtherSubPlayList>
     with AutomaticKeepAliveClientMixin {
   List<Playlists> _source = [];
   List<Playlists> _top = [];
-  int _code = Config.SUCCESS_CODE;
+
+  CommmonService api = CommmonService();
 
   ScrollController _scrollController;
   EasyRefreshController _controller;
@@ -42,20 +43,6 @@ class _OtherSubPlayListState extends State<OtherSubPlayList>
 
   @override
   bool get wantKeepAlive => true;
-
-  Future _getPlayList({int offset = 0}) {
-    return CommmonService()
-        .getGroundPlayList(offset: offset, cat: widget.tag)
-        .then((res) {
-      if (res.statusCode == 200) {
-        TopQualityPlayListModel _bean =
-            TopQualityPlayListModel.fromJson(res.data);
-        if (_bean.code == _code) {
-          return _bean;
-        }
-      }
-    });
-  }
 
   @override
   void initState() {
@@ -80,6 +67,13 @@ class _OtherSubPlayListState extends State<OtherSubPlayList>
   }
 
   @override
+  void dispose() {
+    _scrollController.dispose();
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     super.build(context);
     return extended.NestedScrollViewInnerScrollPositionKeyWidget(
@@ -91,7 +85,7 @@ class _OtherSubPlayListState extends State<OtherSubPlayList>
             scrollController: _scrollController,
             taskIndependence: true,
             onRefresh: () async {
-              var list = await _getPlayList();
+              var list = await api.getGroundPlayList(cat: widget.tag);
               if (widget.index == 0) {
                 putBgImage(list.playlists.sublist(0, 3));
                 _top = list.playlists.sublist(0, 3);
@@ -104,7 +98,8 @@ class _OtherSubPlayListState extends State<OtherSubPlayList>
               setState(() {});
             },
             onLoad: () async {
-              var list = await _getPlayList(offset: 35 * _pageIndex);
+              var list = await api.getGroundPlayList(
+                  offset: 35 * _pageIndex, cat: widget.tag);
               if (list.playlists.length > 0) {
                 setState(() {
                   _source.addAll(list.playlists);

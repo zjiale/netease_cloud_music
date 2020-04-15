@@ -3,8 +3,7 @@ import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:netease_cloud_music/api/CommonService.dart';
 import 'package:netease_cloud_music/model/play_list_abstract_model.dart';
-import 'package:netease_cloud_music/screens/playlist/play_list_screen.dart';
-import 'package:netease_cloud_music/utils/config.dart';
+import 'package:netease_cloud_music/screens/playlist/play_list_detail_screen.dart';
 import 'package:netease_cloud_music/widgets/data_loading.dart';
 import 'package:netease_cloud_music/widgets/play_list_cover.dart';
 
@@ -15,7 +14,8 @@ class RankListScreens extends StatefulWidget {
 
 class _RankListScreensState extends State<RankListScreens>
     with AutomaticKeepAliveClientMixin {
-  int _code = Config.SUCCESS_CODE;
+  CommmonService api = CommmonService();
+
   List<AbstractList> _main = [];
   List<AbstractList> _other = [];
 
@@ -23,17 +23,6 @@ class _RankListScreensState extends State<RankListScreens>
 
   @override
   bool get wantKeepAlive => true;
-
-  Future _getRankAbstrack() {
-    return CommmonService().getRankAbstrack().then((res) {
-      if (res.statusCode == 200) {
-        PlayListAbstractModel _bean = PlayListAbstractModel.fromJson(res.data);
-        if (_bean.code == _code) {
-          return _bean;
-        }
-      }
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,9 +48,10 @@ class _RankListScreensState extends State<RankListScreens>
           firstRefresh: true,
           firstRefreshWidget:
               Container(width: double.infinity, child: DataLoading()),
+          topBouncing: !isInit ? false : true,
           onRefresh: !isInit
               ? () async {
-                  PlayListAbstractModel total = await _getRankAbstrack();
+                  PlayListAbstractModel total = await api.getRankAbstract();
                   if (mounted) {
                     total.list.forEach((item) {
                       item.tracks.length > 0
@@ -91,7 +81,7 @@ class _RankListScreensState extends State<RankListScreens>
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => PlayListScreen(
+                            builder: (context) => PlayListDetailScreen(
                                   expandedHeight: 520,
                                   id: _main[index].id,
                                 )));
@@ -162,7 +152,7 @@ class _RankListScreensState extends State<RankListScreens>
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => PlayListScreen(
+                              builder: (context) => PlayListDetailScreen(
                                     expandedHeight: 520,
                                     id: _other[index].id,
                                   )));

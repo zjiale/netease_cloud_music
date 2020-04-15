@@ -352,15 +352,15 @@ class _EventDescriptionState extends State<EventDescription> {
       default:
         _picList = Container(
           width:
-              widget.event.pics.length == 4 ? ScreenUtil().setWidth(400) : null,
+              widget.event.pics.length == 4 ? ScreenUtil().setWidth(385) : null,
           child: GridView.builder(
               physics: ClampingScrollPhysics(),
               shrinkWrap: true,
               itemCount: widget.event.pics.length,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: widget.event.pics.length == 4 ? 2 : 3,
-                  mainAxisSpacing: ScreenUtil().setWidth(5.0),
-                  crossAxisSpacing: ScreenUtil().setWidth(5.0),
+                  mainAxisSpacing: 1.0,
+                  crossAxisSpacing: 1.0,
                   childAspectRatio: 1.0),
               itemBuilder: (context, index) {
                 return GestureDetector(
@@ -369,9 +369,9 @@ class _EventDescriptionState extends State<EventDescription> {
                   },
                   child: PlayListCoverWidget(
                     widget.event.pics[index].squareUrl,
-                    width: 190.0,
+                    width: widget.isDetail ? 230.0 : 190.0,
                     fit: BoxFit.cover,
-                    circular: 5.0,
+                    circular: 3.0,
                   ),
                 );
               }),
@@ -386,7 +386,7 @@ class _EventDescriptionState extends State<EventDescription> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Stack(
-                  alignment: Alignment.topRight,
+                  alignment: Alignment.center,
                   overflow: Overflow.visible,
                   children: <Widget>[
                     ClipOval(
@@ -397,25 +397,22 @@ class _EventDescriptionState extends State<EventDescription> {
                       ),
                     ),
                     widget.event.pendantData != null
-                        ? Positioned(
-                            top: -5.0,
-                            right: -5.0,
-                            child: FadeNetWorkImage(
-                              widget.isDetail
-                                  ? widget.event.pendantData.imageAndroidUrl
-                                  : widget.event.pendantData.imageUrl,
-                              width: ScreenUtil().setWidth(100.0),
-                            ),
+                        ? FadeNetWorkImage(
+                            widget.isDetail
+                                ? widget.event.pendantData.imageAndroidUrl
+                                : widget.event.pendantData.imageUrl,
+                            width: ScreenUtil().setWidth(90.0),
                           )
-                        : Container()
+                        : SizedBox()
                   ]),
-              SizedBox(width: ScreenUtil().setWidth(20.0)),
+              // SizedBox(width: ScreenUtil().setWidth(20.0)),
               Padding(
                 padding: EdgeInsets.only(right: ScreenUtil().setWidth(10.0)),
                 child: Column(
                   // mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
+                    SizedBox(height: 5.0),
                     Row(children: <Widget>[
                       Text(widget.event.user.nickname,
                           style: TextStyle(color: Colors.blue)),
@@ -443,7 +440,7 @@ class _EventDescriptionState extends State<EventDescription> {
           ),
           Padding(
             padding: widget.isDetail
-                ? EdgeInsets.zero
+                ? EdgeInsets.only(left: 5.0)
                 : EdgeInsets.only(left: ScreenUtil().setWidth(90.0)),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

@@ -17,6 +17,7 @@ import 'package:netease_cloud_music/widgets/fade_network_image.dart';
 import 'package:netease_cloud_music/widgets/play_list_cover.dart';
 import 'package:netease_cloud_music/widgets/sliver_appbar_custom.dart';
 import 'package:netease_cloud_music/widgets/song_item.dart';
+import 'package:netease_cloud_music/widgets/song_subtitle.dart';
 import 'package:netease_cloud_music/widgets/song_title.dart';
 
 class SongList extends StatefulWidget {
@@ -182,66 +183,6 @@ class _SongListState extends State<SongList> {
     );
   }
 
-  Widget _songTitle(MusicSong item) {
-    return RichText(
-        overflow: TextOverflow.ellipsis,
-        text: TextSpan(
-            text: item.name,
-            style: TextStyle(
-                fontSize: ScreenUtil().setSp(28.0),
-                color: item.st == -200 ? Colors.grey : Colors.black),
-            children: <TextSpan>[
-              TextSpan(
-                  text: item.subName != '' ? '（${item.subName}）' : '',
-                  style: TextStyle(color: Colors.grey))
-            ]));
-  }
-
-  Widget _songSubtTitle(MusicSong item) {
-    return Row(
-      children: <Widget>[
-        Offstage(
-          offstage: !item.isHighQuality,
-          child: Container(
-            margin: EdgeInsets.only(right: ScreenUtil().setWidth(5.0)),
-            decoration: BoxDecoration(
-                shape: BoxShape.rectangle,
-                border: Border.all(width: 1.0, color: Colors.red)),
-            padding: EdgeInsets.symmetric(horizontal: 1.0),
-            child: Text('SQ',
-                style: TextStyle(
-                    fontSize: ScreenUtil().setSp(15.0),
-                    fontWeight: FontWeight.bold,
-                    color: Colors.red)),
-          ),
-        ),
-        Offstage(
-          offstage: !item.isVip,
-          child: Container(
-            margin: EdgeInsets.only(right: ScreenUtil().setWidth(5.0)),
-            decoration: BoxDecoration(
-                shape: BoxShape.rectangle,
-                border: Border.all(width: 1.0, color: Colors.red)),
-            padding: EdgeInsets.symmetric(horizontal: 1.0),
-            child: Text('VIP',
-                style: TextStyle(
-                    fontSize: ScreenUtil().setSp(15.0),
-                    fontWeight: FontWeight.bold,
-                    color: Colors.red)),
-          ),
-        ),
-        Flexible(
-          child: Text('${item.artists} - ${item.album}',
-              style: TextStyle(
-                  fontSize: ScreenUtil().setSp(20.0),
-                  color: item.st == -200 ? Colors.grey : Colors.black54),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis),
-        ),
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Store.connect<PlaySongModel>(builder: (context, model, child) {
@@ -277,6 +218,7 @@ class _SongListState extends State<SongList> {
                   left: ScreenUtil().setWidth(35),
                   right: ScreenUtil().setWidth(35),
                   top: ScreenUtil().setWidth(120),
+                  bottom: !widget.official ? 0.0 : ScreenUtil().setWidth(20),
                 ),
                 child: Column(children: <Widget>[
                   !widget.official ? _normalDesc() : _officialDesc(),
@@ -327,7 +269,13 @@ class _SongListState extends State<SongList> {
                       : widget.list[index].picUrl,
                   title: SongTitle(
                       name: widget.detail.playlist.tracks[index].name),
-                  subTitle: _songSubtTitle(widget.list[index]),
+                  subTitle: SongSubTitle(
+                    artists: widget.list[index].artists,
+                    album: widget.list[index].album,
+                    isHighQuality: !widget.list[index].isHighQuality,
+                    isVip: !widget.list[index].isVip,
+                    status: widget.list[index].st,
+                  ),
                 ),
               );
             }, childCount: widget.detail.playlist.trackCount),

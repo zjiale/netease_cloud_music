@@ -35,7 +35,7 @@ dependencies:
   cookie_jar: 1.0.1
   path_provider: 1.6.5
   # 路由管理
-  fluro: 1.5.1
+  ff_annotation_route: 2.0.8
   # 加载动画
   flutter_spinkit: 4.1.1+1
   # 轮播图

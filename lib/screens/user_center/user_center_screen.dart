@@ -25,24 +25,18 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
   int _selectIndex = 0;
   List _button = Config.centerBtn;
   List _area = Config.centerArea;
-  int _code = Config.SUCCESS_CODE;
+
+  CommmonService api = CommmonService();
 
   AsyncMemoizer _memoizer = AsyncMemoizer();
 
-  Future _initPlayList() {
+  Future _initPlayList(int id) {
     return _memoizer.runOnce(() async {
-      return CommmonService().getPlayList(93412043).then((res) {
-        if (res.statusCode == 200) {
-          PlayListModel _bean = PlayListModel.fromJson(res.data);
-          if (_bean.code == _code) {
-            return _bean.playlist;
-          }
-        }
-      });
+      return api.getPlayList(id);
     });
   }
 
-  Widget centerButton() {
+  Widget _centerButton() {
     return Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: _button.asMap().entries.map((MapEntry map) {
@@ -63,7 +57,7 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
         }).toList());
   }
 
-  Widget option(int create, int collect) {
+  Widget _option(int create, int collect) {
     List<String> _options = ["创建歌单", "收藏歌单"];
     return Row(
         children: _options.asMap().entries.map((MapEntry map) {
@@ -97,7 +91,7 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
     }).toList());
   }
 
-  List<Widget> playList(int index, List create, List collect) {
+  List<Widget> _playList(int index, List create, List collect) {
     int _length;
     switch (index) {
       case 0:
@@ -127,7 +121,7 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
     return _list;
   }
 
-  Widget userCenter(
+  Widget _userCenter(
       List subscribedList, List unSubscribedList, UserModel userModel) {
     return CustomScrollView(
       slivers: <Widget>[
@@ -184,7 +178,7 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                                 ])
                           ]),
                       SizedBox(height: ScreenUtil().setHeight(30.0)),
-                      centerButton()
+                      _centerButton()
                     ]),
                   ),
                 ),
@@ -261,7 +255,7 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                       Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
-                            option(
+                            _option(
                                 unSubscribedList.length, subscribedList.length),
                             Icon(Icons.more_vert,
                                 size: ScreenUtil().setSp(50.0),
@@ -271,7 +265,7 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                       Wrap(
                         spacing: ScreenUtil().setWidth(30.0),
                         runSpacing: ScreenUtil().setHeight(20.0),
-                        children: playList(
+                        children: _playList(
                             _selectIndex, unSubscribedList, subscribedList),
                       )
                     ]))),
@@ -284,30 +278,31 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      child: FutureBuilder(
-        future: _initPlayList(),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.waiting:
-              return Center(
-                  child: SpinKitChasingDots(
-                      color: Theme.of(context).primaryColor, size: 30.0));
-            case ConnectionState.done:
-              // List loveList = snapshot.data;
-              List subscribedList = List.from(snapshot.data);
-              List unSubscribedList = List.from(snapshot.data);
-              subscribedList.retainWhere((item) => item.subscribed == true);
-              unSubscribedList.retainWhere(
-                  (item) => item.subscribed == false && item.specialType != 5);
-              return Store.connect<UserModel>(
-                  builder: (context, userModel, child) {
-                return userCenter(subscribedList, unSubscribedList, userModel);
-              });
-            default:
-              return null;
-          }
-        },
-      ),
+      child: Store.connect<UserModel>(builder: (context, userModel, child) {
+        return FutureBuilder(
+          future: _initPlayList(userModel.user.profile.userId),
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            switch (snapshot.connectionState) {
+              case ConnectionState.waiting:
+                return Center(
+                    child: SpinKitChasingDots(
+                        color: Theme.of(context).primaryColor, size: 30.0));
+              case ConnectionState.done:
+                // List loveList = snapshot.data;
+                List subscribedList = List.from(snapshot.data);
+                List unSubscribedList = List.from(snapshot.data);
+                subscribedList.retainWhere((item) => item.subscribed == true);
+                unSubscribedList.retainWhere((item) =>
+                    item.subscribed == false && item.specialType != 5);
+
+                return _userCenter(subscribedList, unSubscribedList, userModel);
+
+              default:
+                return null;
+            }
+          },
+        );
+      }),
     );
   }
 }

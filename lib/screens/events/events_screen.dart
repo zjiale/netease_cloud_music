@@ -23,7 +23,7 @@ class EventsScreen extends StatefulWidget {
 
 class _EventsScreenState extends State<EventsScreen>
     with AutomaticKeepAliveClientMixin {
-  int _code = Config.SUCCESS_CODE;
+  CommmonService api = CommmonService();
   int lastTime = 0;
   List<Events> _event = [];
   List<Follow> _followList = [];
@@ -39,26 +39,6 @@ class _EventsScreenState extends State<EventsScreen>
   void dispose() {
     _controller.dispose();
     super.dispose();
-  }
-
-  Future _getFollows() {
-    return CommmonService().getFollows().then((res) {
-      FollowModel _bean = FollowModel.fromJson(res.data);
-      if (_bean.code == _code) {
-        return _bean.follow
-            .sublist(0, _bean.follow.length < 5 ? _bean.follow.length : 5);
-      }
-    });
-  }
-
-  Future _getEvent({int lastTime = 0}) {
-    // type: 18 分享歌曲  24 分享专栏文章 13 分享歌单 39 发布视频
-    return CommmonService().getEvent(lasttime: lastTime).then((res) {
-      EventModel _bean = EventModel.fromJson(res.data);
-      if (_bean.code == _code) {
-        return _bean;
-      }
-    });
   }
 
   List<int> getVisible() {
@@ -205,8 +185,8 @@ class _EventsScreenState extends State<EventsScreen>
                   // height: double.infinity,
                   child: DataLoading()),
               onRefresh: () async {
-                EventModel eventList = await _getEvent();
-                List<Follow> followList = await _getFollows();
+                EventModel eventList = await api.getEvent();
+                List<Follow> followList = await api.getFollows();
                 if (eventList.more) lastTime = eventList.lasttime;
 
                 eventList.event.removeWhere((event) => event.type == 33);
@@ -220,7 +200,7 @@ class _EventsScreenState extends State<EventsScreen>
                 _controller.finishLoad(noMore: !eventList.more);
               },
               onLoad: () async {
-                EventModel eventList = await _getEvent(lastTime: lastTime);
+                EventModel eventList = await api.getEvent(lasttime: lastTime);
                 if (eventList.more) lastTime = eventList.lasttime;
                 if (mounted) {
                   _event.addAll(eventList.event);
@@ -234,7 +214,7 @@ class _EventsScreenState extends State<EventsScreen>
                 ),
                 SliverPadding(
                   padding: EdgeInsets.fromLTRB(
-                      ScreenUtil().setWidth(40.0),
+                      ScreenUtil().setWidth(20.0),
                       ScreenUtil().setWidth(20.0),
                       ScreenUtil().setWidth(40.0),
                       ScreenUtil().setWidth(40.0)),

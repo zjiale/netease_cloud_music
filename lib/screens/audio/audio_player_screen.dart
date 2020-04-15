@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:extended_image/extended_image.dart';
+import 'package:ff_annotation_route/ff_annotation_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:netease_cloud_music/screens/audio/play_button.dart';
@@ -13,6 +14,11 @@ import 'package:netease_cloud_music/utils/config.dart';
 import 'package:netease_cloud_music/store/model/play_song_model.dart';
 import 'package:netease_cloud_music/utils/numbers_convert.dart';
 
+@FFRoute(
+    name: "neteasecloudmusic://audioplayerscreen",
+    routeName: "DailyRecommendScreen",
+    pageRouteType: PageRouteType.transparent,
+    description: "播放歌曲页面")
 class AudioPlayerScreen extends StatefulWidget {
   @override
   _AudioPlayerScreenState createState() => _AudioPlayerScreenState();

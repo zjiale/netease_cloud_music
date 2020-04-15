@@ -1,22 +1,9 @@
-import 'dart:io';
 import 'package:async/async.dart';
-import 'package:color_thief_flutter/color_thief_flutter.dart';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:netease_cloud_music/model/banner_model.dart';
-import 'package:netease_cloud_music/model/newest_album_model.dart';
-import 'package:netease_cloud_music/model/rank.dart';
-import 'package:netease_cloud_music/model/rank_list_model.dart';
-import 'package:netease_cloud_music/model/recommend_list_model.dart';
-import 'package:netease_cloud_music/model/recommend_song_list_model.dart';
 
 import 'package:netease_cloud_music/screens/home/title_header.dart';
 import 'package:netease_cloud_music/screens/playlist/play_list_ground_screen.dart';
 
-import 'package:netease_cloud_music/store/index.dart';
-import 'package:netease_cloud_music/store/model/tag_model.dart';
 import 'package:netease_cloud_music/utils/config.dart';
 
 import 'package:netease_cloud_music/api/CommonService.dart';
@@ -28,15 +15,17 @@ import 'home_rank.dart';
 import 'home_recommend.dart';
 import 'home_music_list.dart';
 
-class Find extends StatefulWidget {
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+
+class FindScreen extends StatefulWidget {
   @override
-  _FindState createState() => _FindState();
+  _FindScreenState createState() => _FindScreenState();
 }
 
-class _FindState extends State<Find> with AutomaticKeepAliveClientMixin {
+class _FindScreenState extends State<FindScreen>
+    with AutomaticKeepAliveClientMixin {
   List _type = Config.type;
-  List _rankType = Config.rankType;
-  int _code = Config.SUCCESS_CODE;
 
   DateTime now = new DateTime.now();
   AsyncMemoizer _memoizer = AsyncMemoizer();
@@ -61,7 +50,7 @@ class _FindState extends State<Find> with AutomaticKeepAliveClientMixin {
 
   @override
   void initState() {
-    _initData = _load();
+    _initData = _load(); //防止页面重绘
     super.initState();
 
     _discController.addListener(() {
@@ -123,167 +112,77 @@ class _FindState extends State<Find> with AutomaticKeepAliveClientMixin {
     super.dispose();
   }
 
-  Future _initBanner() {
-    int _type;
-    if (Platform.isAndroid) {
-      _type = 1;
-    } else if (Platform.isIOS) {
-      _type = 2;
-    }
-    return CommmonService().getBanner(_type).then((res) {
-      if (res.statusCode == 200) {
-        BannersModel _bean = BannersModel.fromJson(res.data);
-        if (_bean.code == _code) {
-          return _bean.banners;
-        }
-      }
-    });
-  }
-
-  Future _initRecommend() {
-    return CommmonService().getRecommendList().then((res) {
-      if (res.statusCode == 200) {
-        RecommendListModel _bean = RecommendListModel.fromJson(res.data);
-        if (_bean.code == _code) {
-          return _bean.recommend;
-        }
-      }
-    });
-  }
-
-  Future _initRecommendSong() {
-    return CommmonService().getRecommendSongList().then((res) {
-      if (res.statusCode == 200) {
-        RecommendSongListModel _bean =
-            RecommendSongListModel.fromJson(res.data);
-        if (_bean.code == _code) {
-          List recommendSongList = _bean.recommend
-            ..shuffle()
-            ..removeWhere((song) => song.status == -200 || song.fee == 1)
-            ..removeRange(9, _bean.recommend.length);
-          String reason = _bean.recommend.first.reason;
-          var filter =
-              _bean.recommend.takeWhile((item) => item.reason == reason);
-          if (filter.length > 6) {
-          } else {
-            return recommendSongList;
-          }
-        }
-      }
-    });
-  }
-
-  Future _initNewestAlbum() {
-    return CommmonService().getNewestAlbum().then((res) {
-      if (res.statusCode == 200) {
-        NewestAlbumModel _bean = NewestAlbumModel.fromJson(res.data);
-        if (_bean.code == _code) {
-          _bean.albums
-            ..shuffle()
-            ..removeRange(6, _bean.albums.length);
-          return _bean.albums;
-        }
-      }
-    });
-  }
-
-  Future _initRankList() async {
-    List<Rank> _list = new List();
-    for (var i in _rankType) {
-      await CommmonService().getRank(i["type"]).then((res) {
-        if (res.statusCode == 200) {
-          RankListModel _bean = RankListModel.fromJson(res.data);
-          if (_bean.code == _code) {
-            List<Tracks> tracks = _bean.playlist.tracks.sublist(0, 3);
-            getColorFromUrl(tracks.first.al.picUrl).then((color) {
-              return Color.fromRGBO(color[0], color[1], color[2], 1);
-            }).then((color) {
-              Rank _rank = Rank(
-                  title: "${i["title"]}",
-                  content: _bean.playlist.tracks.sublist(0, 3),
-                  bgColor: color);
-
-              _list.add(_rank);
-            });
-          }
-        }
-      });
-    }
-
-    return _list;
-  }
-
   _load() {
+    CommmonService api = CommmonService();
     return _memoizer.runOnce(() async {
       return Future.wait([
-        _initBanner(),
-        _initRecommend(),
-        _initRecommendSong(),
-        _initNewestAlbum(),
-        _initRankList()
+        api.getBanner(),
+        api.getRecommendList(),
+        api.getRecommendSongList(),
+        api.getNewestAlbum(),
+        api.getRank(),
+        api.getPlayLitsTags()
       ]);
     });
   }
 
-  Widget playType() {
-    return Store.connect<TagModel>(builder: (context, model, child) {
-      return Container(
-        height: ScreenUtil().setHeight(150.0),
-        padding: EdgeInsets.symmetric(horizontal: ScreenUtil().setWidth(40.0)),
-        child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: _type.map((item) {
-              return Column(children: <Widget>[
-                GestureDetector(
-                  onTap: () {
-                    switch (item["index"]) {
-                      case 0:
-                        NavigatorUtil.goDailyPage(context);
-                        break;
-                      case 1:
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    PlayListGroundScreen(tagModel: model)));
-                        break;
-                      case 2:
-                        NavigatorUtil.goRankPage(context);
-                        break;
-                      default:
-                    }
-                  },
-                  child: CircleAvatar(
-                      radius: 22.0,
-                      backgroundColor: Color(0xffff1916),
-                      child:
-                          Stack(alignment: Alignment.center, children: <Widget>[
-                        Image.asset(item["image"]),
-                        item["index"] == 0
-                            ? Align(
-                                alignment: FractionalOffset(0.5, 0.55),
-                                child: Text(
-                                  '${now.day}',
-                                  style: TextStyle(
-                                      color: Color(0xffff1916),
-                                      fontSize: ScreenUtil().setSp(25.0),
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              )
-                            : Container()
-                      ])),
-                ),
-                SizedBox(height: 5.0),
-                Text(item["text"],
-                    style: TextStyle(fontSize: ScreenUtil().setSp(20.0)))
-              ]);
-            }).toList()),
-      );
-    });
+  Widget _playType(List tags) {
+    return Container(
+      height: ScreenUtil().setHeight(150.0),
+      padding: EdgeInsets.symmetric(horizontal: ScreenUtil().setWidth(40.0)),
+      child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: _type.map((item) {
+            return Column(children: <Widget>[
+              GestureDetector(
+                onTap: () {
+                  switch (item["index"]) {
+                    case 0:
+                      NavigatorUtil.goDailyPage(context);
+                      break;
+                    case 1:
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  PlayListGroundScreen(tagList: tags)));
+                      break;
+                    case 2:
+                      NavigatorUtil.goRankPage(context);
+                      break;
+                    default:
+                  }
+                },
+                child: CircleAvatar(
+                    radius: 22.0,
+                    backgroundColor: Color(0xffff1916),
+                    child:
+                        Stack(alignment: Alignment.center, children: <Widget>[
+                      Image.asset(item["image"]),
+                      item["index"] == 0
+                          ? Align(
+                              alignment: FractionalOffset(0.5, 0.55),
+                              child: Text(
+                                '${now.day}',
+                                style: TextStyle(
+                                    color: Color(0xffff1916),
+                                    fontSize: ScreenUtil().setSp(25.0),
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            )
+                          : Container()
+                    ])),
+              ),
+              SizedBox(height: 5.0),
+              Text(item["text"],
+                  style: TextStyle(fontSize: ScreenUtil().setSp(20.0)))
+            ]);
+          }).toList()),
+    );
   }
 
-  Widget home(List bannerList, List recommendList, List recommendSongList,
-      List albumList, List homeRankList, double ratio) {
+  Widget _home(List bannerList, List recommendList, List recommendSongList,
+      List albumList, List homeRankList, List tags, double ratio) {
     return Scaffold(
       backgroundColor: Colors.white,
       body: ListView(
@@ -297,7 +196,7 @@ class _FindState extends State<Find> with AutomaticKeepAliveClientMixin {
                     MediaQuery.of(context).padding.top),
             HomeBanner(bannerList), //banner
             SizedBox(height: ScreenUtil().setHeight(20.0)),
-            playType(), // 首页按钮
+            _playType(tags), // 首页按钮
             SizedBox(height: ScreenUtil().setHeight(20.0)),
             TitleHeader('推荐歌单', '为你精挑细选', 1),
             SizedBox(height: ScreenUtil().setHeight(20.0)),
@@ -360,9 +259,10 @@ class _FindState extends State<Find> with AutomaticKeepAliveClientMixin {
             List recommendSongList = snapshot.data[2];
             List albumList = snapshot.data[3];
             List homeRankList = snapshot.data[4];
+            List tags = snapshot.data[5];
 
-            return home(bannerList, recommendList, recommendSongList, albumList,
-                homeRankList, ratio);
+            return _home(bannerList, recommendList, recommendSongList,
+                albumList, homeRankList, tags, ratio);
           default:
             return null;
         }

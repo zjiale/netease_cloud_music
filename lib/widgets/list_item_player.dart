@@ -30,6 +30,7 @@ class ListItemPlayer extends StatefulWidget {
 }
 
 class _ListItemPlayerState extends State<ListItemPlayer> {
+  CommmonService api = CommmonService();
   FijkPlayer _player;
   Timer _timer;
   bool _start = false;
@@ -68,15 +69,7 @@ class _ListItemPlayerState extends State<ListItemPlayer> {
       _timer = Timer(Duration(milliseconds: mills), () async {
         _player = FijkPlayer();
 
-        String _url = "";
-        await CommmonService()
-            .getVideoUrl(widget.videoContent.videoId)
-            .then((res) {
-          VideoUrlModel _bean = VideoUrlModel.fromJson(res.data);
-          if (_bean.code == _code) {
-            _url = _bean.urls.first.url;
-          }
-        });
+        String _url = await api.getVideoUrl(widget.videoContent.videoId);
 
         await _player?.setVolume(0.0);
         await _player?.setDataSource(_url);
