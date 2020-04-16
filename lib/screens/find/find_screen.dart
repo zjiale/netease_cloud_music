@@ -1,22 +1,18 @@
 import 'package:async/async.dart';
+
 import 'package:flutter/material.dart';
-
+import 'package:netease_cloud_music/netease_cloud_music_route.dart';
 import 'package:netease_cloud_music/screens/home/title_header.dart';
-import 'package:netease_cloud_music/screens/playlist/play_list_ground_screen.dart';
-
 import 'package:netease_cloud_music/utils/config.dart';
-
 import 'package:netease_cloud_music/api/CommonService.dart';
-import 'package:netease_cloud_music/utils/routes/navigator_util.dart';
 import 'package:netease_cloud_music/widgets/custom_scroll_physic.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import 'home_banner.dart';
 import 'home_rank.dart';
 import 'home_recommend.dart';
 import 'home_music_list.dart';
-
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class FindScreen extends StatefulWidget {
   @override
@@ -138,17 +134,17 @@ class _FindScreenState extends State<FindScreen>
                 onTap: () {
                   switch (item["index"]) {
                     case 0:
-                      NavigatorUtil.goDailyPage(context);
+                      Navigator.pushNamed(context,
+                          Routes.NETEASECLOUDMUSIC_DAILYRECOMMENDSCREEN);
                       break;
                     case 1:
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  PlayListGroundScreen(tagList: tags)));
+                      Navigator.pushNamed(context,
+                          Routes.NETEASECLOUDMUSIC_PLAYLISTGROUNDSCREEN,
+                          arguments: {"tagList": tags});
                       break;
                     case 2:
-                      NavigatorUtil.goRankPage(context);
+                      Navigator.pushNamed(
+                          context, Routes.NETEASECLOUDMUSIC_RANKLISTSCREEN);
                       break;
                     default:
                   }

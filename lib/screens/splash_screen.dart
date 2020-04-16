@@ -1,21 +1,27 @@
+import 'package:ff_annotation_route/ff_annotation_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:netease_cloud_music/api/CommonService.dart';
-import 'package:netease_cloud_music/screens/home/home_screen.dart';
-import 'package:netease_cloud_music/screens/login/login_screen.dart';
+import 'package:netease_cloud_music/netease_cloud_music_route.dart' as prefix;
 import 'package:netease_cloud_music/store/model/play_video_model.dart';
 import 'package:netease_cloud_music/store/model/user_model.dart';
 
-class SplashScreens extends StatefulWidget {
+@FFRoute(
+    name: "neteasecloudmusic://splashscreen",
+    routeName: "SplashScreen",
+    argumentNames: ["videoModel", "userModel"],
+    pageRouteType: PageRouteType.transparent,
+    description: "videoModel提前获取值让homescreen中使用,userModel判断当前用户是否有登录")
+class SplashScreen extends StatefulWidget {
   final PlayVideoModel videoModel;
   final UserModel userModel;
 
-  SplashScreens({@required this.videoModel, @required this.userModel});
+  SplashScreen({@required this.videoModel, @required this.userModel});
   @override
-  _SplashScreensState createState() => _SplashScreensState();
+  _SplashScreenState createState() => _SplashScreenState();
 }
 
-class _SplashScreensState extends State<SplashScreens> {
+class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
@@ -24,13 +30,15 @@ class _SplashScreensState extends State<SplashScreens> {
 
   goPage() {
     if (widget.userModel.user != null) {
-      Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(
-              builder: (context) => HomeScreen(model: widget.videoModel)),
-          (Route<dynamic> route) => false);
+      Navigator.pushNamedAndRemoveUntil(
+          context,
+          prefix.Routes.NETEASECLOUDMUSIC_HOMESCREEN,
+          (Route<dynamic> route) => false,
+          arguments: {"model": widget.videoModel});
     } else {
-      Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => LoginScreen()),
+      Navigator.pushNamedAndRemoveUntil(
+          context,
+          prefix.Routes.NETEASECLOUDMUSIC_LOGINSCREEN,
           (Route<dynamic> route) => false);
     }
   }

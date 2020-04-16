@@ -16,7 +16,7 @@ import 'package:netease_cloud_music/widgets/song_title.dart';
 @FFRoute(
     name: "neteasecloudmusic://dailyrecommendscreen",
     routeName: "DailyRecommendScreen",
-    pageRouteType: PageRouteType.transparent,
+    pageRouteType: PageRouteType.material,
     description: "日常推荐歌曲")
 class DailyRecommendScreen extends StatefulWidget {
   @override

@@ -1,3 +1,4 @@
+import 'package:ff_annotation_route/ff_annotation_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/ball_pulse_footer.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
@@ -7,6 +8,11 @@ import 'package:netease_cloud_music/model/suscribers_list_model.dart';
 import 'package:netease_cloud_music/widgets/data_loading.dart';
 import 'package:netease_cloud_music/widgets/subscriber_item.dart';
 
+@FFRoute(
+    name: "neteasecloudmusic://suscriberscreen",
+    routeName: "SubscriberScreen",
+    pageRouteType: PageRouteType.material,
+    description: "收藏者列表")
 class SubscriberScreen extends StatefulWidget {
   final int id;
   SubscriberScreen({@required this.id});

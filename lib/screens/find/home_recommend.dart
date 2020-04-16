@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:netease_cloud_music/utils/routes/navigator_util.dart';
+import 'package:netease_cloud_music/netease_cloud_music_route.dart';
+import 'package:netease_cloud_music/screens/playlist/play_list_detail_screen.dart';
 import 'package:netease_cloud_music/widgets/play_list_cover.dart';
 import 'package:netease_cloud_music/utils/numbers_convert.dart';
 
@@ -26,8 +27,15 @@ class HomeRecommend extends StatelessWidget {
         itemCount: 6,
         itemBuilder: (BuildContext context, int index) {
           return InkWell(
-            onTap: () => NavigatorUtil.goPlayListDetailPage(context,
-                expandedHeight: 520, id: recommendList[index].id),
+            onTap: () {
+              Navigator.pushNamed(
+                  context, Routes.NETEASECLOUDMUSIC_PLAYLISTDETAILSCREEN,
+                  arguments: {
+                    "expandedHeight": 520.0,
+                    "id": recommendList[index].id,
+                    "official": false,
+                  });
+            },
             child: Padding(
               padding: EdgeInsets.only(right: 10.0),
               child: Column(children: <Widget>[

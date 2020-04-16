@@ -1,3 +1,4 @@
+import 'package:ff_annotation_route/ff_annotation_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_easyrefresh/material_footer.dart';
@@ -6,16 +7,20 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:netease_cloud_music/api/CommonService.dart';
 import 'package:netease_cloud_music/model/event_model.dart';
 import 'package:netease_cloud_music/model/follow_model.dart';
+import 'package:netease_cloud_music/netease_cloud_music_route.dart' as prefix;
 import 'package:netease_cloud_music/screens/events/event_decription.dart';
-import 'package:netease_cloud_music/screens/events/event_detail_screen.dart';
 import 'package:netease_cloud_music/store/index.dart';
 import 'package:netease_cloud_music/store/model/play_song_model.dart';
 import 'package:netease_cloud_music/store/model/play_video_model.dart';
-import 'package:netease_cloud_music/utils/config.dart';
 import 'package:netease_cloud_music/widgets/data_loading.dart';
 import 'package:netease_cloud_music/widgets/fade_network_image.dart';
 import 'package:rect_getter/rect_getter.dart';
 
+@FFRoute(
+    name: "neteasecloudmusic://eventscreen",
+    routeName: "EventScreen",
+    pageRouteType: PageRouteType.material,
+    description: "云村动态界面,用于查看用户动态")
 class EventsScreen extends StatefulWidget {
   @override
   _EventsScreenState createState() => _EventsScreenState();
@@ -223,11 +228,11 @@ class _EventsScreenState extends State<EventsScreen>
                     delegate: SliverChildBuilderDelegate((context, index) {
                       return InkWell(
                           onTap: () {
-                            Navigator.push(
+                            Navigator.pushNamed(
                                 context,
-                                MaterialPageRoute(
-                                    builder: (context) => EventDetailScreen(
-                                        event: _event[index], index: index)));
+                                prefix
+                                    .Routes.NETEASECLOUDMUSIC_EVENTDETAILSCREEN,
+                                arguments: {"event": _event[index]});
                           },
                           child: EventDescription(
                               event: _event[index],

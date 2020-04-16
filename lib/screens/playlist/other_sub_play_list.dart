@@ -6,10 +6,10 @@ import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:netease_cloud_music/api/CommonService.dart';
 import 'package:netease_cloud_music/model/top_quality_play_list_model.dart';
+import 'package:netease_cloud_music/netease_cloud_music_route.dart';
+import 'package:netease_cloud_music/screens/playlist/play_list_detail_screen.dart';
 import 'package:netease_cloud_music/screens/playlist/top_disc.dart';
-import 'package:netease_cloud_music/utils/config.dart';
 import 'package:netease_cloud_music/utils/numbers_convert.dart';
-import 'package:netease_cloud_music/utils/routes/navigator_util.dart';
 import 'package:netease_cloud_music/widgets/data_loading.dart';
 import 'package:netease_cloud_music/widgets/play_list_cover.dart';
 
@@ -131,12 +131,15 @@ class _OtherSubPlayListState extends State<OtherSubPlayList>
                       ),
                       delegate: SliverChildBuilderDelegate((context, index) {
                         return InkWell(
-                          onTap: () => NavigatorUtil.goPlayListDetailPage(
-                            context,
-                            expandedHeight: 520,
-                            id: _source[index].id,
-                            official: widget.index == 1 ? true : false,
-                          ),
+                          onTap: () {
+                            Navigator.pushNamed(context,
+                                Routes.NETEASECLOUDMUSIC_PLAYLISTDETAILSCREEN,
+                                arguments: {
+                                  "expandedHeight": 520.0,
+                                  "id": _source[index].id,
+                                  "official": widget.index == 1 ? true : false,
+                                });
+                          },
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[

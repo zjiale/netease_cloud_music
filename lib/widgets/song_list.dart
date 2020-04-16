@@ -7,12 +7,13 @@ import 'package:marquee_flutter/marquee_flutter.dart';
 import 'package:netease_cloud_music/model/music_song_model.dart';
 import 'package:netease_cloud_music/model/play_list.detail.dart';
 import 'package:netease_cloud_music/model/subscribers_model.dart';
+import 'package:netease_cloud_music/netease_cloud_music_route.dart';
 import 'package:netease_cloud_music/screens/playlist/play_list_bottom.dart';
 import 'package:netease_cloud_music/screens/playlist/play_list_description.dart';
+import 'package:netease_cloud_music/screens/playlist/subscriber_screen.dart';
 import 'package:netease_cloud_music/store/index.dart';
 import 'package:netease_cloud_music/store/model/play_song_model.dart';
 import 'package:netease_cloud_music/utils/numbers_convert.dart';
-import 'package:netease_cloud_music/utils/routes/navigator_util.dart';
 import 'package:netease_cloud_music/widgets/fade_network_image.dart';
 import 'package:netease_cloud_music/widgets/play_list_cover.dart';
 import 'package:netease_cloud_music/widgets/sliver_appbar_custom.dart';
@@ -284,8 +285,11 @@ class _SongListState extends State<SongList> {
         SliverToBoxAdapter(
             child: widget.suscribers.length > 0
                 ? GestureDetector(
-                    onTap: () =>
-                        NavigatorUtil.goSubscribersPage(context, id: widget.id),
+                    onTap: () {
+                      Navigator.pushNamed(
+                          context, Routes.NETEASECLOUDMUSIC_SUSCRIBERSCREEN,
+                          arguments: {"id": widget.id});
+                    },
                     child: Container(
                       color: Colors.transparent,
                       padding: EdgeInsets.only(

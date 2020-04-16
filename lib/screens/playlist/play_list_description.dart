@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:ff_annotation_route/ff_annotation_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:netease_cloud_music/model/play_list.detail.dart';
@@ -7,6 +8,12 @@ import 'package:netease_cloud_music/widgets/desc_chip.dart';
 import 'package:netease_cloud_music/widgets/desc_divider.dart';
 import 'package:netease_cloud_music/widgets/fade_network_image.dart';
 
+@FFRoute(
+    name: "neteasecloudmusic://playlistdetaildescription",
+    routeName: "PlayListDetailDescription",
+    argumentNames: ["bgColor", "detail"],
+    pageRouteType: PageRouteType.material,
+    description: "歌单详情描述,bgColor是用来设置背景模糊曾颜色,detail则是详情描述内容")
 class PlayListDescription extends StatelessWidget {
   final Color bgColor;
   final PlayListDetailModel detail;

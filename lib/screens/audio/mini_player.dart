@@ -1,8 +1,9 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:netease_cloud_music/netease_cloud_music_route.dart';
+import 'package:netease_cloud_music/screens/audio/audio_player_screen.dart';
 import 'package:netease_cloud_music/store/model/play_song_model.dart';
-import 'package:netease_cloud_music/utils/routes/navigator_util.dart';
 
 class MiniPlayer extends StatelessWidget {
   final PlaySongModel model;
@@ -15,7 +16,8 @@ class MiniPlayer extends StatelessWidget {
             stream: model.curPositionStream,
             builder: (context, AsyncSnapshot snapshot) {
               return GestureDetector(
-                onTap: () => NavigatorUtil.goAudioPage(context),
+                onTap: () => Navigator.pushNamed(
+                    context, Routes.NETEASECLOUDMUSIC_AUDIOPLAYERSCREEN),
                 child: Container(
                     padding: EdgeInsets.only(left: 10.0),
                     height: ScreenUtil().setHeight(80.0),

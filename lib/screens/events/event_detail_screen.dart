@@ -1,3 +1,4 @@
+import 'package:ff_annotation_route/ff_annotation_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_easyrefresh/material_footer.dart';
@@ -15,10 +16,15 @@ import 'package:netease_cloud_music/widgets/comment_item.dart';
 import 'package:netease_cloud_music/widgets/data_loading.dart';
 import 'package:rect_getter/rect_getter.dart';
 
+@FFRoute(
+    name: "neteasecloudmusic://eventdetailscreen",
+    routeName: "EventDetailScreen",
+    argumentNames: ["event"],
+    pageRouteType: PageRouteType.material,
+    description: "云村动态详情界面,event是具体详情内容")
 class EventDetailScreen extends StatefulWidget {
   final Events event;
-  final int index;
-  EventDetailScreen({@required this.event, this.index});
+  EventDetailScreen({@required this.event});
 
   @override
   _EventDetailScreenState createState() => _EventDetailScreenState();

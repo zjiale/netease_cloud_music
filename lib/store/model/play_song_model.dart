@@ -9,7 +9,6 @@ import 'package:netease_cloud_music/utils/config.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:netease_cloud_music/model/music_song_model.dart';
 import 'package:netease_cloud_music/utils/cache.dart';
-import 'package:netease_cloud_music/utils/fluro_convert_util.dart';
 
 class PlaySongModel with ChangeNotifier {
   static const String _SongKey = 'PLAYING_SONG';

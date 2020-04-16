@@ -1,21 +1,26 @@
 import 'dart:ui';
 import 'package:async/async.dart';
+import 'package:ff_annotation_route/ff_annotation_route.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:netease_cloud_music/api/CommonService.dart';
-import 'package:netease_cloud_music/model/play_list_model.dart';
+import 'package:netease_cloud_music/netease_cloud_music_route.dart' as prefix;
 import 'package:netease_cloud_music/store/index.dart';
 import 'package:netease_cloud_music/store/model/user_model.dart';
 import 'package:netease_cloud_music/utils/config.dart';
-import 'package:netease_cloud_music/utils/routes/navigator_util.dart';
 import 'package:netease_cloud_music/widgets/fade_network_image.dart';
 import 'package:netease_cloud_music/widgets/flexible_detail_bar.dart';
 import 'package:netease_cloud_music/widgets/space_bar.dart';
 import 'package:netease_cloud_music/widgets/user_center_area.dart';
 import 'package:netease_cloud_music/widgets/user_center_list.dart';
 
+@FFRoute(
+    name: "neteasecloudmusic://usercenterscreen",
+    routeName: "UserCenterScreen",
+    pageRouteType: PageRouteType.material,
+    description: "用户中心，查看用户当前信息以及歌单")
 class UserCenterScreen extends StatefulWidget {
   @override
   _UserCenterScreenState createState() => _UserCenterScreenState();
@@ -106,8 +111,15 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
     List<Widget> _list = [];
     for (int i = 0; i < _length; i++) {
       _list.add(GestureDetector(
-        onTap: () => NavigatorUtil.goPlayListDetailPage(context,
-            expandedHeight: 520, id: index == 0 ? create[i].id : collect[i].id),
+        onTap: () {
+          Navigator.pushNamed(
+              context, prefix.Routes.NETEASECLOUDMUSIC_PLAYLISTDETAILSCREEN,
+              arguments: {
+                "expandedHeight": 520.0,
+                "id": index == 0 ? create[i].id : collect[i].id,
+                "official": false
+              });
+        },
         child: UserCenterList(index == 0 ? create[i].name : collect[i].name,
             subTitle:
                 '${index == 0 ? create[i].trackCount : collect[i].trackCount}首',
@@ -182,11 +194,14 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                     ]),
                   ),
                 ),
-                background: Image.asset('assets/timg.jpg',
-                    width: MediaQuery.of(context).size.width,
-                    fit: BoxFit.cover,
-                    colorBlendMode: BlendMode.srcOver,
-                    color: Colors.black54)),
+                background: Container(
+                  color: Colors.white,
+                  child: Image.asset('assets/timg.jpg',
+                      width: MediaQuery.of(context).size.width,
+                      fit: BoxFit.cover,
+                      colorBlendMode: BlendMode.srcOver,
+                      color: Colors.black54),
+                )),
             bottom: SpaceBar()),
         SliverToBoxAdapter(
             child: Container(

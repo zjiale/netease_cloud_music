@@ -3,11 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:netease_cloud_music/model/center_area_model.dart';
 import 'package:netease_cloud_music/model/search_type.dart';
 import 'package:netease_cloud_music/utils/cache.dart';
-import 'package:netease_cloud_music/utils/fluro/src/router.dart';
 
 class Config {
-  static Router router;
-
   Map<String, String> _headerMap;
 
   static const int SUCCESS_CODE = 200;

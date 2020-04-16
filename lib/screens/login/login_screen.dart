@@ -1,11 +1,17 @@
+import 'package:ff_annotation_route/ff_annotation_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:netease_cloud_music/screens/home/home_screen.dart';
+import 'package:netease_cloud_music/netease_cloud_music_route.dart' as prefix;
 import 'package:netease_cloud_music/store/index.dart';
 import 'package:netease_cloud_music/store/model/play_video_model.dart';
 import 'package:netease_cloud_music/store/model/user_model.dart';
 
+@FFRoute(
+    name: "neteasecloudmusic://loginscreen",
+    routeName: "LoginScreen",
+    pageRouteType: PageRouteType.transparent,
+    description: "登录界面")
 class LoginScreen extends StatefulWidget {
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -99,10 +105,11 @@ class _LoginScreenState extends State<LoginScreen> {
               userModel.login(int.parse(_phone), _password).then((res) {
                 if (res != null) {
                   userModel.setUser(res);
-                  Navigator.push(
+                  Navigator.pushNamedAndRemoveUntil(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) => HomeScreen(model: videoModel)));
+                      prefix.Routes.NETEASECLOUDMUSIC_HOMESCREEN,
+                      (Route<dynamic> route) => false,
+                      arguments: {"model": videoModel});
                 }
               });
             }

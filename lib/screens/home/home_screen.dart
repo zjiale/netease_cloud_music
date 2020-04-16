@@ -3,12 +3,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:netease_cloud_music/netease_cloud_music_route.dart' as prefix;
 import 'package:netease_cloud_music/screens/audio/mini_player.dart';
 import 'package:netease_cloud_music/screens/find/find_screen.dart';
 import 'package:netease_cloud_music/screens/home/tab_title.dart';
 import 'package:netease_cloud_music/screens/events/events_screen.dart';
-import 'package:netease_cloud_music/screens/login/login_screen.dart';
-import 'package:netease_cloud_music/screens/search/search_screens.dart';
 import 'package:netease_cloud_music/screens/user_center/user_center_screen.dart';
 import 'package:netease_cloud_music/screens/video/video_screen.dart';
 import 'package:netease_cloud_music/store/index.dart';
@@ -224,8 +223,9 @@ class _HomeScreenState extends State<HomeScreen>
               child: ListTile(
                 onTap: () {
                   SpUtil.preferences.clear();
-                  Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(builder: (context) => LoginScreen()),
+                  Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      prefix.Routes.NETEASECLOUDMUSIC_LOGINSCREEN,
                       (Route<dynamic> route) => false);
                 },
                 leading: Text(
@@ -291,10 +291,8 @@ class _HomeScreenState extends State<HomeScreen>
                       icon: Icon(Icons.search,
                           color:
                               _currentIndex == 0 ? Colors.white : Colors.black),
-                      onPressed: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => SearchScreens())))
+                      onPressed: () => Navigator.pushNamed(context,
+                          prefix.Routes.NETEASECLOUDMUSIC_SEARCHSCREEN))
                 ]),
           ),
           Positioned(

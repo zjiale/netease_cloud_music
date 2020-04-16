@@ -8,12 +8,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:netease_cloud_music/model/event_content_model.dart';
 import 'package:netease_cloud_music/model/event_model.dart';
 import 'package:netease_cloud_music/model/music_song_model.dart';
+import 'package:netease_cloud_music/netease_cloud_music_route.dart';
+import 'package:netease_cloud_music/screens/audio/audio_player_screen.dart';
+import 'package:netease_cloud_music/screens/playlist/play_list_detail_screen.dart';
 import 'package:netease_cloud_music/store/index.dart';
 import 'package:netease_cloud_music/store/model/play_song_model.dart';
 import 'package:netease_cloud_music/store/model/play_video_model.dart';
 import 'package:netease_cloud_music/utils/config.dart';
 import 'package:netease_cloud_music/utils/my_special_textspan_builder.dart';
-import 'package:netease_cloud_music/utils/routes/navigator_util.dart';
 import 'package:netease_cloud_music/widgets/fade_network_image.dart';
 import 'package:netease_cloud_music/widgets/list_item_player.dart';
 import 'package:netease_cloud_music/widgets/play_list_cover.dart';
@@ -243,11 +245,15 @@ class _EventDescriptionState extends State<EventDescription> {
       case 13: //分享歌单
         _subTitle = "分享歌单";
         _main = InkWell(
-          onTap: () => NavigatorUtil.goPlayListDetailPage(
-            context,
-            expandedHeight: 520,
-            id: _content.playlist.id,
-          ),
+          onTap: () {
+            Navigator.pushNamed(
+                context, Routes.NETEASECLOUDMUSIC_PLAYLISTDETAILSCREEN,
+                arguments: {
+                  "expandedHeight": 520.0,
+                  "id": _content.playlist.id,
+                  "official": false,
+                });
+          },
           child: _defaultContent(
               url: _content.playlist.coverImgUrl,
               title: _content.playlist.name,
@@ -269,7 +275,9 @@ class _EventDescriptionState extends State<EventDescription> {
                 artists: Config().formatArtist(_list),
                 picUrl: _content.song.album.picUrl);
             widget.model.playOneSong(song);
-            NavigatorUtil.goAudioPage(context);
+
+            Navigator.pushNamed(
+                context, Routes.NETEASECLOUDMUSIC_AUDIOPLAYERSCREEN);
           },
           child: _defaultContent(
               url: _content.song.album.blurPicUrl,

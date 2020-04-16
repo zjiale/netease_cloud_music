@@ -28,8 +28,12 @@ class SliverAppBarCustom extends StatelessWidget {
         titleSpacing: 0.0,
         title: title,
         actions: actions,
-        flexibleSpace:
-            FlexibleDetailBar(content: content, background: background),
+        flexibleSpace: FlexibleDetailBar(
+            content: content,
+            background: Container(
+              color: Colors.white,
+              child: background,
+            )),
         bottom: bottom);
   }
 }

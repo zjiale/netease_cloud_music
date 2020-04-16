@@ -1,18 +1,25 @@
+import 'package:ff_annotation_route/ff_annotation_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:netease_cloud_music/api/CommonService.dart';
 import 'package:netease_cloud_music/model/play_list_abstract_model.dart';
+import 'package:netease_cloud_music/netease_cloud_music_route.dart' as prefix;
 import 'package:netease_cloud_music/screens/playlist/play_list_detail_screen.dart';
 import 'package:netease_cloud_music/widgets/data_loading.dart';
 import 'package:netease_cloud_music/widgets/play_list_cover.dart';
 
-class RankListScreens extends StatefulWidget {
+@FFRoute(
+    name: "neteasecloudmusic://ranklistscreen",
+    routeName: "SubscriberScreen",
+    pageRouteType: PageRouteType.material,
+    description: "排行榜列表")
+class RankListScreen extends StatefulWidget {
   @override
-  _RankListScreensState createState() => _RankListScreensState();
+  _RankListScreenState createState() => _RankListScreenState();
 }
 
-class _RankListScreensState extends State<RankListScreens>
+class _RankListScreenState extends State<RankListScreen>
     with AutomaticKeepAliveClientMixin {
   CommmonService api = CommmonService();
 
@@ -78,13 +85,12 @@ class _RankListScreensState extends State<RankListScreens>
                   SliverChildBuilderDelegate((BuildContext context, int index) {
                 return GestureDetector(
                   onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => PlayListDetailScreen(
-                                  expandedHeight: 520,
-                                  id: _main[index].id,
-                                )));
+                    Navigator.pushNamed(context,
+                        prefix.Routes.NETEASECLOUDMUSIC_PLAYLISTDETAILSCREEN,
+                        arguments: {
+                          "expandedHeight": 520.0,
+                          "id": _main[index].id
+                        });
                   },
                   child: Padding(
                     padding: EdgeInsets.only(bottom: 10.0),

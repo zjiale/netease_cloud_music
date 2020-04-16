@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:extended_image/extended_image.dart';
+import 'package:ff_annotation_route/ff_annotation_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:netease_cloud_music/api/CommonService.dart';
@@ -16,6 +17,11 @@ import 'package:netease_cloud_music/widgets/data_loading.dart';
 import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart'
     as extended;
 
+@FFRoute(
+    name: "neteasecloudmusic://searchscreen",
+    routeName: "SearchScreen",
+    pageRouteType: PageRouteType.material,
+    description: "搜索界面,由首页和详情页组成")
 class SearchScreens extends StatefulWidget {
   @override
   _SearchScreensState createState() => _SearchScreensState();

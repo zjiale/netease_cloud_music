@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:async/async.dart';
+import 'package:ff_annotation_route/ff_annotation_route.dart';
 
 import 'package:flutter/material.dart';
 import 'package:color_thief_flutter/color_thief_flutter.dart';
@@ -15,6 +16,13 @@ import 'package:netease_cloud_music/store/model/play_song_model.dart';
 import 'package:netease_cloud_music/utils/config.dart';
 import 'package:netease_cloud_music/widgets/song_list.dart';
 
+@FFRoute(
+    name: "neteasecloudmusic://playlistdetailscreen",
+    routeName: "PlayListDetailScreen",
+    argumentNames: ["expandedHeight", "id", "official"],
+    pageRouteType: PageRouteType.material,
+    description:
+        "歌单详情界面,expandedHeight是给定一个详情界面头部高度,official是用来判断是否为官方歌单，官方歌单界面与普通有所不同所以需要加以判断")
 class PlayListDetailScreen extends StatefulWidget {
   final double expandedHeight;
   final int id;

@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:ff_annotation_route/ff_annotation_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:netease_cloud_music/screens/audio/mini_player.dart';
@@ -10,6 +11,12 @@ import 'package:netease_cloud_music/widgets/fade_network_image.dart';
 import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart'
     as extended;
 
+@FFRoute(
+    name: "neteasecloudmusic://playlistgroundscreen",
+    routeName: "PlayListGroundScreen",
+    argumentNames: ["tagList"],
+    pageRouteType: PageRouteType.material,
+    description: "全部歌单界面,tagList为歌单类型，在首页提前加载")
 class PlayListGroundScreen extends StatefulWidget {
   final List tagList;
   PlayListGroundScreen({@required this.tagList});

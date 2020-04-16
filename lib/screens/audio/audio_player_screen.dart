@@ -17,7 +17,7 @@ import 'package:netease_cloud_music/utils/numbers_convert.dart';
 @FFRoute(
     name: "neteasecloudmusic://audioplayerscreen",
     routeName: "DailyRecommendScreen",
-    pageRouteType: PageRouteType.transparent,
+    pageRouteType: PageRouteType.material,
     description: "播放歌曲页面")
 class AudioPlayerScreen extends StatefulWidget {
   @override
@@ -205,8 +205,9 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
         _controller.forward();
       }
       return Stack(alignment: AlignmentDirectional.center, children: <Widget>[
-        Image.network(
+        ExtendedImage.network(
           model.curSong.picUrl,
+          cache: true,
           fit: BoxFit.cover,
           alignment: Alignment.center,
           height: double.infinity,
