@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
 
@@ -5,6 +6,7 @@ import 'package:color_thief_flutter/color_thief_flutter.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
+import 'package:flutter/foundation.dart';
 import 'package:netease_cloud_music/api/api.dart';
 import 'package:netease_cloud_music/model/banner_model.dart';
 import 'package:netease_cloud_music/model/comment_model.dart';
@@ -16,7 +18,7 @@ import 'package:netease_cloud_music/model/play_list_model.dart';
 import 'package:netease_cloud_music/model/play_list_tags_model.dart';
 import 'package:netease_cloud_music/model/rank.dart';
 import 'package:netease_cloud_music/model/rank_list_model.dart' as rank;
-import 'package:netease_cloud_music/model/recommend_list_model.dart';
+import 'package:netease_cloud_music/model/recommend_list_model.dart' as prefix;
 import 'package:netease_cloud_music/model/recommend_song_list_model.dart';
 import 'package:netease_cloud_music/model/search_default_model.dart';
 import 'package:netease_cloud_music/model/search_hot_detail_model.dart';
@@ -41,6 +43,53 @@ import 'package:netease_cloud_music/model/search_video_detail_model.dart'
 import 'package:netease_cloud_music/utils/config.dart';
 import 'package:path_provider/path_provider.dart';
 
+List<Banners> parseBanner(var bannerJson) {
+  BannersModel _bean = BannersModel.fromJson(bannerJson);
+  return _bean.banners;
+}
+
+List<prefix.Recommend> parseRecommend(var recommendListJson) {
+  prefix.RecommendListModel _bean =
+      prefix.RecommendListModel.fromJson(recommendListJson);
+  return _bean.recommend;
+}
+
+List<Albums> parseAlbum(var albumJson) {
+  NewestAlbumModel _bean = NewestAlbumModel.fromJson(albumJson);
+  _bean.albums
+    ..shuffle()
+    ..removeRange(6, _bean.albums.length);
+  return _bean.albums;
+}
+
+List<Banners> parseRecommendSongList(var songListJson) {
+  RecommendSongListModel _bean = RecommendSongListModel.fromJson(songListJson);
+
+  List recommendSongList = _bean.recommend
+    ..shuffle()
+    ..removeWhere((song) => song.status == -200 || song.fee == 1)
+    ..removeRange(9, _bean.recommend.length);
+  String reason = _bean.recommend.first.reason;
+  var filter = _bean.recommend.takeWhile((item) => item.reason == reason);
+  return recommendSongList;
+}
+
+// List<Banners> parseBanner(var urlString) {
+//   BannersModel _bean = BannersModel.fromJson(urlString);
+//   return _bean.banners;
+// }
+
+List<Banners> parseTags(var tagJson) {
+  List _tagList = [];
+  PlaylistsTagsModel _bean = PlaylistsTagsModel.fromJson(tagJson);
+  _tagList..add("推荐")..add("官方");
+  _bean.tags.forEach((tag) {
+    if (tag.hot == true && (tag.category == 0 || tag.category == 1))
+      _tagList.add(tag.name);
+  });
+  return _tagList;
+}
+
 class CommmonService {
   int _code = Config.SUCCESS_CODE;
   static Dio _dio;
@@ -61,58 +110,25 @@ class CommmonService {
     }
     Response result =
         await _dio.get("${Api.BANNER}?type=$_type", options: _getOptions());
-    if (result.statusCode == 200) {
-      BannersModel _bean = BannersModel.fromJson(result.data);
-      if (_bean.code == _code) {
-        return _bean.banners;
-      }
-    }
+    return compute(parseBanner, result.data);
   }
 
   Future<List> getRecommendList() async {
     Response result =
         await _dio.get(Api.RECOMMEND_LIST, options: _getOptions());
-    if (result.statusCode == 200) {
-      RecommendListModel _bean = RecommendListModel.fromJson(result.data);
-      if (_bean.code == _code) {
-        return _bean.recommend;
-      }
-    }
+    return compute(parseRecommend, result.data);
   }
 
   Future<List> getRecommendSongList() async {
     Response result =
         await _dio.get(Api.RECOMMEND_SONG_LIST, options: _getOptions());
-    if (result.statusCode == 200) {
-      RecommendSongListModel _bean =
-          RecommendSongListModel.fromJson(result.data);
-      if (_bean.code == _code) {
-        List recommendSongList = _bean.recommend
-          ..shuffle()
-          ..removeWhere((song) => song.status == -200 || song.fee == 1)
-          ..removeRange(9, _bean.recommend.length);
-        String reason = _bean.recommend.first.reason;
-        var filter = _bean.recommend.takeWhile((item) => item.reason == reason);
-        if (filter.length > 6) {
-        } else {
-          return recommendSongList;
-        }
-      }
-    }
+    return compute(parseRecommendSongList, result.data);
   }
 
   Future<List> getNewestAlbum() async {
     Response result =
         await _dio.get(Api.NEWEST_ALBUM_LIST, options: _getOptions());
-    if (result.statusCode == 200) {
-      NewestAlbumModel _bean = NewestAlbumModel.fromJson(result.data);
-      if (_bean.code == _code) {
-        _bean.albums
-          ..shuffle()
-          ..removeRange(6, _bean.albums.length);
-        return _bean.albums;
-      }
-    }
+    return compute(parseAlbum, result.data);
   }
 
   Future<PlayListAbstractModel> getRankAbstract() async {
@@ -128,7 +144,7 @@ class CommmonService {
 
   Future<List> getRank() async {
     List _rankType = Config.rankType;
-    List<Rank> _list = new List();
+    List<Rank> _list = [];
 
     for (var i in _rankType) {
       Response result = await _dio.get("${Api.RANK_LIST}?idx=${i["type"]}",
@@ -158,17 +174,8 @@ class CommmonService {
     List<String> _tagList = [];
     Response result =
         await _dio.get(Api.PLAY_LIST_TAGS, options: _getOptions());
-    if (result.statusCode == 200) {
-      PlaylistsTagsModel _bean = PlaylistsTagsModel.fromJson(result.data);
-      if (_bean.code == _code) {
-        _tagList..add("推荐")..add("官方");
-        _bean.tags.forEach((tag) {
-          if (tag.hot == true && (tag.category == 0 || tag.category == 1))
-            _tagList.add(tag.name);
-        });
-      }
-    }
-    return _tagList;
+
+    return compute(parseTags, result.data);
   }
 
   Future<List> getPlayList(int id) async {

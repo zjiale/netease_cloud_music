@@ -36,7 +36,7 @@ class _FadeNetWorkImageState extends State<FadeNetWorkImage>
         fit: widget.fit,
         color: Colors.black26,
         colorBlendMode: BlendMode.srcOver,
-        cache: true, loadStateChanged: (ExtendedImageState state) {
+        loadStateChanged: (ExtendedImageState state) {
       switch (state.extendedImageLoadState) {
         case LoadState.loading:
           _controller.reset();

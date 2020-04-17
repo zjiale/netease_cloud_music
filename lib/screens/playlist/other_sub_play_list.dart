@@ -7,7 +7,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:netease_cloud_music/api/CommonService.dart';
 import 'package:netease_cloud_music/model/top_quality_play_list_model.dart';
 import 'package:netease_cloud_music/netease_cloud_music_route.dart';
-import 'package:netease_cloud_music/screens/playlist/play_list_detail_screen.dart';
 import 'package:netease_cloud_music/screens/playlist/top_disc.dart';
 import 'package:netease_cloud_music/utils/numbers_convert.dart';
 import 'package:netease_cloud_music/widgets/data_loading.dart';

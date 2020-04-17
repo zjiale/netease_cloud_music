@@ -1,4 +1,6 @@
 import 'package:async/async.dart';
+import 'package:extended_image/extended_image.dart';
+import 'package:flutter/foundation.dart';
 
 import 'package:flutter/material.dart';
 import 'package:netease_cloud_music/netease_cloud_music_route.dart';
@@ -154,7 +156,10 @@ class _FindScreenState extends State<FindScreen>
                     backgroundColor: Color(0xffff1916),
                     child:
                         Stack(alignment: Alignment.center, children: <Widget>[
-                      Image.asset(item["image"]),
+                      ExtendedImage.asset(
+                        item["image"],
+                        enableMemoryCache: true,
+                      ),
                       item["index"] == 0
                           ? Align(
                               alignment: FractionalOffset(0.5, 0.55),

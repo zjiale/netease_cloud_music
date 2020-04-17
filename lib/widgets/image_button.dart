@@ -1,3 +1,4 @@
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:netease_cloud_music/utils/config.dart';
 
@@ -14,8 +15,12 @@ class ImageButton extends StatelessWidget {
     return Expanded(
       child: GestureDetector(
         onTap: fun,
-        child: Image.asset("${Config().prefixImg(url)}",
-            width: width, height: height),
+        child: ExtendedImage.asset(
+          "${Config().prefixImg(url)}",
+          width: width,
+          height: height,
+          enableMemoryCache: true,
+        ),
       ),
     );
   }

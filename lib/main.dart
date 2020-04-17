@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
-import 'package:netease_cloud_music/netease_cloud_music_route.dart';
 import 'package:netease_cloud_music/netease_cloud_music_route_helper.dart';
 import 'package:netease_cloud_music/screens/no_route.dart';
 import 'package:netease_cloud_music/screens/splash_screen.dart';
 import 'package:netease_cloud_music/store/model/play_video_model.dart';
 import 'package:netease_cloud_music/store/model/user_model.dart';
-import 'package:netease_cloud_music/utils/config.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:netease_cloud_music/store/index.dart' show Store;
 import 'package:netease_cloud_music/utils/cache.dart';
@@ -33,7 +30,7 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             primaryColor: Color(0xffff1916),
           ),
-          showPerformanceOverlay: false,
+          showPerformanceOverlay: true,
           navigatorObservers: [
             FFNavigatorObserver(routeChange: (
               Route newRoute,
