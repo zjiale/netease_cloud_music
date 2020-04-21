@@ -11,6 +11,9 @@ import 'package:netease_cloud_music/utils/cache.dart';
 
 Future<void> main() async {
   debugPaintSizeEnabled = false;
+  debugPaintLayerBordersEnabled = false;
+  debugRepaintRainbowEnabled = false;
+  debugProfilePaintsEnabled = false;
 
   // 初始化SharedPreferences
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,7 +33,12 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             primaryColor: Color(0xffff1916),
           ),
-          showPerformanceOverlay: true,
+          showPerformanceOverlay: false,
+          checkerboardOffscreenLayers:
+              false, // 使用了saveLayer的图形会显示为棋盘格式并随着页面刷新而闪烁
+          checkerboardRasterCacheImages:
+              false, // 做了缓存的静态图片在刷新页面时不会改变棋盘格的颜色；如果棋盘格颜色变了说明被重新缓存了，这是我们要避免的
+
           navigatorObservers: [
             FFNavigatorObserver(routeChange: (
               Route newRoute,

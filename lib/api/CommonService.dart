@@ -43,53 +43,6 @@ import 'package:netease_cloud_music/model/search_video_detail_model.dart'
 import 'package:netease_cloud_music/utils/config.dart';
 import 'package:path_provider/path_provider.dart';
 
-List<Banners> parseBanner(var bannerJson) {
-  BannersModel _bean = BannersModel.fromJson(bannerJson);
-  return _bean.banners;
-}
-
-List<prefix.Recommend> parseRecommend(var recommendListJson) {
-  prefix.RecommendListModel _bean =
-      prefix.RecommendListModel.fromJson(recommendListJson);
-  return _bean.recommend;
-}
-
-List<Albums> parseAlbum(var albumJson) {
-  NewestAlbumModel _bean = NewestAlbumModel.fromJson(albumJson);
-  _bean.albums
-    ..shuffle()
-    ..removeRange(6, _bean.albums.length);
-  return _bean.albums;
-}
-
-List<Banners> parseRecommendSongList(var songListJson) {
-  RecommendSongListModel _bean = RecommendSongListModel.fromJson(songListJson);
-
-  List recommendSongList = _bean.recommend
-    ..shuffle()
-    ..removeWhere((song) => song.status == -200 || song.fee == 1)
-    ..removeRange(9, _bean.recommend.length);
-  String reason = _bean.recommend.first.reason;
-  var filter = _bean.recommend.takeWhile((item) => item.reason == reason);
-  return recommendSongList;
-}
-
-// List<Banners> parseBanner(var urlString) {
-//   BannersModel _bean = BannersModel.fromJson(urlString);
-//   return _bean.banners;
-// }
-
-List<Banners> parseTags(var tagJson) {
-  List _tagList = [];
-  PlaylistsTagsModel _bean = PlaylistsTagsModel.fromJson(tagJson);
-  _tagList..add("推荐")..add("官方");
-  _bean.tags.forEach((tag) {
-    if (tag.hot == true && (tag.category == 0 || tag.category == 1))
-      _tagList.add(tag.name);
-  });
-  return _tagList;
-}
-
 class CommmonService {
   int _code = Config.SUCCESS_CODE;
   static Dio _dio;
@@ -101,6 +54,32 @@ class CommmonService {
     _dio = Dio()..interceptors.add(CookieManager(cj)); // 开启请求日志
   }
 
+  static Future<Response> _get(
+    String url, {
+    Map<String, dynamic> params,
+  }) async {
+    try {
+      return await _dio.get(url,
+          queryParameters: params, options: _getOptions());
+    } on DioError catch (e) {
+      if (e == null) {
+        return Future.error(Response(data: -1));
+      } else if (e.response != null) {
+        if (e.response.statusCode >= 300 && e.response.statusCode < 400) {
+          return Future.error(Response(data: -1));
+        } else {
+          return Future.value(e.response);
+        }
+      } else {
+        return Future.error(Response(data: -1));
+      }
+    } finally {}
+  }
+
+  static Options _getOptions() {
+    return Options(headers: Config().getHeader());
+  }
+
   Future<List> getBanner() async {
     int _type;
     if (Platform.isAndroid) {
@@ -108,32 +87,47 @@ class CommmonService {
     } else if (Platform.isIOS) {
       _type = 2;
     }
-    Response result =
-        await _dio.get("${Api.BANNER}?type=$_type", options: _getOptions());
-    return compute(parseBanner, result.data);
+    Response result = await _get("${Api.BANNER}?type=$_type");
+    BannersModel _bean = BannersModel.fromJson(result.data);
+    List<Banners> _banners = _bean.banners;
+    return _banners;
   }
 
   Future<List> getRecommendList() async {
-    Response result =
-        await _dio.get(Api.RECOMMEND_LIST, options: _getOptions());
-    return compute(parseRecommend, result.data);
+    Response result = await _get(Api.RECOMMEND_LIST);
+    prefix.RecommendListModel _bean =
+        prefix.RecommendListModel.fromJson(result.data);
+
+    List<prefix.Recommend> _recommendList = _bean.recommend;
+    return _recommendList;
   }
 
   Future<List> getRecommendSongList() async {
-    Response result =
-        await _dio.get(Api.RECOMMEND_SONG_LIST, options: _getOptions());
-    return compute(parseRecommendSongList, result.data);
+    Response result = await _get(Api.RECOMMEND_SONG_LIST);
+    RecommendSongListModel _bean = RecommendSongListModel.fromJson(result.data);
+
+    List recommendSongList = _bean.recommend
+      ..shuffle()
+      ..removeWhere((song) => song.status == -200 || song.fee == 1)
+      ..removeRange(9, _bean.recommend.length);
+    String reason = _bean.recommend.first.reason;
+    var filter = _bean.recommend.takeWhile((item) => item.reason == reason);
+    return recommendSongList;
   }
 
   Future<List> getNewestAlbum() async {
-    Response result =
-        await _dio.get(Api.NEWEST_ALBUM_LIST, options: _getOptions());
-    return compute(parseAlbum, result.data);
+    Response result = await _get(Api.NEWEST_ALBUM_LIST);
+    NewestAlbumModel _bean = NewestAlbumModel.fromJson(result.data);
+    _bean.albums
+      ..shuffle()
+      ..removeRange(6, _bean.albums.length);
+
+    List<Albums> _albums = _bean.albums;
+    return _albums;
   }
 
   Future<PlayListAbstractModel> getRankAbstract() async {
-    Response result =
-        await _dio.get(Api.RANK_LIST_ABSTRACT, options: _getOptions());
+    Response result = await _get(Api.RANK_LIST_ABSTRACT);
     if (result.statusCode == 200) {
       PlayListAbstractModel _bean = PlayListAbstractModel.fromJson(result.data);
       if (_bean.code == _code) {
@@ -142,45 +136,42 @@ class CommmonService {
     }
   }
 
-  Future<List> getRank() async {
-    List _rankType = Config.rankType;
-    List<Rank> _list = [];
+  static List<rank.Tracks> parseRank(var rankJson) {
+    rank.RankListModel _bean = rank.RankListModel.fromJson(rankJson);
+    return _bean.playlist.tracks.sublist(0, 3);
+  }
 
-    for (var i in _rankType) {
-      Response result = await _dio.get("${Api.RANK_LIST}?idx=${i["type"]}",
-          options: _getOptions());
-      if (result.statusCode == 200) {
-        rank.RankListModel _bean = rank.RankListModel.fromJson(result.data);
-        if (_bean.code == _code) {
-          List<rank.Tracks> tracks = _bean.playlist.tracks.sublist(0, 3);
-          getColorFromUrl(tracks.first.al.picUrl).then((color) {
-            return Color.fromRGBO(color[0], color[1], color[2], 1);
-          }).then((color) {
-            Rank _rank = Rank(
-                title: "${i["title"]}",
-                content: _bean.playlist.tracks.sublist(0, 3),
-                bgColor: color);
+  Future<Rank> getRank(var rankType) async {
+    Rank _rank;
+    Response result = await _get(
+      "${Api.RANK_LIST}?idx=${rankType["type"]}",
+    );
+    // rank.RankListModel _bean = rank.RankListModel.fromJson(result.data);
+    List<rank.Tracks> tracks = await compute(parseRank, result.data);
 
-            _list.add(_rank);
-          });
-        }
-      }
-    }
+    var getColor = await getColorFromUrl(tracks.first.al.picUrl);
+    Color _color = Color.fromRGBO(getColor[0], getColor[1], getColor[2], 1);
 
-    return _list;
+    _rank = Rank(title: rankType["title"], content: tracks, bgColor: _color);
+
+    return _rank;
   }
 
   Future<List> getPlayLitsTags() async {
-    List<String> _tagList = [];
-    Response result =
-        await _dio.get(Api.PLAY_LIST_TAGS, options: _getOptions());
+    List _tagList = [];
+    Response result = await _get(Api.PLAY_LIST_TAGS);
 
-    return compute(parseTags, result.data);
+    PlaylistsTagsModel _bean = PlaylistsTagsModel.fromJson(result.data);
+    _tagList..add("推荐")..add("官方");
+    _bean.tags.forEach((tag) {
+      if (tag.hot == true && (tag.category == 0 || tag.category == 1))
+        _tagList.add(tag.name);
+    });
+    return _tagList;
   }
 
   Future<List> getPlayList(int id) async {
-    Response result =
-        await _dio.get("${Api.PLAY_LIST}?uid=$id", options: _getOptions());
+    Response result = await _get("${Api.PLAY_LIST}?uid=$id");
     if (result.statusCode == 200) {
       PlayListModel _bean = PlayListModel.fromJson(result.data);
       if (_bean.code == _code) {
@@ -191,9 +182,9 @@ class CommmonService {
 
   Future<TopQualityPlayListModel> getGroundPlayList(
       {int offset = 0, String cat = ""}) async {
-    Response result = await _dio.get(
-        "${Api.TOP_PLAY_LIST}?limit=35&offset=$offset&cat=$cat",
-        options: _getOptions());
+    Response result = await _get(
+      "${Api.TOP_PLAY_LIST}?limit=35&offset=$offset&cat=$cat",
+    );
     if (result.statusCode == 200) {
       TopQualityPlayListModel _bean =
           TopQualityPlayListModel.fromJson(result.data);
@@ -204,14 +195,15 @@ class CommmonService {
   }
 
   Future<Response> getDetailPlayList(int id) async {
-    return await _dio.get("${Api.PLAY_LIST_DETAIL}?id=$id",
-        options: _getOptions());
+    return await _get(
+      "${Api.PLAY_LIST_DETAIL}?id=$id",
+    );
   }
 
   Future<SubscribersListModel> getSubscribers(int id, {int offset = 0}) async {
-    Response result = await _dio.get(
-        "${Api.SUBSCRIBERS}?id=$id&limit=20&offset=$offset",
-        options: _getOptions());
+    Response result = await _get(
+      "${Api.SUBSCRIBERS}?id=$id&limit=20&offset=$offset",
+    );
     if (result.statusCode == 200) {
       SubscribersListModel _bean = SubscribersListModel.fromJson(result.data);
       if (_bean.code == _code) {
@@ -222,8 +214,9 @@ class CommmonService {
 
   Future<EventModel> getEvent({int lasttime = 0}) async {
     // type: 18 分享歌曲  24 分享专栏文章 13 分享歌单 39 发布视频
-    Response result = await _dio.get("${Api.EVENT}?lasttime=$lasttime",
-        options: _getOptions());
+    Response result = await _get(
+      "${Api.EVENT}?lasttime=$lasttime",
+    );
     if (result.statusCode == 200) {
       EventModel _bean = EventModel.fromJson(result.data);
       if (_bean.code == _code) {
@@ -233,8 +226,7 @@ class CommmonService {
   }
 
   Future<List> getFollows() async {
-    Response result =
-        await _dio.get("${Api.FOLLOWS}?uid=93412043", options: _getOptions());
+    Response result = await _get("${Api.FOLLOWS}?uid=93412043");
     if (result.statusCode == 200) {
       FollowModel _bean = FollowModel.fromJson(result.data);
       if (_bean.code == _code) {
@@ -246,9 +238,9 @@ class CommmonService {
 
   Future<CommentModel> getEventComment(String threadId,
       {int offset = 0}) async {
-    Response result = await _dio.get(
-        "${Api.EVENT_COMMENT}?threadId=$threadId&offset=$offset",
-        options: _getOptions());
+    Response result = await _get(
+      "${Api.EVENT_COMMENT}?threadId=$threadId&offset=$offset",
+    );
     if (result.statusCode == 200) {
       CommentModel _bean = CommentModel.fromJson(result.data);
       if (_bean.code == _code) {
@@ -258,8 +250,7 @@ class CommmonService {
   }
 
   Future<String> getVideoUrl(String id) async {
-    Response result =
-        await _dio.get("${Api.VIDEO_URL}?id=$id", options: _getOptions());
+    Response result = await _get("${Api.VIDEO_URL}?id=$id");
     if (result.statusCode == 200) {
       VideoUrlModel _bean = VideoUrlModel.fromJson(result.data);
       if (_bean.code == _code) {
@@ -269,9 +260,9 @@ class CommmonService {
   }
 
   Future<CommentModel> getSongComment(int id, {int offset = 0}) async {
-    Response result = await _dio.get(
-        "${Api.SONG_COMMENT}?id=$id&offset=$offset",
-        options: _getOptions());
+    Response result = await _get(
+      "${Api.SONG_COMMENT}?id=$id&offset=$offset",
+    );
     if (result.statusCode == 200) {
       CommentModel _bean = CommentModel.fromJson(result.data);
       if (_bean.code == _code) {
@@ -281,8 +272,7 @@ class CommmonService {
   }
 
   Future<SearchDefaultModel> getSearchDefault() async {
-    Response result =
-        await _dio.get(Api.SEARCH_DEFAULT, options: _getOptions());
+    Response result = await _get(Api.SEARCH_DEFAULT);
     if (result.statusCode == 200) {
       SearchDefaultModel _bean = SearchDefaultModel.fromJson(result.data);
       if (_bean.code == _code) {
@@ -292,8 +282,7 @@ class CommmonService {
   }
 
   Future<SearchHotDetailModel> getSearchHotDetail() async {
-    Response result =
-        await _dio.get(Api.SEARCH_HOT_DETAIL, options: _getOptions());
+    Response result = await _get(Api.SEARCH_HOT_DETAIL);
     if (result.statusCode == 200) {
       SearchHotDetailModel _bean = SearchHotDetailModel.fromJson(result.data);
       if (_bean.code == _code) {
@@ -303,9 +292,9 @@ class CommmonService {
   }
 
   Future<SearchSuggestModel> getSearchSuggest(String keywords) async {
-    Response result = await _dio.get(
-        "${Api.SEARCH_SUGGEST}?keywords=$keywords&type=mobile",
-        options: _getOptions());
+    Response result = await _get(
+      "${Api.SEARCH_SUGGEST}?keywords=$keywords&type=mobile",
+    );
     if (result.statusCode == 200) {
       SearchSuggestModel _bean = SearchSuggestModel.fromJson(result.data);
       if (_bean.code == _code) {
@@ -315,9 +304,9 @@ class CommmonService {
   }
 
   Future getSeachDetail(String keywords, int type) async {
-    Response result = await _dio.get(
-        "${Api.SEARCH_DETAIL}?keywords=$keywords&type=$type",
-        options: _getOptions());
+    Response result = await _get(
+      "${Api.SEARCH_DETAIL}?keywords=$keywords&type=$type",
+    );
     if (result.statusCode == 200) {
       switch (type) {
         case 1018: // 综合
@@ -358,9 +347,5 @@ class CommmonService {
         default:
       }
     }
-  }
-
-  Options _getOptions() {
-    return Options(headers: Config().getHeader());
   }
 }

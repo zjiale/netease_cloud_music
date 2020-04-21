@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:async/async.dart';
+import 'package:extended_image/extended_image.dart';
 import 'package:ff_annotation_route/ff_annotation_route.dart';
 
 import 'package:flutter/material.dart';
@@ -99,9 +100,12 @@ class _PlayListDetailScreenState extends State<PlayListDetailScreen> {
               print(map.key);
             },
             child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-              Image.asset(_button[map.key],
-                  width: ScreenUtil().setWidth(40.0),
-                  height: ScreenUtil().setWidth(40.0)),
+              ExtendedImage.asset(
+                _button[map.key],
+                width: ScreenUtil().setWidth(40.0),
+                height: ScreenUtil().setWidth(40.0),
+                enableMemoryCache: true,
+              ),
               SizedBox(height: ScreenUtil().setHeight(5.0)),
               Text(_text)
             ]),

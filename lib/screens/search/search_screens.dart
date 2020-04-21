@@ -75,6 +75,7 @@ class _SearchScreensState extends State<SearchScreens>
     super.dispose();
   }
 
+// 生成搜索建议
   OverlayEntry _buildSearchSuggest() {
     // 需要添加头部后退的iconbutton 24.0 + 16.0
     return OverlayEntry(builder: (context) {

@@ -51,7 +51,7 @@ class Config {
   static List<String> title = ['我的', '发现', '云村', '视频'];
 
   static List<SearchType> searchType = [
-    SearchType(name: '综合', type: 1018),
+    // SearchType(name: '综合', type: 1018),
     SearchType(name: '单曲', type: 1),
     SearchType(name: '视频', type: 1014),
     SearchType(name: '歌手', type: 100),

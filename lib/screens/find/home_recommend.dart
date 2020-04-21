@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:netease_cloud_music/netease_cloud_music_route.dart';
-import 'package:netease_cloud_music/screens/playlist/play_list_detail_screen.dart';
+
 import 'package:netease_cloud_music/widgets/play_list_cover.dart';
 import 'package:netease_cloud_music/utils/numbers_convert.dart';
+import 'package:provider/provider.dart';
 
 class HomeRecommend extends StatelessWidget {
   final List recommendList;

@@ -5,7 +5,7 @@ import 'package:netease_cloud_music/widgets/net_error.dart';
 
 typedef ValueWidgetBuilder<T> = Widget Function(
   BuildContext context,
-  T value,
+  dynamic value,
 );
 
 /// FutureBuilder 简单封装，除正确返回和错误外，其他返回 小菊花
@@ -94,7 +94,7 @@ class _CustomFutureBuilderState<T> extends State<CustomFutureBuilder<T>> {
                   return widget.loadingWidget;
                 case ConnectionState.done:
                   if (snapshot.hasData) {
-                    return widget.builder(context, snapshot.data);
+                    return widget.builder(context, snapshot);
                   } else if (snapshot.hasError) {
                     return NetErrorWidget(
                       callback: () {

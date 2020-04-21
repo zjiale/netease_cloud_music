@@ -89,7 +89,8 @@ class _RankListScreenState extends State<RankListScreen>
                         prefix.Routes.NETEASECLOUDMUSIC_PLAYLISTDETAILSCREEN,
                         arguments: {
                           "expandedHeight": 520.0,
-                          "id": _main[index].id
+                          "id": _main[index].id,
+                          "official": false,
                         });
                   },
                   child: Padding(

@@ -1,6 +1,5 @@
 import 'package:async/async.dart';
 import 'package:extended_image/extended_image.dart';
-import 'package:flutter/foundation.dart';
 
 import 'package:flutter/material.dart';
 import 'package:netease_cloud_music/netease_cloud_music_route.dart';
@@ -24,6 +23,8 @@ class FindScreen extends StatefulWidget {
 class _FindScreenState extends State<FindScreen>
     with AutomaticKeepAliveClientMixin {
   List _type = Config.type;
+
+  CommmonService api = CommmonService();
 
   DateTime now = new DateTime.now();
   AsyncMemoizer _memoizer = AsyncMemoizer();
@@ -110,16 +111,24 @@ class _FindScreenState extends State<FindScreen>
     super.dispose();
   }
 
+  Future<List> _getRankList() async {
+    List _rankList = [];
+    List _rankType = Config.rankType;
+    for (var item in _rankType) {
+      _rankList.add(await api.getRank(item));
+    }
+    return _rankList;
+  }
+
   _load() {
-    CommmonService api = CommmonService();
     return _memoizer.runOnce(() async {
       return Future.wait([
         api.getBanner(),
         api.getRecommendList(),
         api.getRecommendSongList(),
         api.getNewestAlbum(),
-        api.getRank(),
-        api.getPlayLitsTags()
+        _getRankList(),
+        api.getPlayLitsTags(),
       ]);
     });
   }
@@ -183,7 +192,7 @@ class _FindScreenState extends State<FindScreen>
   }
 
   Widget _home(List bannerList, List recommendList, List recommendSongList,
-      List albumList, List homeRankList, List tags, double ratio) {
+      List albumList, List homeRankList, List tagList, double ratio) {
     return Scaffold(
       backgroundColor: Colors.white,
       body: ListView(
@@ -197,7 +206,7 @@ class _FindScreenState extends State<FindScreen>
                     MediaQuery.of(context).padding.top),
             HomeBanner(bannerList), //banner
             SizedBox(height: ScreenUtil().setHeight(20.0)),
-            _playType(tags), // 首页按钮
+            _playType(tagList), // 首页按钮
             SizedBox(height: ScreenUtil().setHeight(20.0)),
             TitleHeader('推荐歌单', '为你精挑细选', 1),
             SizedBox(height: ScreenUtil().setHeight(20.0)),
@@ -210,26 +219,26 @@ class _FindScreenState extends State<FindScreen>
             TitleHeader('风格推荐', '根据你喜欢的歌曲推荐', 0),
             SizedBox(height: ScreenUtil().setHeight(20.0)),
             HomeMusicList(
+                list: recommendSongList,
                 controller: _controller,
                 physics: _physics,
-                list: recommendSongList,
                 ratio: ratio),
             SizedBox(height: ScreenUtil().setHeight(20.0)),
             TitleHeader('${now.month}月${now.day}日', '新碟', 1),
             SizedBox(height: ScreenUtil().setHeight(20.0)),
             HomeMusicList(
+                list: albumList,
                 controller: _newController,
                 physics: _newPhysics,
-                list: albumList,
                 ratio: ratio,
                 isAlbum: true),
             SizedBox(height: ScreenUtil().setHeight(20.0)),
             TitleHeader('排行榜', '热歌风向标', 1),
             SizedBox(height: ScreenUtil().setHeight(20.0)),
             HomeRank(
+                list: homeRankList,
                 controller: _rankController,
                 physics: _rankPhysics,
-                list: homeRankList,
                 ratio: ratio),
             SizedBox(
                 height: ScreenUtil().setHeight(150.0),
@@ -261,6 +270,8 @@ class _FindScreenState extends State<FindScreen>
             List albumList = snapshot.data[3];
             List homeRankList = snapshot.data[4];
             List tags = snapshot.data[5];
+
+            // return Container();
 
             return _home(bannerList, recommendList, recommendSongList,
                 albumList, homeRankList, tags, ratio);

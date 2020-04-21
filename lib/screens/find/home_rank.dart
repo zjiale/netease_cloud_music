@@ -9,7 +9,7 @@ import 'package:netease_cloud_music/widgets/play_list_cover.dart';
 class HomeRank extends StatelessWidget {
   final ScrollController controller;
   final ScrollPhysics physics;
-  final List<Rank> list;
+  final List list;
   final double ratio;
 
   HomeRank({

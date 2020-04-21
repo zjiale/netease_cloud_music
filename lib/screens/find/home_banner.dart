@@ -2,9 +2,10 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:netease_cloud_music/model/banner_model.dart';
 
 class HomeBanner extends StatelessWidget {
-  final List bannerList;
+  final List<Banners> bannerList;
 
   HomeBanner(this.bannerList);
 

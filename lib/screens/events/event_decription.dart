@@ -359,8 +359,11 @@ class _EventDescriptionState extends State<EventDescription> {
         break;
       default:
         _picList = Container(
-          width:
-              widget.event.pics.length == 4 ? ScreenUtil().setWidth(385) : null,
+          width: widget.event.pics.length == 4
+              ? widget.isDetail
+                  ? ScreenUtil().setWidth(470)
+                  : ScreenUtil().setWidth(385)
+              : null,
           child: GridView.builder(
               physics: ClampingScrollPhysics(),
               shrinkWrap: true,
@@ -410,6 +413,7 @@ class _EventDescriptionState extends State<EventDescription> {
                                 ? widget.event.pendantData.imageAndroidUrl
                                 : widget.event.pendantData.imageUrl,
                             width: ScreenUtil().setWidth(90.0),
+                            pendantData: true,
                           )
                         : SizedBox()
                   ]),
