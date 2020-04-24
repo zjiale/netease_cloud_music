@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-<<<<<<< HEAD
-import 'package:wangyiyun/utils/my_behavior.dart';
-=======
-import 'package:neteast_cloud_music/utils/my_behavior.dart';
->>>>>>> new
+import 'package:netease_cloud_music/utils/my_behavior.dart';
 
 class TabTitle extends StatefulWidget {
   List<String> datas;

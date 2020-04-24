@@ -1,22 +1,26 @@
+import 'package:ff_annotation_route/ff_annotation_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_easyrefresh/material_footer.dart';
 import 'package:flutter_easyrefresh/material_header.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:neteast_cloud_music/api/CommonService.dart';
-import 'package:neteast_cloud_music/model/event_content_model.dart';
-import 'package:neteast_cloud_music/model/event_model.dart';
-import 'package:neteast_cloud_music/model/follow_model.dart';
-import 'package:neteast_cloud_music/screens/events/event_decription.dart';
-import 'package:neteast_cloud_music/screens/events/event_detail_screen.dart';
-import 'package:neteast_cloud_music/store/index.dart';
-import 'package:neteast_cloud_music/store/model/play_song_model.dart';
-import 'package:neteast_cloud_music/store/model/play_video_model.dart';
-import 'package:neteast_cloud_music/utils/config.dart';
-import 'package:neteast_cloud_music/widgets/data_loading.dart';
-import 'package:neteast_cloud_music/widgets/fade_network_image.dart';
+import 'package:netease_cloud_music/api/CommonService.dart';
+import 'package:netease_cloud_music/model/event_model.dart';
+import 'package:netease_cloud_music/model/follow_model.dart';
+import 'package:netease_cloud_music/netease_cloud_music_route.dart' as prefix;
+import 'package:netease_cloud_music/screens/events/event_decription.dart';
+import 'package:netease_cloud_music/store/index.dart';
+import 'package:netease_cloud_music/store/model/play_song_model.dart';
+import 'package:netease_cloud_music/store/model/play_video_model.dart';
+import 'package:netease_cloud_music/widgets/data_loading.dart';
+import 'package:netease_cloud_music/widgets/fade_network_image.dart';
 import 'package:rect_getter/rect_getter.dart';
 
+@FFRoute(
+    name: "neteasecloudmusic://eventscreen",
+    routeName: "EventScreen",
+    pageRouteType: PageRouteType.material,
+    description: "云村动态界面,用于查看用户动态")
 class EventsScreen extends StatefulWidget {
   @override
   _EventsScreenState createState() => _EventsScreenState();
@@ -24,7 +28,7 @@ class EventsScreen extends StatefulWidget {
 
 class _EventsScreenState extends State<EventsScreen>
     with AutomaticKeepAliveClientMixin {
-  int _code = Config.SUCCESS_CODE;
+  CommmonService api = CommmonService();
   int lastTime = 0;
   List<Events> _event = [];
   List<Follow> _followList = [];
@@ -40,26 +44,6 @@ class _EventsScreenState extends State<EventsScreen>
   void dispose() {
     _controller.dispose();
     super.dispose();
-  }
-
-  Future _getFollows() {
-    return CommmonService().getFollows().then((res) {
-      FollowModel _bean = FollowModel.fromJson(res.data);
-      if (_bean.code == _code) {
-        return _bean.follow
-            .sublist(0, _bean.follow.length < 5 ? _bean.follow.length : 5);
-      }
-    });
-  }
-
-  Future _getEvent({int lastTime = 0}) {
-    // type: 18 分享歌曲  24 分享专栏文章 13 分享歌单 39 发布视频
-    return CommmonService().getEvent(lasttime: lastTime).then((res) {
-      EventModel _bean = EventModel.fromJson(res.data);
-      if (_bean.code == _code) {
-        return _bean;
-      }
-    });
   }
 
   List<int> getVisible() {
@@ -206,8 +190,8 @@ class _EventsScreenState extends State<EventsScreen>
                   // height: double.infinity,
                   child: DataLoading()),
               onRefresh: () async {
-                EventModel eventList = await _getEvent();
-                List<Follow> followList = await _getFollows();
+                EventModel eventList = await api.getEvent();
+                List<Follow> followList = await api.getFollows();
                 if (eventList.more) lastTime = eventList.lasttime;
 
                 eventList.event.removeWhere((event) => event.type == 33);
@@ -221,7 +205,7 @@ class _EventsScreenState extends State<EventsScreen>
                 _controller.finishLoad(noMore: !eventList.more);
               },
               onLoad: () async {
-                EventModel eventList = await _getEvent(lastTime: lastTime);
+                EventModel eventList = await api.getEvent(lasttime: lastTime);
                 if (eventList.more) lastTime = eventList.lasttime;
                 if (mounted) {
                   _event.addAll(eventList.event);
@@ -235,7 +219,7 @@ class _EventsScreenState extends State<EventsScreen>
                 ),
                 SliverPadding(
                   padding: EdgeInsets.fromLTRB(
-                      ScreenUtil().setWidth(40.0),
+                      ScreenUtil().setWidth(20.0),
                       ScreenUtil().setWidth(20.0),
                       ScreenUtil().setWidth(40.0),
                       ScreenUtil().setWidth(40.0)),
@@ -244,11 +228,11 @@ class _EventsScreenState extends State<EventsScreen>
                     delegate: SliverChildBuilderDelegate((context, index) {
                       return InkWell(
                           onTap: () {
-                            Navigator.push(
+                            Navigator.pushNamed(
                                 context,
-                                MaterialPageRoute(
-                                    builder: (context) => EventDetailScreen(
-                                        event: _event[index], index: index)));
+                                prefix
+                                    .Routes.NETEASECLOUDMUSIC_EVENTDETAILSCREEN,
+                                arguments: {"event": _event[index]});
                           },
                           child: EventDescription(
                               event: _event[index],

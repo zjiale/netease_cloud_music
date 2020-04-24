@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
-<<<<<<< HEAD
-import 'package:wangyiyun/model/top_quality_play_list_model.dart';
-import 'package:wangyiyun/widgets/play_list_cover.dart';
-=======
-import 'package:neteast_cloud_music/model/top_quality_play_list_model.dart';
-import 'package:neteast_cloud_music/widgets/play_list_cover.dart';
->>>>>>> new
+import 'package:netease_cloud_music/model/top_quality_play_list_model.dart';
+import 'package:netease_cloud_music/widgets/play_list_cover.dart';
 
 class TopDisc extends StatelessWidget {
   final List<Playlists> source;

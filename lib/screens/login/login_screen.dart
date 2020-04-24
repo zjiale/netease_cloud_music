@@ -1,7 +1,17 @@
+import 'package:ff_annotation_route/ff_annotation_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:netease_cloud_music/netease_cloud_music_route.dart' as prefix;
+import 'package:netease_cloud_music/store/index.dart';
+import 'package:netease_cloud_music/store/model/play_video_model.dart';
+import 'package:netease_cloud_music/store/model/user_model.dart';
 
+@FFRoute(
+    name: "neteasecloudmusic://loginscreen",
+    routeName: "LoginScreen",
+    pageRouteType: PageRouteType.transparent,
+    description: "登录界面")
 class LoginScreen extends StatefulWidget {
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -23,6 +33,13 @@ class _LoginScreenState extends State<LoginScreen> {
     super.initState();
   }
 
+  @override
+  void dispose() {
+    _phoneFocus.dispose();
+    _pwFocus.dispose();
+    super.dispose();
+  }
+
   Widget inputInfo() {
     return Form(
       key: _inputInfo,
@@ -32,6 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
             TextFormField(
                 maxLength: 11,
                 textAlign: TextAlign.left,
+                keyboardType: TextInputType.phone,
                 focusNode: _phoneFocus,
                 // 键盘回车键的操作
                 textInputAction: TextInputAction.next,
@@ -42,7 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       color: Colors.black54,
                     ),
                     hintText: "请输入手机号码"),
-                validator: (phone) => phone.length < 11 ?? '请输入正确的手机号',
+                validator: (phone) => phone.length < 11 ? '请输入正确的手机号' : null,
                 onFieldSubmitted: (input) {
                   _phoneFocus.unfocus();
                   FocusScope.of(context).requestFocus(_pwFocus);
@@ -69,30 +87,42 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget loginButton(BuildContext context) {
-    return Expanded(
-      child: RaisedButton(
-        color: Theme.of(context).primaryColor,
-        shape: _shape,
-        child: Text('登录',
-            style: TextStyle(
-                color: Colors.white, fontSize: ScreenUtil().setSp(30.0))),
-        onPressed: () {
-          var _form = _inputInfo.currentState;
-          if (_form.validate()) {
-            // 触发text得onsave方法
-            _form.save();
-          }
-        },
-      ),
-    );
+    return Store.connect2<UserModel, PlayVideoModel>(
+        builder: (context, userModel, videoModel, child) {
+      return Expanded(
+        child: RaisedButton(
+          color: Theme.of(context).primaryColor,
+          shape: _shape,
+          child: Text('登录',
+              style: TextStyle(
+                  color: Colors.white, fontSize: ScreenUtil().setSp(30.0))),
+          onPressed: () {
+            var _form = _inputInfo.currentState;
+            if (_form.validate()) {
+              // 触发text得onsave方法
+              _form.save();
+              FocusScope.of(context).requestFocus(FocusNode());
+              userModel.login(int.parse(_phone), _password).then((res) {
+                if (res != null) {
+                  userModel.setUser(res);
+                  Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      prefix.Routes.NETEASECLOUDMUSIC_HOMESCREEN,
+                      (Route<dynamic> route) => false,
+                      arguments: {"model": videoModel});
+                }
+              });
+            }
+          },
+        ),
+      );
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    ScreenUtil.init(context, width: 750, height: 1334);
-    return SafeArea(
-        child: Scaffold(
-            body: Padding(
+    return Scaffold(
+        body: Padding(
       padding: EdgeInsets.symmetric(horizontal: 50.0),
       child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -120,6 +150,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ],
             )
           ]),
-    )));
+    ));
   }
 }

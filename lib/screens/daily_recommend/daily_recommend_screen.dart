@@ -1,31 +1,23 @@
-<<<<<<< HEAD
-import 'dart:math';
-=======
->>>>>>> new
 import 'dart:ui';
 
+import 'package:ff_annotation_route/ff_annotation_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-<<<<<<< HEAD
-import 'package:wangyiyun/api/CommonService.dart';
-import 'package:wangyiyun/model/music_song_model.dart';
-import 'package:wangyiyun/model/recommend_song_list_model.dart';
-import 'package:wangyiyun/screens/playlist/play_list_bottom.dart';
-import 'package:wangyiyun/utils/config.dart';
-import 'package:wangyiyun/widgets/sliver_appbar_custom.dart';
-import 'package:wangyiyun/widgets/song_item.dart';
-import 'package:wangyiyun/widgets/space_bar.dart';
-=======
-import 'package:neteast_cloud_music/api/CommonService.dart';
-import 'package:neteast_cloud_music/model/music_song_model.dart';
-import 'package:neteast_cloud_music/model/recommend_song_list_model.dart';
-import 'package:neteast_cloud_music/screens/playlist/play_list_bottom.dart';
-import 'package:neteast_cloud_music/utils/config.dart';
-import 'package:neteast_cloud_music/widgets/sliver_appbar_custom.dart';
-import 'package:neteast_cloud_music/widgets/song_item.dart';
->>>>>>> new
+import 'package:netease_cloud_music/api/CommonService.dart';
+import 'package:netease_cloud_music/model/music_song_model.dart';
+import 'package:netease_cloud_music/model/recommend_song_list_model.dart';
+import 'package:netease_cloud_music/screens/playlist/play_list_bottom.dart';
+import 'package:netease_cloud_music/widgets/sliver_appbar_custom.dart';
+import 'package:netease_cloud_music/widgets/song_item.dart';
+import 'package:netease_cloud_music/widgets/song_subtitle.dart';
+import 'package:netease_cloud_music/widgets/song_title.dart';
 
+@FFRoute(
+    name: "neteasecloudmusic://dailyrecommendscreen",
+    routeName: "DailyRecommendScreen",
+    pageRouteType: PageRouteType.material,
+    description: "日常推荐歌曲")
 class DailyRecommendScreen extends StatefulWidget {
   @override
   _DailyRecommendScreenState createState() => _DailyRecommendScreenState();
@@ -36,13 +28,11 @@ class _DailyRecommendScreenState extends State<DailyRecommendScreen> {
   ScrollController _controller = new ScrollController();
   String _title = '';
 
-  int _code = Config.SUCCESS_CODE;
-
   Future _initData;
 
   @override
   void initState() {
-    _initData = _initDailyRecommend();
+    _initData = CommmonService().getRecommendSongList();
 
     double ratio = (window.physicalSize.width / window.devicePixelRatio) /
         750; // 将px转为dp然后再除以750获取像素比，相关文档看screenutil转换原理
@@ -50,11 +40,6 @@ class _DailyRecommendScreenState extends State<DailyRecommendScreen> {
         (window.physicalSize.height / window.devicePixelRatio) / 1334;
     double _scrollOffset = (350 * ratio1) - (100 * ratio) - kToolbarHeight;
     _controller.addListener(() {
-<<<<<<< HEAD
-      // _opacity =
-      //     _opacity < 0 ? 0 : 1.0 - max(0.0, _controller.offset) / _scrollOffset;
-=======
->>>>>>> new
       if (_controller.offset >= _scrollOffset && _title == '') {
         setState(() {
           _title = '每日推荐';
@@ -66,18 +51,6 @@ class _DailyRecommendScreenState extends State<DailyRecommendScreen> {
       }
     });
     super.initState();
-  }
-
-  Future _initDailyRecommend() {
-    return CommmonService().getRecommendSongList().then((res) {
-      if (res.statusCode == 200) {
-        RecommendSongListModel _bean =
-            RecommendSongListModel.fromJson(res.data);
-        if (_bean.code == _code) {
-          return _bean.recommend;
-        }
-      }
-    });
   }
 
   String _formateArtist(List<Artists> _list) {
@@ -114,14 +87,10 @@ class _DailyRecommendScreenState extends State<DailyRecommendScreen> {
                 List<Recommend> recommendList = snapshot.data;
                 List<MusicSong> _list = [];
                 recommendList.forEach((song) {
-<<<<<<< HEAD
-                  _list.add(MusicSong(song.id,
-=======
                   _list.add(MusicSong(
                       id: song.id,
->>>>>>> new
                       mvid: song.mvid,
-                      totalTime: song.duration,
+                      duration: song.duration,
                       name: song.name,
                       subName: song.transName != null
                           ? song.transName
@@ -193,10 +162,7 @@ class _DailyRecommendScreenState extends State<DailyRecommendScreen> {
                             color: Colors.white.withOpacity(0.2)),
                         bottom: PlayListBottom(
                           show: false,
-<<<<<<< HEAD
-=======
                           isRecommend: true,
->>>>>>> new
                         )),
                     SliverPadding(
                       padding: EdgeInsets.only(left: 10.0),
@@ -205,13 +171,20 @@ class _DailyRecommendScreenState extends State<DailyRecommendScreen> {
                         delegate: SliverChildBuilderDelegate(
                             (BuildContext context, int index) {
                           return SongItem(
+                            title: SongTitle(
+                              name: _list[index].name,
+                              transName: _list[index].subName,
+                              status: _list[index].st,
+                            ),
+                            subTitle: SongSubTitle(
+                              artists: _list[index].artists,
+                              album: _list[index].album,
+                              isHighQuality: _list[index].isHighQuality,
+                              isVip: _list[index].isVip,
+                            ),
                             index: index,
                             showIndex: true,
-<<<<<<< HEAD
-=======
-                            showPic: true,
->>>>>>> new
-                            detail: _list[index],
+                            picUrl: _list[index].picUrl,
                           );
                         }, childCount: recommendList.length),
                       ),

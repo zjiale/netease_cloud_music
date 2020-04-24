@@ -5,18 +5,20 @@ import 'package:extended_image/extended_image.dart';
 import 'package:extended_text/extended_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:neteast_cloud_music/model/event_content_model.dart';
-import 'package:neteast_cloud_music/model/event_model.dart';
-import 'package:neteast_cloud_music/model/music_song_model.dart';
-import 'package:neteast_cloud_music/store/index.dart';
-import 'package:neteast_cloud_music/store/model/play_song_model.dart';
-import 'package:neteast_cloud_music/store/model/play_video_model.dart';
-import 'package:neteast_cloud_music/utils/config.dart';
-import 'package:neteast_cloud_music/utils/my_special_textspan_builder.dart';
-import 'package:neteast_cloud_music/utils/routes/navigator_util.dart';
-import 'package:neteast_cloud_music/widgets/fade_network_image.dart';
-import 'package:neteast_cloud_music/widgets/list_item_player.dart';
-import 'package:neteast_cloud_music/widgets/play_list_cover.dart';
+import 'package:netease_cloud_music/model/event_content_model.dart';
+import 'package:netease_cloud_music/model/event_model.dart';
+import 'package:netease_cloud_music/model/music_song_model.dart';
+import 'package:netease_cloud_music/netease_cloud_music_route.dart';
+import 'package:netease_cloud_music/screens/audio/audio_player_screen.dart';
+import 'package:netease_cloud_music/screens/playlist/play_list_detail_screen.dart';
+import 'package:netease_cloud_music/store/index.dart';
+import 'package:netease_cloud_music/store/model/play_song_model.dart';
+import 'package:netease_cloud_music/store/model/play_video_model.dart';
+import 'package:netease_cloud_music/utils/config.dart';
+import 'package:netease_cloud_music/utils/my_special_textspan_builder.dart';
+import 'package:netease_cloud_music/widgets/fade_network_image.dart';
+import 'package:netease_cloud_music/widgets/list_item_player.dart';
+import 'package:netease_cloud_music/widgets/play_list_cover.dart';
 import 'package:rect_getter/rect_getter.dart';
 
 class EventDescription extends StatefulWidget {
@@ -243,11 +245,15 @@ class _EventDescriptionState extends State<EventDescription> {
       case 13: //分享歌单
         _subTitle = "分享歌单";
         _main = InkWell(
-          onTap: () => NavigatorUtil.goPlayListDetailPage(
-            context,
-            expandedHeight: 520,
-            id: _content.playlist.id,
-          ),
+          onTap: () {
+            Navigator.pushNamed(
+                context, Routes.NETEASECLOUDMUSIC_PLAYLISTDETAILSCREEN,
+                arguments: {
+                  "expandedHeight": 520.0,
+                  "id": _content.playlist.id,
+                  "official": false,
+                });
+          },
           child: _defaultContent(
               url: _content.playlist.coverImgUrl,
               title: _content.playlist.name,
@@ -255,22 +261,28 @@ class _EventDescriptionState extends State<EventDescription> {
         );
         break;
       case 18: //分享歌曲
+        List _list = [];
+        _content.song.artists.forEach((artist) {
+          _list.add(artist.name);
+        });
         _subTitle = "分享歌曲";
         _main = InkWell(
           onTap: () {
             MusicSong song = MusicSong(
                 id: _content.song.id,
-                totalTime: _content.song.duration,
+                duration: _content.song.duration,
                 name: _content.song.name,
-                artists: Config().formateArtist(_content.song.artists),
+                artists: Config().formatArtist(_list),
                 picUrl: _content.song.album.picUrl);
             widget.model.playOneSong(song);
-            NavigatorUtil.goAudioPage(context);
+
+            Navigator.pushNamed(
+                context, Routes.NETEASECLOUDMUSIC_AUDIOPLAYERSCREEN);
           },
           child: _defaultContent(
               url: _content.song.album.blurPicUrl,
               title: _content.song.name,
-              creator: Config().formateArtist(_content.song.artists),
+              creator: Config().formatArtist(_list),
               isSong: true),
         );
         break;
@@ -347,16 +359,19 @@ class _EventDescriptionState extends State<EventDescription> {
         break;
       default:
         _picList = Container(
-          width:
-              widget.event.pics.length == 4 ? ScreenUtil().setWidth(400) : null,
+          width: widget.event.pics.length == 4
+              ? widget.isDetail
+                  ? ScreenUtil().setWidth(470)
+                  : ScreenUtil().setWidth(385)
+              : null,
           child: GridView.builder(
               physics: ClampingScrollPhysics(),
               shrinkWrap: true,
               itemCount: widget.event.pics.length,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: widget.event.pics.length == 4 ? 2 : 3,
-                  mainAxisSpacing: ScreenUtil().setWidth(5.0),
-                  crossAxisSpacing: ScreenUtil().setWidth(5.0),
+                  mainAxisSpacing: 1.0,
+                  crossAxisSpacing: 1.0,
                   childAspectRatio: 1.0),
               itemBuilder: (context, index) {
                 return GestureDetector(
@@ -365,9 +380,9 @@ class _EventDescriptionState extends State<EventDescription> {
                   },
                   child: PlayListCoverWidget(
                     widget.event.pics[index].squareUrl,
-                    width: 190.0,
+                    width: widget.isDetail ? 230.0 : 190.0,
                     fit: BoxFit.cover,
-                    circular: 5.0,
+                    circular: 3.0,
                   ),
                 );
               }),
@@ -382,7 +397,7 @@ class _EventDescriptionState extends State<EventDescription> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Stack(
-                  alignment: Alignment.topRight,
+                  alignment: Alignment.center,
                   overflow: Overflow.visible,
                   children: <Widget>[
                     ClipOval(
@@ -393,25 +408,23 @@ class _EventDescriptionState extends State<EventDescription> {
                       ),
                     ),
                     widget.event.pendantData != null
-                        ? Positioned(
-                            top: -5.0,
-                            right: -5.0,
-                            child: FadeNetWorkImage(
-                              widget.isDetail
-                                  ? widget.event.pendantData.imageAndroidUrl
-                                  : widget.event.pendantData.imageUrl,
-                              width: ScreenUtil().setWidth(100.0),
-                            ),
+                        ? FadeNetWorkImage(
+                            widget.isDetail
+                                ? widget.event.pendantData.imageAndroidUrl
+                                : widget.event.pendantData.imageUrl,
+                            width: ScreenUtil().setWidth(90.0),
+                            pendantData: true,
                           )
-                        : Container()
+                        : SizedBox()
                   ]),
-              SizedBox(width: ScreenUtil().setWidth(20.0)),
+              // SizedBox(width: ScreenUtil().setWidth(20.0)),
               Padding(
                 padding: EdgeInsets.only(right: ScreenUtil().setWidth(10.0)),
                 child: Column(
                   // mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
+                    SizedBox(height: 5.0),
                     Row(children: <Widget>[
                       Text(widget.event.user.nickname,
                           style: TextStyle(color: Colors.blue)),
@@ -439,7 +452,7 @@ class _EventDescriptionState extends State<EventDescription> {
           ),
           Padding(
             padding: widget.isDetail
-                ? EdgeInsets.zero
+                ? EdgeInsets.only(left: 5.0)
                 : EdgeInsets.only(left: ScreenUtil().setWidth(90.0)),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

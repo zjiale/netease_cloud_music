@@ -2,7 +2,7 @@ import 'package:common_utils/common_utils.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:neteast_cloud_music/model/comment_list_model.dart';
+import 'package:netease_cloud_music/model/comment_list_model.dart';
 
 class CommentItem extends StatelessWidget {
   final CommentListModel commentInfo;

@@ -1,13 +1,18 @@
-import 'package:extended_image/extended_image.dart';
+import 'package:ff_annotation_route/ff_annotation_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/ball_pulse_footer.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:neteast_cloud_music/api/CommonService.dart';
-import 'package:neteast_cloud_music/model/suscribers_list_model.dart';
-import 'package:neteast_cloud_music/utils/config.dart';
-import 'package:neteast_cloud_music/widgets/data_loading.dart';
+import 'package:netease_cloud_music/api/CommonService.dart';
+import 'package:netease_cloud_music/model/suscribers_list_model.dart';
+import 'package:netease_cloud_music/widgets/data_loading.dart';
+import 'package:netease_cloud_music/widgets/subscriber_item.dart';
 
+@FFRoute(
+    name: "neteasecloudmusic://suscriberscreen",
+    routeName: "SubscriberScreen",
+    pageRouteType: PageRouteType.material,
+    description: "收藏者列表")
 class SubscriberScreen extends StatefulWidget {
   final int id;
   SubscriberScreen({@required this.id});
@@ -17,10 +22,9 @@ class SubscriberScreen extends StatefulWidget {
 }
 
 class _SubscriberScreenState extends State<SubscriberScreen> {
-  int _code = Config.SUCCESS_CODE;
+  CommmonService api = CommmonService();
 
   List<Subscribers> _subscribers = [];
-  ScrollController _scrollController;
   EasyRefreshController _controller;
 
   int _pageIndex = 1;
@@ -36,19 +40,6 @@ class _SubscriberScreenState extends State<SubscriberScreen> {
   void dispose() {
     super.dispose();
     _controller?.dispose();
-  }
-
-  Future _getSubscriber({int offset = 0}) {
-    return CommmonService()
-        .getSubscribers(widget.id, offset: offset)
-        .then((res) {
-      if (res.statusCode == 200) {
-        SubscribersListModel _bean = SubscribersListModel.fromJson(res.data);
-        if (_bean.code == _code) {
-          return _bean;
-        }
-      }
-    });
   }
 
   @override
@@ -71,7 +62,7 @@ class _SubscriberScreenState extends State<SubscriberScreen> {
               Container(width: double.infinity, child: DataLoading()),
           onRefresh: !_isInit
               ? () async {
-                  var list = await _getSubscriber();
+                  var list = await api.getSubscribers(widget.id);
                   if (mounted) {
                     _subscribers = list.subscribers;
                     _isInit = true;
@@ -80,7 +71,8 @@ class _SubscriberScreenState extends State<SubscriberScreen> {
                 }
               : null,
           onLoad: () async {
-            var list = await _getSubscriber(offset: (20 * _pageIndex) - 1);
+            var list = await api.getSubscribers(widget.id,
+                offset: (20 * _pageIndex) - 1);
             if (list.subscribers.length > 0) {
               setState(() {
                 _subscribers.addAll(list.subscribers);
@@ -93,60 +85,13 @@ class _SubscriberScreenState extends State<SubscriberScreen> {
           slivers: <Widget>[
             SliverList(
               delegate: SliverChildBuilderDelegate((context, index) {
-                return Padding(
-                  padding: EdgeInsets.only(
-                      left: ScreenUtil().setWidth(20.0),
-                      right: ScreenUtil().setWidth(20.0),
-                      bottom: ScreenUtil().setWidth(20.0)),
-                  child: Row(
-                    children: <Widget>[
-                      ClipOval(
-                          child: ExtendedImage.network(
-                        _subscribers[index].avatarUrl,
-                        fit: BoxFit.cover,
-                        width: ScreenUtil().setWidth(100.0),
-                        height: ScreenUtil().setWidth(100.0),
-                      )),
-                      Expanded(
-                        child: ListTile(
-                          dense: true,
-                          contentPadding: EdgeInsets.only(
-                              left: ScreenUtil().setWidth(20.0)),
-                          title: Row(
-                            children: <Widget>[
-                              Text(_subscribers[index].nickname,
-                                  style: TextStyle(
-                                      fontSize: ScreenUtil().setSp(28.0))),
-                              SizedBox(
-                                width: ScreenUtil().setWidth(5.0),
-                              ),
-                              _subscribers[index].gender != 0
-                                  ? Image.asset(
-                                      "assets/${_subscribers[index].gender == 1 ? 'male' : 'female'}.png",
-                                      width: ScreenUtil().setWidth(20.0))
-                                  : Container()
-                            ],
-                          ),
-                          subtitle: _subscribers[index].signature != ''
-                              ? Row(
-                                  children: <Widget>[
-                                    Flexible(
-                                      child: Text(
-                                          "${_subscribers[index].signature}",
-                                          style: TextStyle(
-                                              color: Colors.black54,
-                                              fontSize:
-                                                  ScreenUtil().setSp(20.0)),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis),
-                                    ),
-                                  ],
-                                )
-                              : null,
-                        ),
-                      )
-                    ],
-                  ),
+                return SubscriberItem(
+                  avatarUrl: _subscribers[index].avatarUrl,
+                  name: _subscribers[index].nickname,
+                  showGender: true,
+                  gender: _subscribers[index].gender,
+                  showSignature: true,
+                  signature: _subscribers[index].signature,
                 );
               }, childCount: _subscribers.length),
             )

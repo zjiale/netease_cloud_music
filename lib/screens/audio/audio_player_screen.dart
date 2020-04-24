@@ -1,31 +1,24 @@
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:audioplayers/audioplayers.dart';
-import 'package:common_utils/common_utils.dart';
 import 'package:extended_image/extended_image.dart';
+import 'package:ff_annotation_route/ff_annotation_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-<<<<<<< HEAD
-import 'package:wangyiyun/screens/audio/play_button.dart';
-import 'package:wangyiyun/screens/audio/slider_time.dart';
-import 'package:wangyiyun/store/index.dart';
-import 'package:wangyiyun/utils/config.dart';
+import 'package:netease_cloud_music/screens/audio/play_button.dart';
+import 'package:netease_cloud_music/screens/audio/slider_time.dart';
+import 'package:netease_cloud_music/screens/audio/song_comment.dart';
+import 'package:netease_cloud_music/store/index.dart';
+import 'package:netease_cloud_music/utils/config.dart';
 
-import 'package:wangyiyun/store/model/play_song_model.dart';
-=======
-import 'package:neteast_cloud_music/api/CommonService.dart';
-import 'package:neteast_cloud_music/model/comment_model.dart';
-import 'package:neteast_cloud_music/screens/audio/play_button.dart';
-import 'package:neteast_cloud_music/screens/audio/slider_time.dart';
-import 'package:neteast_cloud_music/screens/audio/song_comment.dart';
-import 'package:neteast_cloud_music/store/index.dart';
-import 'package:neteast_cloud_music/utils/config.dart';
+import 'package:netease_cloud_music/store/model/play_song_model.dart';
+import 'package:netease_cloud_music/utils/numbers_convert.dart';
 
-import 'package:neteast_cloud_music/store/model/play_song_model.dart';
-import 'package:neteast_cloud_music/utils/numbers_convert.dart';
->>>>>>> new
-
+@FFRoute(
+    name: "neteasecloudmusic://audioplayerscreen",
+    routeName: "DailyRecommendScreen",
+    pageRouteType: PageRouteType.material,
+    description: "播放歌曲页面")
 class AudioPlayerScreen extends StatefulWidget {
   @override
   _AudioPlayerScreenState createState() => _AudioPlayerScreenState();
@@ -36,10 +29,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
   final List<String> _key = [
     "dislike",
     "song_download",
-<<<<<<< HEAD
-=======
     "bfc",
->>>>>>> new
     "song_comment",
     "song_more"
   ];
@@ -93,39 +83,6 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: _key.asMap().entries.map((MapEntry map) {
               return GestureDetector(
-<<<<<<< HEAD
-                onTap: () {
-                  switch (map.key) {
-                    case 0:
-                      setState(() {
-                        if (isLike) {
-                          isLike = false;
-                          _key.replaceRange(0, 1, ['dislike']);
-                        } else {
-                          isLike = true;
-                          _key.replaceRange(0, 1, ['liked']);
-                        }
-                      });
-                      break;
-                    default:
-                  }
-                },
-                child: Stack(overflow: Overflow.visible, children: <Widget>[
-                  Image.asset("${Config().prefixImg(_key[map.key])}",
-                      width: ScreenUtil().setWidth(80.0)),
-                  map.key == 2
-                      ? Positioned(
-                          right: -6.0,
-                          top: 5.0,
-                          child: Text('999+',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: ScreenUtil().setSp(18.0))),
-                        )
-                      : Container()
-                ]),
-              );
-=======
                   onTap: () {
                     switch (map.key) {
                       case 0:
@@ -158,7 +115,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
                             image: AssetImage(
                       "${Config().prefixImg(_key[map.key])}",
                     ))),
-                    child: map.key == 3
+                    child: map.key == 3 && model.comment != null
                         ? Align(
                             alignment: model.comment.total < 100
                                 ? Alignment(0.5, -0.6)
@@ -171,7 +128,6 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
                           )
                         : Container(),
                   ));
->>>>>>> new
             }).toList()));
   }
 
@@ -248,15 +204,12 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
         _imgController.stop();
         _controller.forward();
       }
-<<<<<<< HEAD
-      return Stack(children: <Widget>[
-=======
       return Stack(alignment: AlignmentDirectional.center, children: <Widget>[
->>>>>>> new
-        Image.network(
+        ExtendedImage.network(
           model.curSong.picUrl,
+          cache: true,
           fit: BoxFit.cover,
-          alignment: Alignment.bottomLeft,
+          alignment: Alignment.center,
           height: double.infinity,
         ),
         BackdropFilter(

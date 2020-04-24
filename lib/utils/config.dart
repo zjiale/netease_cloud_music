@@ -1,27 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-<<<<<<< HEAD
-import 'package:wangyiyun/model/center_area_model.dart';
+import 'package:netease_cloud_music/model/center_area_model.dart';
+import 'package:netease_cloud_music/model/search_type.dart';
+import 'package:netease_cloud_music/utils/cache.dart';
 
 class Config {
-=======
-import 'package:neteast_cloud_music/model/center_area_model.dart';
-import 'package:neteast_cloud_music/utils/fluro/src/router.dart';
-
-class Config {
-  static Router router;
-
->>>>>>> new
-  String cookie =
-      '__remember_me=true; MUSIC_U=abdca9af4324f26ef36310855b23ab2fcd1fcf1d285067808fc4a467c5dc65cbbdd1e76e7cd8459859b37bbcbfa845e87955a739ab43dce1; __csrf=1ac281f1e4ced023ed502cf28906a07e';
   Map<String, String> _headerMap;
 
-  static int SUCCESS_CODE = 200;
+  static const int SUCCESS_CODE = 200;
 
   Map<String, String> getHeader() {
+    const String TOKEN = 'token';
     if (null == _headerMap) {
       _headerMap = Map();
-      _headerMap["Cookie"] = cookie;
+      _headerMap["Cookie"] = SpUtil.preferences.get(TOKEN);
     }
     return _headerMap;
   }
@@ -30,47 +22,43 @@ class Config {
     return "assets/icon_$key.png";
   }
 
-<<<<<<< HEAD
-=======
-  String formateArtist(List _list) {
+  String formatArtist(List _list) {
     String artists = '';
     for (var i = 0; i <= _list.length - 1; i++) {
       if (i == _list.length - 1) {
-        artists = '$artists${_list[i].name}';
+        artists = '$artists${_list[i]}';
       } else {
-        artists = '$artists${_list[i].name}\/';
+        artists = '$artists${_list[i]}\/';
       }
     }
     return artists;
   }
 
-  /// 返回对应的Rect区域...
-  static Rect getRectFromKey(BuildContext currentContext) {
-    var object = currentContext?.findRenderObject();
-    var translation = object?.getTransformTo(null)?.getTranslation();
-    var size = object?.semanticBounds?.size;
+  // /// 返回对应的Rect区域...
+  // static Rect getRectFromKey(BuildContext currentContext) {
+  //   var object = currentContext?.findRenderObject();
+  //   var translation = object?.getTransformTo(null)?.getTranslation();
+  //   var size = object?.semanticBounds?.size;
 
-    if (translation != null && size != null) {
-      return new Rect.fromLTWH(
-          translation.x, translation.y, size.width, size.height);
-    } else {
-      return null;
-    }
-  }
+  //   if (translation != null && size != null) {
+  //     return new Rect.fromLTWH(
+  //         translation.x, translation.y, size.width, size.height);
+  //   } else {
+  //     return null;
+  //   }
+  // }
 
->>>>>>> new
-  static List<Tab> titleTabs = <Tab>[
-    Tab(text: '我的'),
-    Tab(text: '发现'),
-    Tab(text: '云村'),
-    Tab(text: '视频')
-  ];
-
-<<<<<<< HEAD
-  static List<String> title = ['我的', '发现', '动态', '视频'];
-=======
   static List<String> title = ['我的', '发现', '云村', '视频'];
->>>>>>> new
+
+  static List<SearchType> searchType = [
+    // SearchType(name: '综合', type: 1018),
+    SearchType(name: '单曲', type: 1),
+    SearchType(name: '视频', type: 1014),
+    SearchType(name: '歌手', type: 100),
+    SearchType(name: '专辑', type: 10),
+    SearchType(name: '歌单', type: 1000),
+    SearchType(name: '用户', type: 1002),
+  ];
 
   static List type = [
     {"image": "assets/icon_daily.png", "text": "每日推荐", "index": 0},

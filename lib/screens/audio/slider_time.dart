@@ -1,11 +1,7 @@
 import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-<<<<<<< HEAD
-import 'package:wangyiyun/store/model/play_song_model.dart';
-=======
-import 'package:neteast_cloud_music/store/model/play_song_model.dart';
->>>>>>> new
+import 'package:netease_cloud_music/store/model/play_song_model.dart';
 
 class SliderTime extends StatefulWidget {
   final PlaySongModel model;
@@ -59,7 +55,7 @@ class _SliderTimeState extends State<SliderTime> {
                     )),
                 child: Slider(
                   value: double.parse('$curTime'),
-                  max: double.parse('${widget.model.curSong.totalTime}'),
+                  max: double.parse('${widget.model.curSong.duration}'),
                   min: 0.0,
                   onChangeStart: (data) {
                     widget.model.stopProgress();
@@ -77,7 +73,7 @@ class _SliderTimeState extends State<SliderTime> {
             SizedBox(width: ScreenUtil().setWidth(5.0)),
             Text(
                 DateUtil.formatDateMs(
-                    int.parse('${widget.model.curSong.totalTime}'),
+                    int.parse('${widget.model.curSong.duration}'),
                     format: "mm:ss"),
                 style: TextStyle(
                     fontSize: ScreenUtil().setSp(20.0), color: Colors.grey))

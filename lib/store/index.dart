@@ -1,16 +1,9 @@
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
+import 'package:netease_cloud_music/store/model/play_video_model.dart';
+import 'package:netease_cloud_music/store/model/user_model.dart';
 import 'package:provider/provider.dart';
 
-import 'package:wangyiyun/store/model/play_song_model.dart';
-import 'package:wangyiyun/store/model/tag_model.dart';
-=======
-import 'package:neteast_cloud_music/store/model/play_video_model.dart';
-import 'package:provider/provider.dart';
-
-import 'package:neteast_cloud_music/store/model/play_song_model.dart';
-import 'package:neteast_cloud_music/store/model/tag_model.dart';
->>>>>>> new
+import 'package:netease_cloud_music/store/model/play_song_model.dart';
 
 class Store {
   static BuildContext context;
@@ -24,11 +17,8 @@ class Store {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => PlaySongModel()..init()),
-        ChangeNotifierProvider(create: (_) => TagModel()..init()),
-<<<<<<< HEAD
-=======
-        ChangeNotifierProvider(create: (_) => PlayVideoModel())
->>>>>>> new
+        ChangeNotifierProvider(create: (_) => PlayVideoModel()),
+        ChangeNotifierProvider(create: (_) => UserModel()..init())
       ],
       child: child,
     );

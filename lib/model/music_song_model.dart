@@ -1,40 +1,49 @@
-<<<<<<< HEAD
-=======
 import "package:flutter/material.dart";
 
->>>>>>> new
 class MusicSong {
-  int id; // 歌曲id
-  int mvid; //mv id
-  int totalTime; //歌曲总时长
-<<<<<<< HEAD
-=======
-  int commentCount; //评论数量
->>>>>>> new
-  String name; // 歌曲名称
-  String subName; // 歌曲翻译
-  String artists; // 演唱者
-  String album; // 专辑名
-  String picUrl; // 歌曲图片
-  int st; //歌曲状态
-  bool isHighQuality; //是否高清
-  bool isVip; //是否需要vip
+  /// 歌曲id
+  int id;
 
-<<<<<<< HEAD
-  MusicSong(this.id,
-      {this.mvid,
-      this.totalTime,
-      this.name,
-      this.subName = '',
-=======
+  /// mv id
+  int mvid;
+
+  /// 歌曲总时长
+  int duration;
+
+  /// 评论数量
+  int commentCount;
+
+  /// 歌曲名称
+  String name;
+
+  /// 歌曲翻译
+  String subName;
+
+  /// 演唱者
+  String artists;
+
+  /// 专辑名
+  String album;
+
+  /// 图片
+  String picUrl;
+
+  ///歌曲状态
+  int st;
+
+  ///是否高清
+  bool isHighQuality;
+
+  ///是否需要vip
+  bool isVip;
+
   MusicSong(
       {this.id,
-      this.mvid,
-      this.totalTime,
+      this.mvid = 0,
+      this.duration,
       this.commentCount,
       this.name,
       this.subName = "",
->>>>>>> new
       this.artists,
       this.album,
       this.picUrl,
@@ -44,10 +53,7 @@ class MusicSong {
 
   @override
   String toString() {
-<<<<<<< HEAD
-    return 'Song{id: $id, name: $name, artists: $artists}';
-=======
-    return '{"id": $id, "mvid": $mvid, "totalTime": $totalTime, "commentCount": $commentCount, "name": "$name", "subName": "$subName", "artists": "$artists", "album": "$album", "picUrl": "$picUrl", "st": $st, "isHighQuality": $isHighQuality, "isVip": $isVip}';
+    return '{"id": $id, "mvid": $mvid, "duration": $duration, "commentCount": $commentCount, "name": "$name", "subName": "$subName", "artists": "$artists", "album": "$album", "picUrl": "$picUrl",  "st": $st, "isHighQuality": $isHighQuality, "isVip": $isVip}';
   }
 
   factory MusicSong.fromJson(jsonRes) => jsonRes == null
@@ -64,7 +70,7 @@ class MusicSong {
           picUrl: jsonRes['picUrl'],
           st: jsonRes['st'],
           subName: jsonRes['subName'],
-          totalTime: jsonRes['totalTime'],
+          duration: jsonRes['duration'],
         );
   Map<String, dynamic> toJson() => {
         'album': album,
@@ -78,7 +84,7 @@ class MusicSong {
         'picUrl': picUrl,
         'st': st,
         'subName': subName,
-        'totalTime': totalTime,
+        'duration': duration,
       };
 
   void tryCatch(Function f) {
@@ -88,6 +94,5 @@ class MusicSong {
       debugPrint("$e");
       debugPrint("$stack");
     }
->>>>>>> new
   }
 }

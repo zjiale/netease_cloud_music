@@ -4,19 +4,22 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:marquee_flutter/marquee_flutter.dart';
-import 'package:neteast_cloud_music/model/music_song_model.dart';
-import 'package:neteast_cloud_music/model/play_list.detail.dart';
-import 'package:neteast_cloud_music/model/subscribers_model.dart';
-import 'package:neteast_cloud_music/screens/playlist/play_list_bottom.dart';
-import 'package:neteast_cloud_music/screens/playlist/play_list_description.dart';
-import 'package:neteast_cloud_music/store/index.dart';
-import 'package:neteast_cloud_music/store/model/play_song_model.dart';
-import 'package:neteast_cloud_music/utils/numbers_convert.dart';
-import 'package:neteast_cloud_music/utils/routes/navigator_util.dart';
-import 'package:neteast_cloud_music/widgets/fade_network_image.dart';
-import 'package:neteast_cloud_music/widgets/play_list_cover.dart';
-import 'package:neteast_cloud_music/widgets/sliver_appbar_custom.dart';
-import 'package:neteast_cloud_music/widgets/song_item.dart';
+import 'package:netease_cloud_music/model/music_song_model.dart';
+import 'package:netease_cloud_music/model/play_list.detail.dart';
+import 'package:netease_cloud_music/model/subscribers_model.dart';
+import 'package:netease_cloud_music/netease_cloud_music_route.dart';
+import 'package:netease_cloud_music/screens/playlist/play_list_bottom.dart';
+import 'package:netease_cloud_music/screens/playlist/play_list_description.dart';
+import 'package:netease_cloud_music/screens/playlist/subscriber_screen.dart';
+import 'package:netease_cloud_music/store/index.dart';
+import 'package:netease_cloud_music/store/model/play_song_model.dart';
+import 'package:netease_cloud_music/utils/numbers_convert.dart';
+import 'package:netease_cloud_music/widgets/fade_network_image.dart';
+import 'package:netease_cloud_music/widgets/play_list_cover.dart';
+import 'package:netease_cloud_music/widgets/sliver_appbar_custom.dart';
+import 'package:netease_cloud_music/widgets/song_item.dart';
+import 'package:netease_cloud_music/widgets/song_subtitle.dart';
+import 'package:netease_cloud_music/widgets/song_title.dart';
 
 class SongList extends StatefulWidget {
   final double expandedHeight;
@@ -216,6 +219,7 @@ class _SongListState extends State<SongList> {
                   left: ScreenUtil().setWidth(35),
                   right: ScreenUtil().setWidth(35),
                   top: ScreenUtil().setWidth(120),
+                  bottom: !widget.official ? 0.0 : ScreenUtil().setWidth(20),
                 ),
                 child: Column(children: <Widget>[
                   !widget.official ? _normalDesc() : _officialDesc(),
@@ -251,15 +255,28 @@ class _SongListState extends State<SongList> {
               return GestureDetector(
                 onTap: () => model.playOneSong(MusicSong(
                     id: widget.detail.playlist.tracks[index].id,
-                    totalTime: widget.detail.playlist.tracks[index].dt,
+                    duration: widget.detail.playlist.tracks[index].dt,
                     name: widget.detail.playlist.tracks[index].name,
                     artists: widget.detail.playlist.tracks[index].ar.first.name,
                     picUrl: widget.detail.playlist.tracks[index].al.picUrl)),
                 child: SongItem(
                   index: index,
                   showIndex: false,
-                  showPic: widget.list[index].picUrl == null ? false : true,
-                  detail: widget.list[index],
+                  hasMv: widget.detail.playlist.tracks[index].mv != 0
+                      ? false
+                      : true,
+                  picUrl: widget.list[index].picUrl == null
+                      ? ''
+                      : widget.list[index].picUrl,
+                  title: SongTitle(
+                      name: widget.detail.playlist.tracks[index].name),
+                  subTitle: SongSubTitle(
+                    artists: widget.list[index].artists,
+                    album: widget.list[index].album,
+                    isHighQuality: !widget.list[index].isHighQuality,
+                    isVip: !widget.list[index].isVip,
+                    status: widget.list[index].st,
+                  ),
                 ),
               );
             }, childCount: widget.detail.playlist.trackCount),
@@ -268,8 +285,11 @@ class _SongListState extends State<SongList> {
         SliverToBoxAdapter(
             child: widget.suscribers.length > 0
                 ? GestureDetector(
-                    onTap: () =>
-                        NavigatorUtil.goSubscribersPage(context, id: widget.id),
+                    onTap: () {
+                      Navigator.pushNamed(
+                          context, Routes.NETEASECLOUDMUSIC_SUSCRIBERSCREEN,
+                          arguments: {"id": widget.id});
+                    },
                     child: Container(
                       color: Colors.transparent,
                       padding: EdgeInsets.only(

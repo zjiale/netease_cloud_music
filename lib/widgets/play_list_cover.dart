@@ -1,43 +1,26 @@
-import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-<<<<<<< HEAD
-import 'package:wangyiyun/widgets/fade_network_image.dart';
-=======
-import 'package:neteast_cloud_music/widgets/fade_network_image.dart';
->>>>>>> new
+import 'package:netease_cloud_music/widgets/fade_network_image.dart';
 
 class PlayListCoverWidget extends StatefulWidget {
   final String url;
   final String playCount;
-<<<<<<< HEAD
-  final double width;
-  final double height;
-  final double circular;
-=======
   final String updateTime;
   final double width;
   final double height;
   final double circular;
   final BoxFit fit;
->>>>>>> new
   final bool isAlbum;
   final bool create;
   final bool all;
 
   PlayListCoverWidget(this.url,
       {this.playCount,
-<<<<<<< HEAD
-      this.width = 200,
-      this.height = 0,
-      this.circular = 8.0,
-=======
       this.updateTime,
       this.width = 200,
       this.height = 0,
       this.circular = 8.0,
       this.fit = BoxFit.contain,
->>>>>>> new
       this.isAlbum = false,
       this.create = false,
       this.all = true});
@@ -68,16 +51,12 @@ class _PlayListCoverWidgetState extends State<PlayListCoverWidget>
               alignment: Alignment.topRight,
               children: <Widget>[
                 widget.create == false
-<<<<<<< HEAD
-                    ? FadeNetWorkImage(widget.url)
-=======
                     ? FadeNetWorkImage(
                         widget.url,
                         fit: widget.fit,
                       )
->>>>>>> new
                     : Container(),
-                widget.playCount == null
+                widget.playCount == '' || widget.playCount == null
                     ? Container()
                     : Padding(
                         padding: EdgeInsets.only(
@@ -101,8 +80,6 @@ class _PlayListCoverWidgetState extends State<PlayListCoverWidget>
                             )
                           ],
                         ),
-<<<<<<< HEAD
-=======
                       ),
                 widget.updateTime == null
                     ? Container()
@@ -119,7 +96,6 @@ class _PlayListCoverWidgetState extends State<PlayListCoverWidget>
                                 fontSize: ScreenUtil().setSp(20.0)),
                           ),
                         ),
->>>>>>> new
                       )
               ],
             ),

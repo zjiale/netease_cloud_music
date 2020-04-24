@@ -4,27 +4,13 @@ import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart'
 import 'package:flutter_easyrefresh/ball_pulse_footer.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
-<<<<<<< HEAD
-import 'package:wangyiyun/api/CommonService.dart';
-import 'package:wangyiyun/model/top_quality_play_list_model.dart';
-import 'package:wangyiyun/screens/playlist/play_list_screen.dart';
-import 'package:wangyiyun/screens/playlist/top_disc.dart';
-import 'package:wangyiyun/utils/config.dart';
-import 'package:wangyiyun/utils/numbers_convert.dart';
-import 'package:wangyiyun/widgets/data_loading.dart';
-import 'package:wangyiyun/widgets/play_list_cover.dart';
-=======
-import 'package:neteast_cloud_music/api/CommonService.dart';
-import 'package:neteast_cloud_music/model/top_quality_play_list_model.dart';
-import 'package:neteast_cloud_music/screens/playlist/play_list_screen.dart';
-import 'package:neteast_cloud_music/screens/playlist/top_disc.dart';
-import 'package:neteast_cloud_music/utils/config.dart';
-import 'package:neteast_cloud_music/utils/numbers_convert.dart';
-import 'package:neteast_cloud_music/utils/routes/navigator_util.dart';
-import 'package:neteast_cloud_music/widgets/data_loading.dart';
-import 'package:neteast_cloud_music/widgets/play_list_cover.dart';
->>>>>>> new
+import 'package:netease_cloud_music/api/CommonService.dart';
+import 'package:netease_cloud_music/model/top_quality_play_list_model.dart';
+import 'package:netease_cloud_music/netease_cloud_music_route.dart';
+import 'package:netease_cloud_music/screens/playlist/top_disc.dart';
+import 'package:netease_cloud_music/utils/numbers_convert.dart';
+import 'package:netease_cloud_music/widgets/data_loading.dart';
+import 'package:netease_cloud_music/widgets/play_list_cover.dart';
 
 class OtherSubPlayList extends StatefulWidget {
   final int index;
@@ -46,7 +32,8 @@ class _OtherSubPlayListState extends State<OtherSubPlayList>
     with AutomaticKeepAliveClientMixin {
   List<Playlists> _source = [];
   List<Playlists> _top = [];
-  int _code = Config.SUCCESS_CODE;
+
+  CommmonService api = CommmonService();
 
   ScrollController _scrollController;
   EasyRefreshController _controller;
@@ -56,20 +43,6 @@ class _OtherSubPlayListState extends State<OtherSubPlayList>
   @override
   bool get wantKeepAlive => true;
 
-  Future _getPlayList({int offset = 0}) {
-    return CommmonService()
-        .getGroundPlayList(offset: offset, cat: widget.tag)
-        .then((res) {
-      if (res.statusCode == 200) {
-        TopQualityPlayListModel _bean =
-            TopQualityPlayListModel.fromJson(res.data);
-        if (_bean.code == _code) {
-          return _bean;
-        }
-      }
-    });
-  }
-
   @override
   void initState() {
     // TODO: implement initState
@@ -78,24 +51,25 @@ class _OtherSubPlayListState extends State<OtherSubPlayList>
     _controller = EasyRefreshController();
   }
 
-<<<<<<< HEAD
-=======
   /// 获取轮播图当前index
->>>>>>> new
   void getCurrentIndex(index) {
     widget.indexCallback(index);
   }
 
-<<<<<<< HEAD
-=======
   /// 将轮播图第一涨图设置背景图
->>>>>>> new
   void putBgImage(List<Playlists> list) {
     List<String> imgUrl = [];
     list.forEach((playlist) {
       imgUrl.add(playlist.coverImgUrl);
     });
     widget.imgCallback(imgUrl);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -110,7 +84,7 @@ class _OtherSubPlayListState extends State<OtherSubPlayList>
             scrollController: _scrollController,
             taskIndependence: true,
             onRefresh: () async {
-              var list = await _getPlayList();
+              var list = await api.getGroundPlayList(cat: widget.tag);
               if (widget.index == 0) {
                 putBgImage(list.playlists.sublist(0, 3));
                 _top = list.playlists.sublist(0, 3);
@@ -123,7 +97,8 @@ class _OtherSubPlayListState extends State<OtherSubPlayList>
               setState(() {});
             },
             onLoad: () async {
-              var list = await _getPlayList(offset: 35 * _pageIndex);
+              var list = await api.getGroundPlayList(
+                  offset: 35 * _pageIndex, cat: widget.tag);
               if (list.playlists.length > 0) {
                 setState(() {
                   _source.addAll(list.playlists);
@@ -140,11 +115,7 @@ class _OtherSubPlayListState extends State<OtherSubPlayList>
                 child: DataLoading()),
             slivers: <Widget>[
               SliverToBoxAdapter(
-<<<<<<< HEAD
-                child: widget.index == 0
-=======
                 child: widget.tag == ""
->>>>>>> new
                     ? TopDisc(
                         source: _top,
                         callback: (index) => getCurrentIndex(index))
@@ -159,26 +130,15 @@ class _OtherSubPlayListState extends State<OtherSubPlayList>
                       ),
                       delegate: SliverChildBuilderDelegate((context, index) {
                         return InkWell(
-<<<<<<< HEAD
                           onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => PlayListScreen(
-                                          520,
-                                          _source[index].id,
-                                          isOfficial:
-                                              widget.index == 1 ? true : false,
-                                        )));
+                            Navigator.pushNamed(context,
+                                Routes.NETEASECLOUDMUSIC_PLAYLISTDETAILSCREEN,
+                                arguments: {
+                                  "expandedHeight": 520.0,
+                                  "id": _source[index].id,
+                                  "official": widget.index == 1 ? true : false,
+                                });
                           },
-=======
-                          onTap: () => NavigatorUtil.goPlayListDetailPage(
-                            context,
-                            expandedHeight: 520,
-                            id: _source[index].id,
-                            official: widget.index == 1 ? true : false,
-                          ),
->>>>>>> new
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[

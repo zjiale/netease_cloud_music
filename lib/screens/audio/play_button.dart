@@ -1,19 +1,8 @@
-<<<<<<< HEAD
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:wangyiyun/utils/config.dart';
-import 'package:wangyiyun/store/model/play_song_model.dart';
-import 'package:wangyiyun/widgets/image_button.dart';
-=======
-import 'package:flutter/material.dart';
-import 'package:audioplayers/audioplayers.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:neteast_cloud_music/store/model/play_song_model.dart';
-import 'package:neteast_cloud_music/widgets/image_button.dart';
->>>>>>> new
+import 'package:netease_cloud_music/store/model/play_song_model.dart';
+import 'package:netease_cloud_music/widgets/image_button.dart';
 
 class PlayButton extends StatelessWidget {
   final PlaySongModel model;

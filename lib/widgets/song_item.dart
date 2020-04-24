@@ -1,149 +1,115 @@
-import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-<<<<<<< HEAD
-import 'package:wangyiyun/model/music_song_model.dart';
-import 'package:wangyiyun/widgets/play_list_cover.dart';
+import 'package:netease_cloud_music/widgets/play_list_cover.dart';
 
 class SongItem extends StatelessWidget {
   final bool showIndex;
-  final MusicSong detail;
-  final int index;
-
-  SongItem({this.showIndex = false, this.detail, this.index});
-=======
-import 'package:neteast_cloud_music/model/music_song_model.dart';
-import 'package:neteast_cloud_music/widgets/play_list_cover.dart';
-
-class SongItem extends StatelessWidget {
-  final bool showIndex;
-  final bool showPic;
-  final MusicSong detail;
+  final bool isSearch;
+  final bool hasMv;
+  final String picUrl;
+  final Widget title;
+  final Widget subTitle;
+  final int type;
+  final double height;
+  final int playCount;
   final int index;
 
   SongItem(
-      {this.showIndex = false, this.showPic = false, this.detail, this.index});
->>>>>>> new
+      {this.showIndex = false,
+      this.picUrl = '',
+      this.hasMv = true,
+      this.isSearch = false,
+      @required this.title,
+      @required this.subTitle,
+      this.type = 0, // 0: 歌曲 1: 专辑 2: 歌单 4: 视频
+      this.height = 0,
+      this.playCount = 0,
+      this.index = 0});
 
   @override
   Widget build(BuildContext context) {
-    return Row(crossAxisAlignment: CrossAxisAlignment.center, children: <
-        Widget>[
-      Offstage(
-        offstage: showIndex,
-        child: Container(
-          width: ScreenUtil().setWidth(60.0),
-          child: Center(
-<<<<<<< HEAD
-            child: Text('${0 + index}',
-=======
-            child: Text('${1 + index}',
->>>>>>> new
-                style: TextStyle(
-                    fontSize: ScreenUtil().setSp(30.0), color: Colors.black45)),
-          ),
-        ),
-      ),
-<<<<<<< HEAD
-      PlayListCoverWidget(detail.picUrl, width: 80.0),
-=======
-      showPic ? PlayListCoverWidget(detail.picUrl, width: 80.0) : Container(),
->>>>>>> new
-      Expanded(
-          child: ListTile(
-              dense: true,
-              contentPadding: EdgeInsets.only(left: 12.0),
-              title: RichText(
-                  overflow: TextOverflow.ellipsis,
-                  text: TextSpan(
-                      text: detail.name,
-                      style: TextStyle(
-                          fontSize: ScreenUtil().setSp(28.0),
-                          color:
-                              detail.st == -200 ? Colors.grey : Colors.black),
-                      children: <TextSpan>[
-                        TextSpan(
-                            text: detail.subName != ''
-                                ? '（${detail.subName}）'
-                                : '',
-                            style: TextStyle(color: Colors.grey))
-                      ])),
-              subtitle: Row(
-                children: <Widget>[
-                  Offstage(
-                    offstage: !detail.isHighQuality,
-                    child: Container(
-                      margin:
-                          EdgeInsets.only(right: ScreenUtil().setWidth(5.0)),
-                      decoration: BoxDecoration(
-                          shape: BoxShape.rectangle,
-                          border: Border.all(width: 1.0, color: Colors.red)),
-                      padding: EdgeInsets.symmetric(horizontal: 1.0),
-                      child: Text('SQ',
-                          style: TextStyle(
-                              fontSize: ScreenUtil().setSp(15.0),
-                              fontWeight: FontWeight.bold,
-                              color: Colors.red)),
-                    ),
-                  ),
-                  Offstage(
-                    child: Container(
-                      margin:
-                          EdgeInsets.only(right: ScreenUtil().setWidth(5.0)),
-                      decoration: BoxDecoration(
-                          shape: BoxShape.rectangle,
-                          border: Border.all(width: 1.0, color: Colors.red)),
-                      padding: EdgeInsets.symmetric(horizontal: 1.0),
-                      child: Text('VIP',
-                          style: TextStyle(
-                              fontSize: ScreenUtil().setSp(15.0),
-                              fontWeight: FontWeight.bold,
-                              color: Colors.red)),
-                    ),
-                  ),
-                  Flexible(
-                    child: Text('${detail.artists} - ${detail.album}',
-                        style: TextStyle(
-                            fontSize: ScreenUtil().setSp(20.0),
-                            color: detail.st == -200
-                                ? Colors.grey
-                                : Colors.black54),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis),
-                  ),
-                ],
+    Widget _buildPic() {
+      double width;
+      switch (type) {
+        case 0:
+          width = 80.0;
+          break;
+        case 4:
+          width = 230.0;
+          break;
+        default:
+          width = 100.0;
+      }
+
+      return picUrl != ''
+          ? PlayListCoverWidget(
+              picUrl,
+              circular: type == 0 ? 8.0 : 5.0,
+              width: width,
+              height: height != 0 ? height : 0,
+              isAlbum: type == 1 ? true : false,
+              playCount: type == 4 ? '$playCount' : '',
+              fit: BoxFit.cover,
+            )
+          : Container();
+    }
+
+    return Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Offstage(
+            offstage: showIndex,
+            child: Container(
+              width: ScreenUtil().setWidth(60.0),
+              child: Center(
+                child: Text('${1 + index}',
+                    style: TextStyle(
+                        fontSize: ScreenUtil().setSp(30.0),
+                        color: Colors.black45)),
               ),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Offstage(
-                    offstage: detail.mvid == 0 ? true : false,
-                    child: Container(
-                      width: ScreenUtil().setWidth(35.0),
-                      height: ScreenUtil().setWidth(30.0),
-                      margin: EdgeInsets.only(right: 5.0),
-                      decoration: BoxDecoration(
-                          shape: BoxShape.rectangle,
-                          border: Border.all(width: 1.0, color: Colors.grey),
-                          borderRadius: BorderRadius.circular(6.0)),
-                      child: Center(
-                        child: Icon(
-                          Icons.play_arrow,
-                          size: ScreenUtil().setWidth(20.0),
-                          color: Colors.grey,
+            ),
+          ),
+          _buildPic(),
+          Expanded(
+              child: ListTile(
+                  dense: true,
+                  contentPadding: EdgeInsets.only(left: 12.0),
+                  title: title,
+                  subtitle: subTitle,
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Offstage(
+                        offstage: hasMv ? true : false,
+                        child: Container(
+                          width: ScreenUtil().setWidth(35.0),
+                          height: ScreenUtil().setWidth(30.0),
+                          margin: EdgeInsets.only(right: 5.0),
+                          decoration: BoxDecoration(
+                              shape: BoxShape.rectangle,
+                              border:
+                                  Border.all(width: 1.0, color: Colors.grey),
+                              borderRadius: BorderRadius.circular(6.0)),
+                          child: Center(
+                            child: Icon(
+                              Icons.play_arrow,
+                              size: ScreenUtil().setWidth(20.0),
+                              color: Colors.grey,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                  IconButton(
-                    icon: Icon(
-                      Icons.more_vert,
-                      color: Colors.grey,
-                    ),
-                    onPressed: () {},
-                  )
-                ],
-              )))
-    ]);
+                      isSearch
+                          ? Container()
+                          : IconButton(
+                              icon: Icon(
+                                Icons.more_vert,
+                                color: Colors.grey,
+                              ),
+                              onPressed: () {},
+                            )
+                    ],
+                  )))
+        ]);
   }
 }

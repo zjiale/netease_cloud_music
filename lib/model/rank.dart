@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:neteast_cloud_music/model/rank_list_model.dart';
+import 'package:netease_cloud_music/model/rank_list_model.dart';
 
 class Rank {
   String title;

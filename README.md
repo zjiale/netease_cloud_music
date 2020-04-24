@@ -1,8 +1,12 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 # wangyiyun
 =======
 # neteast_cloud_music
 >>>>>>> new
+=======
+# netease_cloud_music
+>>>>>>> latest
 
 A new Flutter project.
 

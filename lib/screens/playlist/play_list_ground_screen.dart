@@ -1,31 +1,25 @@
 import 'dart:ui';
 
-<<<<<<< HEAD
+import 'package:ff_annotation_route/ff_annotation_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:wangyiyun/screens/playlist/other_sub_play_list.dart';
-import 'package:wangyiyun/store/model/tag_model.dart';
-import 'package:wangyiyun/utils/config.dart';
-import 'package:wangyiyun/widgets/fade_network_image.dart';
-=======
-import 'package:common_utils/common_utils.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:neteast_cloud_music/api/CommonService.dart';
-import 'package:neteast_cloud_music/screens/audio/mini_player.dart';
-import 'package:neteast_cloud_music/screens/playlist/other_sub_play_list.dart';
-import 'package:neteast_cloud_music/store/index.dart';
-import 'package:neteast_cloud_music/store/model/play_song_model.dart';
-import 'package:neteast_cloud_music/store/model/tag_model.dart';
-import 'package:neteast_cloud_music/utils/config.dart';
-import 'package:neteast_cloud_music/widgets/fade_network_image.dart';
->>>>>>> new
+import 'package:netease_cloud_music/screens/audio/mini_player.dart';
+import 'package:netease_cloud_music/screens/playlist/other_sub_play_list.dart';
+import 'package:netease_cloud_music/store/index.dart';
+import 'package:netease_cloud_music/store/model/play_song_model.dart';
+import 'package:netease_cloud_music/widgets/fade_network_image.dart';
 import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart'
     as extended;
 
+@FFRoute(
+    name: "neteasecloudmusic://playlistgroundscreen",
+    routeName: "PlayListGroundScreen",
+    argumentNames: ["tagList"],
+    pageRouteType: PageRouteType.material,
+    description: "全部歌单界面,tagList为歌单类型，在首页提前加载")
 class PlayListGroundScreen extends StatefulWidget {
-  final TagModel tagModel;
-  PlayListGroundScreen({@required this.tagModel});
+  final List tagList;
+  PlayListGroundScreen({@required this.tagList});
 
   @override
   _PlayListGroundScreenState createState() => _PlayListGroundScreenState();
@@ -47,21 +41,15 @@ class _PlayListGroundScreenState extends State<PlayListGroundScreen>
   void initState() {
     super.initState();
 
-    _tabController =
-<<<<<<< HEAD
-        TabController(vsync: this, length: widget.tagModel.allTags.length);
-=======
-        TabController(vsync: this, length: widget.tagModel.allTags.length)
-          ..addListener(() {
-            if (_tabController.index.toDouble() ==
-                _tabController.animation.value) {
-              if (_tabIndex == _tabController.index) return;
-              setState(() {
-                _tabIndex = _tabController.index;
-              });
-            }
+    _tabController = TabController(vsync: this, length: widget.tagList.length)
+      ..addListener(() {
+        if (_tabController.index.toDouble() == _tabController.animation.value) {
+          if (_tabIndex == _tabController.index) return;
+          setState(() {
+            _tabIndex = _tabController.index;
           });
->>>>>>> new
+        }
+      });
   }
 
   @override
@@ -93,20 +81,12 @@ class _PlayListGroundScreenState extends State<PlayListGroundScreen>
       headerSliverBuilder: (context, innerBoxIsScrolled) =>
           <Widget>[SliverToBoxAdapter()],
       body: TabBarView(
-<<<<<<< HEAD
-        physics: NeverScrollableScrollPhysics(),
-=======
         // physics: NeverScrollableScrollPhysics(),
->>>>>>> new
         controller: _tabController,
-        children: widget.tagModel.allTags.map((tag) {
+        children: widget.tagList.map((tag) {
           return OtherSubPlayList(
             tag: tag == "推荐" ? "" : tag,
-<<<<<<< HEAD
-            index: _tabController.index,
-=======
             index: _tabIndex,
->>>>>>> new
             indexCallback: (index) => _getImageIndex(index),
             imgCallback: (val) => _getBgImage(val),
           );
@@ -175,7 +155,7 @@ class _PlayListGroundScreenState extends State<PlayListGroundScreen>
                                 _tabIndex = index;
                               });
                             },
-                            tabs: widget.tagModel.allTags.map((tag) {
+                            tabs: widget.tagList.map((tag) {
                               return Tab(
                                 text: tag,
                               );
@@ -187,9 +167,6 @@ class _PlayListGroundScreenState extends State<PlayListGroundScreen>
                       ]),
                     )),
               ),
-<<<<<<< HEAD
-              body: content())
-=======
               body: Stack(
                 children: <Widget>[
                   content(),
@@ -203,7 +180,6 @@ class _PlayListGroundScreenState extends State<PlayListGroundScreen>
                       }))
                 ],
               ))
->>>>>>> new
         ],
       ),
     );

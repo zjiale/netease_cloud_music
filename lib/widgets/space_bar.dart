@@ -12,63 +12,6 @@ class SpaceBar extends StatelessWidget implements PreferredSizeWidget {
           borderRadius: BorderRadius.vertical(
               top: Radius.circular(ScreenUtil().setWidth(30))),
           border: Border.all(width: 0.0, color: Colors.white)),
-<<<<<<< HEAD
-      child: Column(
-        children: <Widget>[
-          SizedBox(
-            height: 3.0,
-          ),
-          Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Stack(
-                  alignment: Alignment.center,
-                  overflow: Overflow.visible,
-                  children: <Widget>[
-                    Container(
-                        width: 8.0,
-                        height: 8.0,
-                        decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Color(0xffcdcdcd).withOpacity(0.5))),
-                    Positioned(
-                        top: -7.0,
-                        child: Container(
-                            width: 4.0,
-                            height: 13.0,
-                            decoration: BoxDecoration(
-                                shape: BoxShape.rectangle,
-                                borderRadius: BorderRadius.circular(10.0),
-                                color: Colors.white)))
-                  ],
-                ),
-                Stack(
-                  alignment: Alignment.center,
-                  overflow: Overflow.visible,
-                  children: <Widget>[
-                    Container(
-                        width: 8.0,
-                        height: 8.0,
-                        decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Color(0xffcdcdcd).withOpacity(0.5))),
-                    Positioned(
-                        top: -7.0,
-                        child: Container(
-                            width: 4.0,
-                            height: 13.0,
-                            decoration: BoxDecoration(
-                                shape: BoxShape.rectangle,
-                                borderRadius: BorderRadius.circular(10.0),
-                                color: Colors.white)))
-                  ],
-                )
-              ]),
-        ],
-      ),
-=======
->>>>>>> new
     );
   }
 

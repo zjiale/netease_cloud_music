@@ -1,30 +1,26 @@
 import 'dart:ui';
 import 'package:async/async.dart';
+import 'package:ff_annotation_route/ff_annotation_route.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-<<<<<<< HEAD
-import 'package:wangyiyun/api/CommonService.dart';
-import 'package:wangyiyun/model/play_list_model.dart';
-import 'package:wangyiyun/screens/playlist/play_list_screen.dart';
-import 'package:wangyiyun/utils/config.dart';
-import 'package:wangyiyun/widgets/flexible_detail_bar.dart';
-import 'package:wangyiyun/widgets/space_bar.dart';
-import 'package:wangyiyun/widgets/user_center_area.dart';
-import 'package:wangyiyun/widgets/user_center_list.dart';
-=======
-import 'package:neteast_cloud_music/api/CommonService.dart';
-import 'package:neteast_cloud_music/model/play_list_model.dart';
-import 'package:neteast_cloud_music/screens/playlist/play_list_screen.dart';
-import 'package:neteast_cloud_music/utils/config.dart';
-import 'package:neteast_cloud_music/utils/routes/navigator_util.dart';
-import 'package:neteast_cloud_music/widgets/flexible_detail_bar.dart';
-import 'package:neteast_cloud_music/widgets/space_bar.dart';
-import 'package:neteast_cloud_music/widgets/user_center_area.dart';
-import 'package:neteast_cloud_music/widgets/user_center_list.dart';
->>>>>>> new
+import 'package:netease_cloud_music/api/CommonService.dart';
+import 'package:netease_cloud_music/netease_cloud_music_route.dart' as prefix;
+import 'package:netease_cloud_music/store/index.dart';
+import 'package:netease_cloud_music/store/model/user_model.dart';
+import 'package:netease_cloud_music/utils/config.dart';
+import 'package:netease_cloud_music/widgets/fade_network_image.dart';
+import 'package:netease_cloud_music/widgets/flexible_detail_bar.dart';
+import 'package:netease_cloud_music/widgets/space_bar.dart';
+import 'package:netease_cloud_music/widgets/user_center_area.dart';
+import 'package:netease_cloud_music/widgets/user_center_list.dart';
 
+@FFRoute(
+    name: "neteasecloudmusic://usercenterscreen",
+    routeName: "UserCenterScreen",
+    pageRouteType: PageRouteType.material,
+    description: "用户中心，查看用户当前信息以及歌单")
 class UserCenterScreen extends StatefulWidget {
   @override
   _UserCenterScreenState createState() => _UserCenterScreenState();
@@ -34,24 +30,18 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
   int _selectIndex = 0;
   List _button = Config.centerBtn;
   List _area = Config.centerArea;
-  int _code = Config.SUCCESS_CODE;
+
+  CommmonService api = CommmonService();
 
   AsyncMemoizer _memoizer = AsyncMemoizer();
 
-  Future _initPlayList() {
+  Future _initPlayList(int id) {
     return _memoizer.runOnce(() async {
-      return CommmonService().getPlayList(93412043).then((res) {
-        if (res.statusCode == 200) {
-          PlayListModel _bean = PlayListModel.fromJson(res.data);
-          if (_bean.code == _code) {
-            return _bean.playlist;
-          }
-        }
-      });
+      return api.getPlayList(id);
     });
   }
 
-  Widget centerButton() {
+  Widget _centerButton() {
     return Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: _button.asMap().entries.map((MapEntry map) {
@@ -72,7 +62,7 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
         }).toList());
   }
 
-  Widget option(int create, int collect) {
+  Widget _option(int create, int collect) {
     List<String> _options = ["创建歌单", "收藏歌单"];
     return Row(
         children: _options.asMap().entries.map((MapEntry map) {
@@ -106,7 +96,7 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
     }).toList());
   }
 
-  List<Widget> playList(int index, List create, List collect) {
+  List<Widget> _playList(int index, List create, List collect) {
     int _length;
     switch (index) {
       case 0:
@@ -117,25 +107,19 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
         break;
       default:
     }
-<<<<<<< HEAD
-    List<Widget> _list = [];
-    for (int i = 0; i < _length; i++) {
-      _list.add(GestureDetector(
-        onTap: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => PlayListScreen(
-                      520, index == 0 ? create[i].id : collect[i].id)));
-        },
-=======
 
     List<Widget> _list = [];
     for (int i = 0; i < _length; i++) {
       _list.add(GestureDetector(
-        onTap: () => NavigatorUtil.goPlayListDetailPage(context,
-            expandedHeight: 520, id: index == 0 ? create[i].id : collect[i].id),
->>>>>>> new
+        onTap: () {
+          Navigator.pushNamed(
+              context, prefix.Routes.NETEASECLOUDMUSIC_PLAYLISTDETAILSCREEN,
+              arguments: {
+                "expandedHeight": 520.0,
+                "id": index == 0 ? create[i].id : collect[i].id,
+                "official": false
+              });
+        },
         child: UserCenterList(index == 0 ? create[i].name : collect[i].name,
             subTitle:
                 '${index == 0 ? create[i].trackCount : collect[i].trackCount}首',
@@ -149,22 +133,17 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
     return _list;
   }
 
-  Widget userCenter(List subscribedList, List unSubscribedList) {
+  Widget _userCenter(
+      List subscribedList, List unSubscribedList, UserModel userModel) {
     return CustomScrollView(
       slivers: <Widget>[
         SliverAppBar(
             pinned: true,
             elevation: 0,
-<<<<<<< HEAD
-            expandedHeight: ScreenUtil().setHeight(380.0),
-            brightness: Brightness.dark,
-            iconTheme: IconThemeData(color: Colors.white),
-=======
             iconTheme: IconThemeData(color: Colors.transparent),
-            expandedHeight: ScreenUtil().setHeight(380.0) +
+            expandedHeight: ScreenUtil().setHeight(350.0) +
                 MediaQuery.of(context).padding.top,
             brightness: Brightness.dark,
->>>>>>> new
             flexibleSpace: FlexibleDetailBar(
                 content: SafeArea(
                   child: Padding(
@@ -178,16 +157,17 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             ClipOval(
-                                child: Container(
-                                    width: ScreenUtil().setWidth(100),
-                                    height: ScreenUtil().setWidth(100),
-                                    color: Colors.orange)),
+                                child: FadeNetWorkImage(
+                              userModel.user.profile.avatarUrl,
+                              fit: BoxFit.cover,
+                              width: ScreenUtil().setWidth(100.0),
+                            )),
                             SizedBox(width: ScreenUtil().setWidth(15.0)),
                             Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
-                                  Text('吉川福浪',
+                                  Text(userModel.user.profile.nickname,
                                       style: TextStyle(
                                           fontSize: ScreenUtil().setSp(25.0),
                                           fontWeight: FontWeight.bold)),
@@ -210,15 +190,18 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                                 ])
                           ]),
                       SizedBox(height: ScreenUtil().setHeight(30.0)),
-                      centerButton()
+                      _centerButton()
                     ]),
                   ),
                 ),
-                background: Image.asset('assets/timg.jpg',
-                    width: MediaQuery.of(context).size.width,
-                    fit: BoxFit.cover,
-                    colorBlendMode: BlendMode.srcOver,
-                    color: Colors.black54)),
+                background: Container(
+                  color: Colors.white,
+                  child: Image.asset('assets/timg.jpg',
+                      width: MediaQuery.of(context).size.width,
+                      fit: BoxFit.cover,
+                      colorBlendMode: BlendMode.srcOver,
+                      color: Colors.black54),
+                )),
             bottom: SpaceBar()),
         SliverToBoxAdapter(
             child: Container(
@@ -287,7 +270,7 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                       Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
-                            option(
+                            _option(
                                 unSubscribedList.length, subscribedList.length),
                             Icon(Icons.more_vert,
                                 size: ScreenUtil().setSp(50.0),
@@ -295,13 +278,9 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                           ]),
                       SizedBox(height: ScreenUtil().setHeight(20.0)),
                       Wrap(
-<<<<<<< HEAD
-                        spacing: 20.0,
-=======
                         spacing: ScreenUtil().setWidth(30.0),
->>>>>>> new
                         runSpacing: ScreenUtil().setHeight(20.0),
-                        children: playList(
+                        children: _playList(
                             _selectIndex, unSubscribedList, subscribedList),
                       )
                     ]))),
@@ -313,51 +292,32 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
 
   @override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
-    return FutureBuilder(
-      future: _initPlayList(),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        switch (snapshot.connectionState) {
-          case ConnectionState.waiting:
-            return Center(
-                child: SpinKitChasingDots(
-                    color: Theme.of(context).primaryColor, size: 30.0));
-          case ConnectionState.done:
-            // List loveList = snapshot.data;
-            List subscribedList = List.from(snapshot.data);
-            List unSubscribedList = List.from(snapshot.data);
-            subscribedList.retainWhere((item) => item.subscribed == true);
-            unSubscribedList.retainWhere(
-                (item) => item.subscribed == false && item.specialType != 5);
-            return userCenter(subscribedList, unSubscribedList);
-          default:
-            return null;
-        }
-      },
-=======
     return Material(
-      child: FutureBuilder(
-        future: _initPlayList(),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.waiting:
-              return Center(
-                  child: SpinKitChasingDots(
-                      color: Theme.of(context).primaryColor, size: 30.0));
-            case ConnectionState.done:
-              // List loveList = snapshot.data;
-              List subscribedList = List.from(snapshot.data);
-              List unSubscribedList = List.from(snapshot.data);
-              subscribedList.retainWhere((item) => item.subscribed == true);
-              unSubscribedList.retainWhere(
-                  (item) => item.subscribed == false && item.specialType != 5);
-              return userCenter(subscribedList, unSubscribedList);
-            default:
-              return null;
-          }
-        },
-      ),
->>>>>>> new
+      child: Store.connect<UserModel>(builder: (context, userModel, child) {
+        return FutureBuilder(
+          future: _initPlayList(userModel.user.profile.userId),
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            switch (snapshot.connectionState) {
+              case ConnectionState.waiting:
+                return Center(
+                    child: SpinKitChasingDots(
+                        color: Theme.of(context).primaryColor, size: 30.0));
+              case ConnectionState.done:
+                // List loveList = snapshot.data;
+                List subscribedList = List.from(snapshot.data);
+                List unSubscribedList = List.from(snapshot.data);
+                subscribedList.retainWhere((item) => item.subscribed == true);
+                unSubscribedList.retainWhere((item) =>
+                    item.subscribed == false && item.specialType != 5);
+
+                return _userCenter(subscribedList, unSubscribedList, userModel);
+
+              default:
+                return null;
+            }
+          },
+        );
+      }),
     );
   }
 }

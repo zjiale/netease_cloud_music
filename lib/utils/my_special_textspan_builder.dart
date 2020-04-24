@@ -5,8 +5,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class MySpecialTextSpanBuilder extends SpecialTextSpanBuilder {
   /// whether show background for @somebody
+  final bool isSearch;
+  final String keyword;
   final bool showAtBackground;
-  MySpecialTextSpanBuilder({this.showAtBackground: false});
+  MySpecialTextSpanBuilder({
+    this.isSearch = false,
+    this.keyword = '',
+    this.showAtBackground: false,
+  });
 
   @override
   TextSpan build(String data, {TextStyle textStyle, onTap}) {
@@ -19,6 +25,11 @@ class MySpecialTextSpanBuilder extends SpecialTextSpanBuilder {
       {TextStyle textStyle, SpecialTextGestureTapCallback onTap, int index}) {
     if (flag == null || flag == "") return null;
 
+    if (isSearch) {
+      return SearchText(
+          startFlag: keyword[0], endFlag: keyword[keyword.length - 1]);
+    }
+
     ///index is end index of start flag, so text start index should be index-(flag.length-1)
     if (isStart(flag, AtText.flag)) {
       return AtText(textStyle, onTap,
@@ -26,9 +37,6 @@ class MySpecialTextSpanBuilder extends SpecialTextSpanBuilder {
           showAtBackground: showAtBackground);
     } else if (isStart(flag, NumText.flag)) {
       return NumText(textStyle, onTap,
-<<<<<<< HEAD
-          start: index - (AtText.flag.length - 1),
-=======
           start: index - (NumText.flag.length - 1),
           showAtBackground: showAtBackground);
     } else if (isStart(flag, EventText.flag)) {
@@ -38,19 +46,48 @@ class MySpecialTextSpanBuilder extends SpecialTextSpanBuilder {
     } else if (isStart(flag, UrlText.flag)) {
       return UrlText(textStyle, onTap,
           start: index - (UrlText.flag.length - 1),
->>>>>>> new
           showAtBackground: showAtBackground);
     }
     return null;
   }
 }
 
+class SearchText extends SpecialText {
+  final int start;
+
+  /// whether show background for @somebody
+  final bool showAtBackground;
+
+  SearchText(
+      {@required String startFlag,
+      @required String endFlag,
+      TextStyle textStyle,
+      this.start,
+      this.showAtBackground})
+      : super(startFlag, endFlag, textStyle);
+
+  @override
+  InlineSpan finishText() {
+    TextStyle textStyle = this
+        .textStyle
+        ?.copyWith(fontSize: ScreenUtil().setSp(20.0), color: Colors.blue[800]);
+
+    final String keyword = getContent();
+
+    return SpecialTextSpan(
+        text: keyword,
+        actualText: keyword,
+        start: start,
+        style: textStyle,
+        recognizer: (TapGestureRecognizer()
+          ..onTap = () {
+            if (onTap != null) onTap(keyword);
+          }));
+  }
+}
+
 class AtText extends SpecialText {
-<<<<<<< HEAD
-  static const String flag = "@s";
-=======
   static const String flag = "@start";
->>>>>>> new
   final int start;
 
   /// whether show background for @somebody
@@ -68,11 +105,7 @@ class AtText extends SpecialText {
   InlineSpan finishText() {
     TextStyle textStyle = this
         .textStyle
-<<<<<<< HEAD
-        ?.copyWith(fontSize: ScreenUtil().setSp(20.0), color: Colors.grey);
-=======
         ?.copyWith(fontSize: ScreenUtil().setSp(20.0), color: Colors.white70);
->>>>>>> new
 
     final String atText = getContent();
 
@@ -121,11 +154,7 @@ class NumText extends SpecialText {
   InlineSpan finishText() {
     TextStyle textStyle = this.textStyle?.copyWith(
         fontSize: ScreenUtil().setSp(28.0),
-<<<<<<< HEAD
-        color: Colors.black,
-=======
         color: Colors.white,
->>>>>>> new
         fontWeight: FontWeight.bold);
 
     final String atText = getContent();
@@ -155,8 +184,6 @@ class NumText extends SpecialText {
               }));
   }
 }
-<<<<<<< HEAD
-=======
 
 class EventText extends SpecialText {
   static const String flag = "#";
@@ -251,4 +278,3 @@ class UrlText extends SpecialText {
               }));
   }
 }
->>>>>>> new
