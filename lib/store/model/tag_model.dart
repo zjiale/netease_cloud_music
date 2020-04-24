@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:wangyiyun/api/CommonService.dart';
 import 'package:wangyiyun/model/play_list_tags_model.dart';
 import 'package:wangyiyun/utils/config.dart';
+=======
+import 'package:neteast_cloud_music/api/CommonService.dart';
+import 'package:neteast_cloud_music/model/play_list_tags_model.dart';
+import 'package:neteast_cloud_music/utils/config.dart';
+>>>>>>> new
 
 class TagModel with ChangeNotifier {
   int _code = Config.SUCCESS_CODE;

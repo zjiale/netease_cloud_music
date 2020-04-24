@@ -1,9 +1,13 @@
+<<<<<<< HEAD
 import 'dart:math';
+=======
+>>>>>>> new
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+<<<<<<< HEAD
 import 'package:wangyiyun/api/CommonService.dart';
 import 'package:wangyiyun/model/music_song_model.dart';
 import 'package:wangyiyun/model/recommend_song_list_model.dart';
@@ -12,6 +16,15 @@ import 'package:wangyiyun/utils/config.dart';
 import 'package:wangyiyun/widgets/sliver_appbar_custom.dart';
 import 'package:wangyiyun/widgets/song_item.dart';
 import 'package:wangyiyun/widgets/space_bar.dart';
+=======
+import 'package:neteast_cloud_music/api/CommonService.dart';
+import 'package:neteast_cloud_music/model/music_song_model.dart';
+import 'package:neteast_cloud_music/model/recommend_song_list_model.dart';
+import 'package:neteast_cloud_music/screens/playlist/play_list_bottom.dart';
+import 'package:neteast_cloud_music/utils/config.dart';
+import 'package:neteast_cloud_music/widgets/sliver_appbar_custom.dart';
+import 'package:neteast_cloud_music/widgets/song_item.dart';
+>>>>>>> new
 
 class DailyRecommendScreen extends StatefulWidget {
   @override
@@ -37,8 +50,11 @@ class _DailyRecommendScreenState extends State<DailyRecommendScreen> {
         (window.physicalSize.height / window.devicePixelRatio) / 1334;
     double _scrollOffset = (350 * ratio1) - (100 * ratio) - kToolbarHeight;
     _controller.addListener(() {
+<<<<<<< HEAD
       // _opacity =
       //     _opacity < 0 ? 0 : 1.0 - max(0.0, _controller.offset) / _scrollOffset;
+=======
+>>>>>>> new
       if (_controller.offset >= _scrollOffset && _title == '') {
         setState(() {
           _title = '每日推荐';
@@ -98,7 +114,12 @@ class _DailyRecommendScreenState extends State<DailyRecommendScreen> {
                 List<Recommend> recommendList = snapshot.data;
                 List<MusicSong> _list = [];
                 recommendList.forEach((song) {
+<<<<<<< HEAD
                   _list.add(MusicSong(song.id,
+=======
+                  _list.add(MusicSong(
+                      id: song.id,
+>>>>>>> new
                       mvid: song.mvid,
                       totalTime: song.duration,
                       name: song.name,
@@ -172,6 +193,10 @@ class _DailyRecommendScreenState extends State<DailyRecommendScreen> {
                             color: Colors.white.withOpacity(0.2)),
                         bottom: PlayListBottom(
                           show: false,
+<<<<<<< HEAD
+=======
+                          isRecommend: true,
+>>>>>>> new
                         )),
                     SliverPadding(
                       padding: EdgeInsets.only(left: 10.0),
@@ -182,6 +207,10 @@ class _DailyRecommendScreenState extends State<DailyRecommendScreen> {
                           return SongItem(
                             index: index,
                             showIndex: true,
+<<<<<<< HEAD
+=======
+                            showPic: true,
+>>>>>>> new
                             detail: _list[index],
                           );
                         }, childCount: recommendList.length),

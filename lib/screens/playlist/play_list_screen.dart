@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:async/async.dart';
 import 'package:color_thief_flutter/color_thief_flutter.dart';
+<<<<<<< HEAD
 
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +24,32 @@ class PlayListScreen extends StatefulWidget {
   final bool isOfficial;
 
   PlayListScreen(this.expandedHeight, this.pid, {this.isOfficial = false});
+=======
+import 'package:common_utils/common_utils.dart';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:neteast_cloud_music/api/CommonService.dart';
+import 'package:neteast_cloud_music/model/music_song_model.dart';
+import 'package:neteast_cloud_music/model/play_list.detail.dart';
+import 'package:neteast_cloud_music/model/subscribers_model.dart';
+import 'package:neteast_cloud_music/screens/audio/mini_player.dart';
+import 'package:neteast_cloud_music/store/index.dart';
+import 'package:neteast_cloud_music/store/model/play_song_model.dart';
+import 'package:neteast_cloud_music/utils/config.dart';
+import 'package:neteast_cloud_music/widgets/song_list.dart';
+
+class PlayListScreen extends StatefulWidget {
+  final double expandedHeight;
+  final int id;
+  final bool official;
+
+  PlayListScreen(
+      {@required this.expandedHeight,
+      @required this.id,
+      this.official = false});
+>>>>>>> new
 
   @override
   _PlayListScreenState createState() => _PlayListScreenState();
@@ -32,14 +59,18 @@ class _PlayListScreenState extends State<PlayListScreen> {
   List _button = Config.button;
   int _code = Config.SUCCESS_CODE;
 
+<<<<<<< HEAD
   bool _marquee = false;
 
   ScrollController _controller = new ScrollController();
 
+=======
+>>>>>>> new
   AsyncMemoizer _memoizer = AsyncMemoizer();
 
   Color bgColor;
 
+<<<<<<< HEAD
   @override
   void initState() {
     super.initState();
@@ -56,14 +87,38 @@ class _PlayListScreenState extends State<PlayListScreen> {
         });
       }
     });
+=======
+  String _formateArtist(List<Ar> _list) {
+    String artists = '';
+    for (var i = 0; i <= _list.length - 1; i++) {
+      if (i == _list.length - 1) {
+        artists = '$artists${_list[i].name}';
+      } else {
+        artists = '$artists${_list[i].name}\/';
+      }
+    }
+    return artists;
+>>>>>>> new
   }
 
   Future _initDetailPlayList() {
     return _memoizer.runOnce(() async {
+<<<<<<< HEAD
       return CommmonService().getDetailPlayList(widget.pid).then((res) {
         if (res.statusCode == 200) {
           PlayListDetailModel _bean = PlayListDetailModel.fromJson(res.data);
           if (_bean.code == _code) {
+=======
+      return CommmonService().getDetailPlayList(widget.id).then((res) {
+        if (res.statusCode == 200) {
+          PlayListDetailModel _bean = PlayListDetailModel.fromJson(res.data);
+          if (_bean.code == _code) {
+            getColorFromUrl(_bean.playlist.coverImgUrl).then((color) {
+              setState(() {
+                bgColor = Color.fromRGBO(color[0], color[1], color[2], 1);
+              }); // [R,G,B]
+            });
+>>>>>>> new
             return _bean;
           }
         }
@@ -105,6 +160,7 @@ class _PlayListScreenState extends State<PlayListScreen> {
         }).toList());
   }
 
+<<<<<<< HEAD
   Widget content(PlayListDetailModel detail) {
     return CustomScrollView(controller: _controller, slivers: <Widget>[
       SliverAppBarCustom(
@@ -311,6 +367,10 @@ class _PlayListScreenState extends State<PlayListScreen> {
   Widget build(BuildContext context) {
     ScreenUtil.init(context, width: 750, height: 1334);
 
+=======
+  @override
+  Widget build(BuildContext context) {
+>>>>>>> new
     return Scaffold(
         body: FutureBuilder(
             future: _initDetailPlayList(),
@@ -321,8 +381,59 @@ class _PlayListScreenState extends State<PlayListScreen> {
                       child: SpinKitChasingDots(
                           color: Theme.of(context).primaryColor, size: 30.0));
                 case ConnectionState.done:
+<<<<<<< HEAD
                   PlayListDetailModel playList = snapshot.data;
                   return content(playList);
+=======
+                  List<MusicSong> _list = [];
+                  List<SubscribersModel> _suscribers = [];
+                  PlayListDetailModel playList = snapshot.data;
+                  playList.playlist.tracks.forEach((song) {
+                    _list.add(MusicSong(
+                        id: song.id,
+                        mvid: song.mv,
+                        totalTime: song.dt,
+                        name: song.name,
+                        subName: song.alia.length > 0 ? song.alia.first : '',
+                        artists: song.ar.length == 1
+                            ? song.ar.first.name
+                            : _formateArtist(song.ar),
+                        album: song.al.name,
+                        st: song.st,
+                        isVip: song.fee == 1 ? true : false));
+                  });
+                  playList.playlist.subscribers.forEach((subscriber) {
+                    _suscribers.add(SubscribersModel(
+                        name: subscriber.nickname,
+                        id: subscriber.userId,
+                        description: subscriber.description,
+                        avatarUrl: subscriber.avatarUrl,
+                        gender: subscriber.gender));
+                  });
+                  return Stack(
+                    children: <Widget>[
+                      SongList(
+                        expandedHeight: widget.expandedHeight,
+                        id: widget.id,
+                        detail: playList,
+                        list: _list,
+                        suscribers: _suscribers,
+                        bgColor: bgColor,
+                        playlistbutton: playButton(playList.playlist.shareCount,
+                            playList.playlist.commentCount),
+                        official: widget.official,
+                      ),
+                      Positioned(
+                          bottom: 0.0,
+                          child: Store.connect<PlaySongModel>(
+                              builder: (context, model, child) {
+                            return Offstage(
+                                offstage: model.show,
+                                child: MiniPlayer(model: model));
+                          }))
+                    ],
+                  );
+>>>>>>> new
                 default:
                   return null;
               }

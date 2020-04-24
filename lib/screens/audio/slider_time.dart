@@ -1,7 +1,11 @@
 import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+<<<<<<< HEAD
 import 'package:wangyiyun/store/model/play_song_model.dart';
+=======
+import 'package:neteast_cloud_music/store/model/play_song_model.dart';
+>>>>>>> new
 
 class SliderTime extends StatefulWidget {
   final PlaySongModel model;

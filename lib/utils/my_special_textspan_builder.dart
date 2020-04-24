@@ -26,7 +26,19 @@ class MySpecialTextSpanBuilder extends SpecialTextSpanBuilder {
           showAtBackground: showAtBackground);
     } else if (isStart(flag, NumText.flag)) {
       return NumText(textStyle, onTap,
+<<<<<<< HEAD
           start: index - (AtText.flag.length - 1),
+=======
+          start: index - (NumText.flag.length - 1),
+          showAtBackground: showAtBackground);
+    } else if (isStart(flag, EventText.flag)) {
+      return EventText(textStyle, onTap,
+          start: index - (EventText.flag.length - 1),
+          showAtBackground: showAtBackground);
+    } else if (isStart(flag, UrlText.flag)) {
+      return UrlText(textStyle, onTap,
+          start: index - (UrlText.flag.length - 1),
+>>>>>>> new
           showAtBackground: showAtBackground);
     }
     return null;
@@ -34,7 +46,11 @@ class MySpecialTextSpanBuilder extends SpecialTextSpanBuilder {
 }
 
 class AtText extends SpecialText {
+<<<<<<< HEAD
   static const String flag = "@s";
+=======
+  static const String flag = "@start";
+>>>>>>> new
   final int start;
 
   /// whether show background for @somebody
@@ -52,7 +68,11 @@ class AtText extends SpecialText {
   InlineSpan finishText() {
     TextStyle textStyle = this
         .textStyle
+<<<<<<< HEAD
         ?.copyWith(fontSize: ScreenUtil().setSp(20.0), color: Colors.grey);
+=======
+        ?.copyWith(fontSize: ScreenUtil().setSp(20.0), color: Colors.white70);
+>>>>>>> new
 
     final String atText = getContent();
 
@@ -101,7 +121,11 @@ class NumText extends SpecialText {
   InlineSpan finishText() {
     TextStyle textStyle = this.textStyle?.copyWith(
         fontSize: ScreenUtil().setSp(28.0),
+<<<<<<< HEAD
         color: Colors.black,
+=======
+        color: Colors.white,
+>>>>>>> new
         fontWeight: FontWeight.bold);
 
     final String atText = getContent();
@@ -131,3 +155,100 @@ class NumText extends SpecialText {
               }));
   }
 }
+<<<<<<< HEAD
+=======
+
+class EventText extends SpecialText {
+  static const String flag = "#";
+  final int start;
+
+  /// whether show background for @somebody
+  final bool showAtBackground;
+
+  EventText(TextStyle textStyle, SpecialTextGestureTapCallback onTap,
+      {this.showAtBackground: false, this.start})
+      : super(
+          flag,
+          flag,
+          textStyle,
+        );
+
+  @override
+  InlineSpan finishText() {
+    TextStyle textStyle = this.textStyle?.copyWith(color: Colors.blue);
+
+    final String atText = toString();
+
+    return showAtBackground
+        ? BackgroundTextSpan(
+            background: Paint()..color = Colors.blue.withOpacity(0.15),
+            text: atText,
+            actualText: atText,
+            start: start,
+
+            ///caret can move into special text
+            deleteAll: true,
+            style: textStyle,
+            recognizer: (TapGestureRecognizer()
+              ..onTap = () {
+                if (onTap != null) onTap(atText);
+              }))
+        : SpecialTextSpan(
+            text: atText,
+            actualText: atText,
+            start: start,
+            style: textStyle,
+            recognizer: (TapGestureRecognizer()
+              ..onTap = () {
+                if (onTap != null) onTap(atText);
+              }));
+  }
+}
+
+class UrlText extends SpecialText {
+  static const String flag = "http";
+  final int start;
+
+  /// whether show background for @somebody
+  final bool showAtBackground;
+
+  UrlText(TextStyle textStyle, SpecialTextGestureTapCallback onTap,
+      {this.showAtBackground: false, this.start})
+      : super(
+          flag,
+          " ",
+          textStyle,
+        );
+
+  @override
+  InlineSpan finishText() {
+    TextStyle textStyle = this.textStyle?.copyWith(color: Colors.blue);
+
+    final String atText = "\u261b 网页地址";
+
+    return showAtBackground
+        ? BackgroundTextSpan(
+            background: Paint()..color = Colors.blue.withOpacity(0.15),
+            text: atText,
+            actualText: atText,
+            start: start,
+
+            ///caret can move into special text
+            deleteAll: true,
+            style: textStyle,
+            recognizer: (TapGestureRecognizer()
+              ..onTap = () {
+                if (onTap != null) onTap(atText);
+              }))
+        : SpecialTextSpan(
+            text: atText,
+            actualText: atText,
+            start: start,
+            style: textStyle,
+            recognizer: (TapGestureRecognizer()
+              ..onTap = () {
+                if (onTap != null) onTap(atText);
+              }));
+  }
+}
+>>>>>>> new

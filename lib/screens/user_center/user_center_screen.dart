@@ -4,6 +4,7 @@ import 'package:async/async.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+<<<<<<< HEAD
 import 'package:wangyiyun/api/CommonService.dart';
 import 'package:wangyiyun/model/play_list_model.dart';
 import 'package:wangyiyun/screens/playlist/play_list_screen.dart';
@@ -12,6 +13,17 @@ import 'package:wangyiyun/widgets/flexible_detail_bar.dart';
 import 'package:wangyiyun/widgets/space_bar.dart';
 import 'package:wangyiyun/widgets/user_center_area.dart';
 import 'package:wangyiyun/widgets/user_center_list.dart';
+=======
+import 'package:neteast_cloud_music/api/CommonService.dart';
+import 'package:neteast_cloud_music/model/play_list_model.dart';
+import 'package:neteast_cloud_music/screens/playlist/play_list_screen.dart';
+import 'package:neteast_cloud_music/utils/config.dart';
+import 'package:neteast_cloud_music/utils/routes/navigator_util.dart';
+import 'package:neteast_cloud_music/widgets/flexible_detail_bar.dart';
+import 'package:neteast_cloud_music/widgets/space_bar.dart';
+import 'package:neteast_cloud_music/widgets/user_center_area.dart';
+import 'package:neteast_cloud_music/widgets/user_center_list.dart';
+>>>>>>> new
 
 class UserCenterScreen extends StatefulWidget {
   @override
@@ -105,6 +117,7 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
         break;
       default:
     }
+<<<<<<< HEAD
     List<Widget> _list = [];
     for (int i = 0; i < _length; i++) {
       _list.add(GestureDetector(
@@ -115,6 +128,14 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                   builder: (context) => PlayListScreen(
                       520, index == 0 ? create[i].id : collect[i].id)));
         },
+=======
+
+    List<Widget> _list = [];
+    for (int i = 0; i < _length; i++) {
+      _list.add(GestureDetector(
+        onTap: () => NavigatorUtil.goPlayListDetailPage(context,
+            expandedHeight: 520, id: index == 0 ? create[i].id : collect[i].id),
+>>>>>>> new
         child: UserCenterList(index == 0 ? create[i].name : collect[i].name,
             subTitle:
                 '${index == 0 ? create[i].trackCount : collect[i].trackCount}首',
@@ -134,9 +155,16 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
         SliverAppBar(
             pinned: true,
             elevation: 0,
+<<<<<<< HEAD
             expandedHeight: ScreenUtil().setHeight(380.0),
             brightness: Brightness.dark,
             iconTheme: IconThemeData(color: Colors.white),
+=======
+            iconTheme: IconThemeData(color: Colors.transparent),
+            expandedHeight: ScreenUtil().setHeight(380.0) +
+                MediaQuery.of(context).padding.top,
+            brightness: Brightness.dark,
+>>>>>>> new
             flexibleSpace: FlexibleDetailBar(
                 content: SafeArea(
                   child: Padding(
@@ -267,7 +295,11 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
                           ]),
                       SizedBox(height: ScreenUtil().setHeight(20.0)),
                       Wrap(
+<<<<<<< HEAD
                         spacing: 20.0,
+=======
+                        spacing: ScreenUtil().setWidth(30.0),
+>>>>>>> new
                         runSpacing: ScreenUtil().setHeight(20.0),
                         children: playList(
                             _selectIndex, unSubscribedList, subscribedList),
@@ -281,6 +313,7 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     return FutureBuilder(
       future: _initPlayList(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -301,6 +334,30 @@ class _UserCenterScreenState extends State<UserCenterScreen> {
             return null;
         }
       },
+=======
+    return Material(
+      child: FutureBuilder(
+        future: _initPlayList(),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          switch (snapshot.connectionState) {
+            case ConnectionState.waiting:
+              return Center(
+                  child: SpinKitChasingDots(
+                      color: Theme.of(context).primaryColor, size: 30.0));
+            case ConnectionState.done:
+              // List loveList = snapshot.data;
+              List subscribedList = List.from(snapshot.data);
+              List unSubscribedList = List.from(snapshot.data);
+              subscribedList.retainWhere((item) => item.subscribed == true);
+              unSubscribedList.retainWhere(
+                  (item) => item.subscribed == false && item.specialType != 5);
+              return userCenter(subscribedList, unSubscribedList);
+            default:
+              return null;
+          }
+        },
+      ),
+>>>>>>> new
     );
   }
 }

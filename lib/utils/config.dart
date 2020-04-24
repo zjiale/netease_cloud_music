@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+<<<<<<< HEAD
 import 'package:wangyiyun/model/center_area_model.dart';
 
 class Config {
+=======
+import 'package:neteast_cloud_music/model/center_area_model.dart';
+import 'package:neteast_cloud_music/utils/fluro/src/router.dart';
+
+class Config {
+  static Router router;
+
+>>>>>>> new
   String cookie =
       '__remember_me=true; MUSIC_U=abdca9af4324f26ef36310855b23ab2fcd1fcf1d285067808fc4a467c5dc65cbbdd1e76e7cd8459859b37bbcbfa845e87955a739ab43dce1; __csrf=1ac281f1e4ced023ed502cf28906a07e';
   Map<String, String> _headerMap;
@@ -21,6 +30,35 @@ class Config {
     return "assets/icon_$key.png";
   }
 
+<<<<<<< HEAD
+=======
+  String formateArtist(List _list) {
+    String artists = '';
+    for (var i = 0; i <= _list.length - 1; i++) {
+      if (i == _list.length - 1) {
+        artists = '$artists${_list[i].name}';
+      } else {
+        artists = '$artists${_list[i].name}\/';
+      }
+    }
+    return artists;
+  }
+
+  /// 返回对应的Rect区域...
+  static Rect getRectFromKey(BuildContext currentContext) {
+    var object = currentContext?.findRenderObject();
+    var translation = object?.getTransformTo(null)?.getTranslation();
+    var size = object?.semanticBounds?.size;
+
+    if (translation != null && size != null) {
+      return new Rect.fromLTWH(
+          translation.x, translation.y, size.width, size.height);
+    } else {
+      return null;
+    }
+  }
+
+>>>>>>> new
   static List<Tab> titleTabs = <Tab>[
     Tab(text: '我的'),
     Tab(text: '发现'),
@@ -28,7 +66,11 @@ class Config {
     Tab(text: '视频')
   ];
 
+<<<<<<< HEAD
   static List<String> title = ['我的', '发现', '动态', '视频'];
+=======
+  static List<String> title = ['我的', '发现', '云村', '视频'];
+>>>>>>> new
 
   static List type = [
     {"image": "assets/icon_daily.png", "text": "每日推荐", "index": 0},

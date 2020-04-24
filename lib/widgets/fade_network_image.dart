@@ -3,7 +3,14 @@ import 'package:flutter/material.dart';
 
 class FadeNetWorkImage extends StatefulWidget {
   final String url;
+<<<<<<< HEAD
   FadeNetWorkImage(this.url, {Key key});
+=======
+  final BoxFit fit;
+  final double width;
+  FadeNetWorkImage(this.url,
+      {this.fit = BoxFit.contain, this.width = double.infinity, Key key});
+>>>>>>> new
   @override
   _FadeNetWorkImageState createState() => _FadeNetWorkImageState();
 }
@@ -28,8 +35,16 @@ class _FadeNetWorkImageState extends State<FadeNetWorkImage>
   @override
   Widget build(BuildContext context) {
     return ExtendedImage.network(widget.url,
+<<<<<<< HEAD
         width: MediaQuery.of(context).size.width,
         fit: BoxFit.cover,
+=======
+        width: widget.width,
+        height: widget.width,
+        fit: widget.fit,
+        color: Colors.black26,
+        colorBlendMode: BlendMode.srcOver,
+>>>>>>> new
         cache: true, loadStateChanged: (ExtendedImageState state) {
       switch (state.extendedImageLoadState) {
         case LoadState.loading:
@@ -40,7 +55,14 @@ class _FadeNetWorkImageState extends State<FadeNetWorkImage>
           _controller.forward();
           return FadeTransition(
             opacity: _controller,
+<<<<<<< HEAD
             child: ExtendedRawImage(image: state.extendedImageInfo?.image),
+=======
+            child: ExtendedRawImage(
+              image: state.extendedImageInfo?.image,
+              fit: widget.fit,
+            ),
+>>>>>>> new
           );
           break;
         case LoadState.failed:

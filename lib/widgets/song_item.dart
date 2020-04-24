@@ -1,6 +1,7 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+<<<<<<< HEAD
 import 'package:wangyiyun/model/music_song_model.dart';
 import 'package:wangyiyun/widgets/play_list_cover.dart';
 
@@ -10,6 +11,19 @@ class SongItem extends StatelessWidget {
   final int index;
 
   SongItem({this.showIndex = false, this.detail, this.index});
+=======
+import 'package:neteast_cloud_music/model/music_song_model.dart';
+import 'package:neteast_cloud_music/widgets/play_list_cover.dart';
+
+class SongItem extends StatelessWidget {
+  final bool showIndex;
+  final bool showPic;
+  final MusicSong detail;
+  final int index;
+
+  SongItem(
+      {this.showIndex = false, this.showPic = false, this.detail, this.index});
+>>>>>>> new
 
   @override
   Widget build(BuildContext context) {
@@ -20,13 +34,21 @@ class SongItem extends StatelessWidget {
         child: Container(
           width: ScreenUtil().setWidth(60.0),
           child: Center(
+<<<<<<< HEAD
             child: Text('${0 + index}',
+=======
+            child: Text('${1 + index}',
+>>>>>>> new
                 style: TextStyle(
                     fontSize: ScreenUtil().setSp(30.0), color: Colors.black45)),
           ),
         ),
       ),
+<<<<<<< HEAD
       PlayListCoverWidget(detail.picUrl, width: 80.0),
+=======
+      showPic ? PlayListCoverWidget(detail.picUrl, width: 80.0) : Container(),
+>>>>>>> new
       Expanded(
           child: ListTile(
               dense: true,

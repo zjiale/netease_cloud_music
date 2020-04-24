@@ -11,13 +11,21 @@ class HomeBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+<<<<<<< HEAD
       padding: EdgeInsets.only(left: 10.0),
+=======
+>>>>>>> new
       height: ScreenUtil().setHeight(230.0),
       child: Swiper(
           autoplay: true,
           itemBuilder: (BuildContext context, int index) {
             return Padding(
+<<<<<<< HEAD
               padding: EdgeInsets.only(right: 10.0),
+=======
+              padding:
+                  EdgeInsets.symmetric(horizontal: ScreenUtil().setWidth(40.0)),
+>>>>>>> new
               child: ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(10.0)),
                 child: new ExtendedImage.network(bannerList[index].pic,

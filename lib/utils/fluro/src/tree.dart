@@ -7,7 +7,11 @@
  * See LICENSE for distribution and usage details.
  */
 
+<<<<<<< HEAD
 import 'package:wangyiyun/utils/fluro/src/common.dart';
+=======
+import 'package:neteast_cloud_music/utils/fluro/src/common.dart';
+>>>>>>> new
 import 'package:flutter/widgets.dart';
 
 enum RouteTreeNodeType {

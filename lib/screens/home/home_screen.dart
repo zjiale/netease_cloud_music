@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -13,15 +14,42 @@ import 'package:wangyiyun/store/model/play_song_model.dart';
 import 'package:wangyiyun/utils/config.dart';
 
 class HomeScreen extends StatefulWidget {
+=======
+import 'dart:io';
+
+import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:neteast_cloud_music/screens/audio/audio_player_screen.dart';
+import 'package:neteast_cloud_music/screens/audio/mini_player.dart';
+import 'package:neteast_cloud_music/screens/home/find.dart';
+import 'package:neteast_cloud_music/screens/home/tab_title.dart';
+import 'package:neteast_cloud_music/screens/events/events_screen.dart';
+import 'package:neteast_cloud_music/screens/user_center/user_center_screen.dart';
+import 'package:neteast_cloud_music/screens/video/video_screen.dart';
+import 'package:neteast_cloud_music/store/index.dart';
+
+import 'package:neteast_cloud_music/store/model/play_song_model.dart';
+import 'package:neteast_cloud_music/store/model/play_video_model.dart';
+import 'package:neteast_cloud_music/utils/config.dart';
+
+class HomeScreen extends StatefulWidget {
+  final PlayVideoModel model;
+  HomeScreen({this.model});
+>>>>>>> new
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
+<<<<<<< HEAD
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   final Duration _duration = Duration(milliseconds: 200);
 
+=======
+>>>>>>> new
   List<String> _title = Config.title;
   List<Widget> _pages;
 
@@ -51,6 +79,15 @@ class _HomeScreenState extends State<HomeScreen>
       });
       pageCall(pos);
     }
+<<<<<<< HEAD
+=======
+    if (pos != 2) {
+      if (widget.model.index.value == -1) return;
+      widget.model.changeIndex(-1);
+    } else {
+      widget.model.changeIndex(0);
+    }
+>>>>>>> new
   }
 
   @override
@@ -61,7 +98,11 @@ class _HomeScreenState extends State<HomeScreen>
     _pages = List()
       ..add(UserCenterScreen())
       ..add(Find())
+<<<<<<< HEAD
       ..add(MomentsScreen())
+=======
+      ..add(EventsScreen())
+>>>>>>> new
       ..add(VideoScreen());
     _pageController = PageController(initialPage: _currentIndex)
       ..addListener(() {
@@ -77,6 +118,7 @@ class _HomeScreenState extends State<HomeScreen>
   Widget build(BuildContext context) {
     ScreenUtil.init(context, width: 750, height: 1334);
 
+<<<<<<< HEAD
     return SafeArea(
         child: Scaffold(
             key: _scaffoldKey,
@@ -130,5 +172,66 @@ class _HomeScreenState extends State<HomeScreen>
                         offstage: model.show, child: MiniPlayer(model));
                   }))
             ])));
+=======
+    if (Platform.isAndroid) {
+      SystemUiOverlayStyle style = SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarIconBrightness:
+              _currentIndex == 0 ? Brightness.light : Brightness.dark);
+      SystemChrome.setSystemUIOverlayStyle(style);
+    }
+
+    return Scaffold(
+        drawer: new Drawer(),
+        body: Stack(children: <Widget>[
+          PageView.builder(
+              controller: _pageController,
+              itemCount: _title.length,
+              onPageChanged: _pageChage,
+              itemBuilder: (context, pos) {
+                return _pages[pos];
+              }),
+          Container(
+            height: ScreenUtil().setHeight(80.0) +
+                MediaQuery.of(context).padding.top,
+            width: double.infinity,
+            child: AppBar(
+                brightness:
+                    _currentIndex == 0 ? Brightness.dark : Brightness.light,
+                backgroundColor: _colorTween.lerp(1 - _offset),
+                elevation: 0,
+                iconTheme: IconThemeData(color: Colors.transparent),
+                //因为tittle准备放置一个listview，设置这个属性title横向填满
+                titleSpacing: 0.0,
+                centerTitle: true,
+                title: TabTitle(
+                  _title,
+                  setCall: _pageChagedCall,
+                  itemClick: _tittleItemClickCall,
+                ),
+                leading: Builder(
+                  builder: (context) => IconButton(
+                      icon: Icon(Icons.menu,
+                          color:
+                              _currentIndex == 0 ? Colors.white : Colors.black),
+                      onPressed: () => Scaffold.of(context).openDrawer()),
+                ),
+                actions: <Widget>[
+                  IconButton(
+                      icon: Icon(Icons.search,
+                          color:
+                              _currentIndex == 0 ? Colors.white : Colors.black),
+                      onPressed: () {})
+                ]),
+          ),
+          Positioned(
+              bottom: 0.0,
+              child: Store.connect<PlaySongModel>(
+                  builder: (context, model, child) {
+                return Offstage(
+                    offstage: model.show, child: MiniPlayer(model: model));
+              }))
+        ]));
+>>>>>>> new
   }
 }

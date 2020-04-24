@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+<<<<<<< HEAD
 import 'package:wangyiyun/utils/config.dart';
+=======
+import 'package:neteast_cloud_music/utils/config.dart';
+>>>>>>> new
 
 class ImageButton extends StatelessWidget {
   final double width;

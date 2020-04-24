@@ -5,6 +5,7 @@ import 'package:flutter_easyrefresh/ball_pulse_footer.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+<<<<<<< HEAD
 import 'package:wangyiyun/api/CommonService.dart';
 import 'package:wangyiyun/model/top_quality_play_list_model.dart';
 import 'package:wangyiyun/screens/playlist/play_list_screen.dart';
@@ -13,6 +14,17 @@ import 'package:wangyiyun/utils/config.dart';
 import 'package:wangyiyun/utils/numbers_convert.dart';
 import 'package:wangyiyun/widgets/data_loading.dart';
 import 'package:wangyiyun/widgets/play_list_cover.dart';
+=======
+import 'package:neteast_cloud_music/api/CommonService.dart';
+import 'package:neteast_cloud_music/model/top_quality_play_list_model.dart';
+import 'package:neteast_cloud_music/screens/playlist/play_list_screen.dart';
+import 'package:neteast_cloud_music/screens/playlist/top_disc.dart';
+import 'package:neteast_cloud_music/utils/config.dart';
+import 'package:neteast_cloud_music/utils/numbers_convert.dart';
+import 'package:neteast_cloud_music/utils/routes/navigator_util.dart';
+import 'package:neteast_cloud_music/widgets/data_loading.dart';
+import 'package:neteast_cloud_music/widgets/play_list_cover.dart';
+>>>>>>> new
 
 class OtherSubPlayList extends StatefulWidget {
   final int index;
@@ -66,10 +78,18 @@ class _OtherSubPlayListState extends State<OtherSubPlayList>
     _controller = EasyRefreshController();
   }
 
+<<<<<<< HEAD
+=======
+  /// 获取轮播图当前index
+>>>>>>> new
   void getCurrentIndex(index) {
     widget.indexCallback(index);
   }
 
+<<<<<<< HEAD
+=======
+  /// 将轮播图第一涨图设置背景图
+>>>>>>> new
   void putBgImage(List<Playlists> list) {
     List<String> imgUrl = [];
     list.forEach((playlist) {
@@ -120,7 +140,11 @@ class _OtherSubPlayListState extends State<OtherSubPlayList>
                 child: DataLoading()),
             slivers: <Widget>[
               SliverToBoxAdapter(
+<<<<<<< HEAD
                 child: widget.index == 0
+=======
+                child: widget.tag == ""
+>>>>>>> new
                     ? TopDisc(
                         source: _top,
                         callback: (index) => getCurrentIndex(index))
@@ -135,6 +159,7 @@ class _OtherSubPlayListState extends State<OtherSubPlayList>
                       ),
                       delegate: SliverChildBuilderDelegate((context, index) {
                         return InkWell(
+<<<<<<< HEAD
                           onTap: () {
                             Navigator.push(
                                 context,
@@ -146,6 +171,14 @@ class _OtherSubPlayListState extends State<OtherSubPlayList>
                                               widget.index == 1 ? true : false,
                                         )));
                           },
+=======
+                          onTap: () => NavigatorUtil.goPlayListDetailPage(
+                            context,
+                            expandedHeight: 520,
+                            id: _source[index].id,
+                            official: widget.index == 1 ? true : false,
+                          ),
+>>>>>>> new
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[

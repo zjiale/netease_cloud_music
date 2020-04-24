@@ -13,7 +13,11 @@ class TitleHeader extends StatelessWidget {
     ScreenUtil.init(context, width: 750, height: 1334);
 
     return Padding(
+<<<<<<< HEAD
       padding: EdgeInsets.symmetric(horizontal: 10.0),
+=======
+      padding: EdgeInsets.symmetric(horizontal: ScreenUtil().setWidth(40.0)),
+>>>>>>> new
       child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.end,

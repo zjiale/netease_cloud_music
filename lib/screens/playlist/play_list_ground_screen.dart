@@ -1,11 +1,25 @@
 import 'dart:ui';
 
+<<<<<<< HEAD
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wangyiyun/screens/playlist/other_sub_play_list.dart';
 import 'package:wangyiyun/store/model/tag_model.dart';
 import 'package:wangyiyun/utils/config.dart';
 import 'package:wangyiyun/widgets/fade_network_image.dart';
+=======
+import 'package:common_utils/common_utils.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:neteast_cloud_music/api/CommonService.dart';
+import 'package:neteast_cloud_music/screens/audio/mini_player.dart';
+import 'package:neteast_cloud_music/screens/playlist/other_sub_play_list.dart';
+import 'package:neteast_cloud_music/store/index.dart';
+import 'package:neteast_cloud_music/store/model/play_song_model.dart';
+import 'package:neteast_cloud_music/store/model/tag_model.dart';
+import 'package:neteast_cloud_music/utils/config.dart';
+import 'package:neteast_cloud_music/widgets/fade_network_image.dart';
+>>>>>>> new
 import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart'
     as extended;
 
@@ -34,7 +48,20 @@ class _PlayListGroundScreenState extends State<PlayListGroundScreen>
     super.initState();
 
     _tabController =
+<<<<<<< HEAD
         TabController(vsync: this, length: widget.tagModel.allTags.length);
+=======
+        TabController(vsync: this, length: widget.tagModel.allTags.length)
+          ..addListener(() {
+            if (_tabController.index.toDouble() ==
+                _tabController.animation.value) {
+              if (_tabIndex == _tabController.index) return;
+              setState(() {
+                _tabIndex = _tabController.index;
+              });
+            }
+          });
+>>>>>>> new
   }
 
   @override
@@ -66,12 +93,20 @@ class _PlayListGroundScreenState extends State<PlayListGroundScreen>
       headerSliverBuilder: (context, innerBoxIsScrolled) =>
           <Widget>[SliverToBoxAdapter()],
       body: TabBarView(
+<<<<<<< HEAD
         physics: NeverScrollableScrollPhysics(),
+=======
+        // physics: NeverScrollableScrollPhysics(),
+>>>>>>> new
         controller: _tabController,
         children: widget.tagModel.allTags.map((tag) {
           return OtherSubPlayList(
             tag: tag == "推荐" ? "" : tag,
+<<<<<<< HEAD
             index: _tabController.index,
+=======
+            index: _tabIndex,
+>>>>>>> new
             indexCallback: (index) => _getImageIndex(index),
             imgCallback: (val) => _getBgImage(val),
           );
@@ -152,7 +187,23 @@ class _PlayListGroundScreenState extends State<PlayListGroundScreen>
                       ]),
                     )),
               ),
+<<<<<<< HEAD
               body: content())
+=======
+              body: Stack(
+                children: <Widget>[
+                  content(),
+                  Positioned(
+                      bottom: 0.0,
+                      child: Store.connect<PlaySongModel>(
+                          builder: (context, model, child) {
+                        return Offstage(
+                            offstage: model.show,
+                            child: MiniPlayer(model: model));
+                      }))
+                ],
+              ))
+>>>>>>> new
         ],
       ),
     );

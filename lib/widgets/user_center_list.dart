@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+<<<<<<< HEAD
 import 'package:wangyiyun/widgets/play_list_cover.dart';
+=======
+import 'package:neteast_cloud_music/widgets/play_list_cover.dart';
+>>>>>>> new
 
 class UserCenterList extends StatelessWidget {
   final String url;

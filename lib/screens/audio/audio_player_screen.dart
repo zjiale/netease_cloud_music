@@ -6,12 +6,25 @@ import 'package:common_utils/common_utils.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+<<<<<<< HEAD
 import 'package:wangyiyun/screens/audio/play_button.dart';
 import 'package:wangyiyun/screens/audio/slider_time.dart';
 import 'package:wangyiyun/store/index.dart';
 import 'package:wangyiyun/utils/config.dart';
 
 import 'package:wangyiyun/store/model/play_song_model.dart';
+=======
+import 'package:neteast_cloud_music/api/CommonService.dart';
+import 'package:neteast_cloud_music/model/comment_model.dart';
+import 'package:neteast_cloud_music/screens/audio/play_button.dart';
+import 'package:neteast_cloud_music/screens/audio/slider_time.dart';
+import 'package:neteast_cloud_music/screens/audio/song_comment.dart';
+import 'package:neteast_cloud_music/store/index.dart';
+import 'package:neteast_cloud_music/utils/config.dart';
+
+import 'package:neteast_cloud_music/store/model/play_song_model.dart';
+import 'package:neteast_cloud_music/utils/numbers_convert.dart';
+>>>>>>> new
 
 class AudioPlayerScreen extends StatefulWidget {
   @override
@@ -23,6 +36,10 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
   final List<String> _key = [
     "dislike",
     "song_download",
+<<<<<<< HEAD
+=======
+    "bfc",
+>>>>>>> new
     "song_comment",
     "song_more"
   ];
@@ -76,6 +93,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: _key.asMap().entries.map((MapEntry map) {
               return GestureDetector(
+<<<<<<< HEAD
                 onTap: () {
                   switch (map.key) {
                     case 0:
@@ -107,6 +125,53 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
                       : Container()
                 ]),
               );
+=======
+                  onTap: () {
+                    switch (map.key) {
+                      case 0:
+                        setState(() {
+                          if (isLike) {
+                            isLike = false;
+                            _key.replaceRange(0, 1, ['dislike']);
+                          } else {
+                            isLike = true;
+                            _key.replaceRange(0, 1, ['liked']);
+                          }
+                        });
+                        break;
+                      case 3:
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => SongComment(
+                                      songModel: model,
+                                    )));
+                        break;
+                      default:
+                    }
+                  },
+                  child: Container(
+                    width: ScreenUtil().setWidth(80.0),
+                    height: ScreenUtil().setWidth(80.0),
+                    decoration: BoxDecoration(
+                        image: DecorationImage(
+                            image: AssetImage(
+                      "${Config().prefixImg(_key[map.key])}",
+                    ))),
+                    child: map.key == 3
+                        ? Align(
+                            alignment: model.comment.total < 100
+                                ? Alignment(0.5, -0.6)
+                                : Alignment(1.2, -0.7),
+                            child: Text(
+                                NumberUtils.formatNum(model.comment.total),
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: ScreenUtil().setSp(18.0))),
+                          )
+                        : Container(),
+                  ));
+>>>>>>> new
             }).toList()));
   }
 
@@ -183,7 +248,11 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
         _imgController.stop();
         _controller.forward();
       }
+<<<<<<< HEAD
       return Stack(children: <Widget>[
+=======
+      return Stack(alignment: AlignmentDirectional.center, children: <Widget>[
+>>>>>>> new
         Image.network(
           model.curSong.picUrl,
           fit: BoxFit.cover,

@@ -12,6 +12,7 @@ class SpaceBar extends StatelessWidget implements PreferredSizeWidget {
           borderRadius: BorderRadius.vertical(
               top: Radius.circular(ScreenUtil().setWidth(30))),
           border: Border.all(width: 0.0, color: Colors.white)),
+<<<<<<< HEAD
       child: Column(
         children: <Widget>[
           SizedBox(
@@ -66,6 +67,8 @@ class SpaceBar extends StatelessWidget implements PreferredSizeWidget {
               ]),
         ],
       ),
+=======
+>>>>>>> new
     );
   }
 

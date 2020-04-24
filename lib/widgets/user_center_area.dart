@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+<<<<<<< HEAD
 import 'package:wangyiyun/model/center_area_model.dart';
+=======
+import 'package:neteast_cloud_music/model/center_area_model.dart';
+>>>>>>> new
 
 class UserCenterArea extends StatelessWidget {
   final CenterAreaModel area;

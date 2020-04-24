@@ -11,8 +11,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+<<<<<<< HEAD
 import 'package:wangyiyun/utils/fluro/fluro.dart';
 import 'package:wangyiyun/utils/fluro/src/common.dart';
+=======
+import 'package:neteast_cloud_music/utils/fluro/fluro.dart';
+import 'package:neteast_cloud_music/utils/fluro/src/common.dart';
+>>>>>>> new
 
 class Router {
   static final appRouter = new Router();

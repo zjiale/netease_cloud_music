@@ -8,7 +8,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+<<<<<<< HEAD
 import 'package:wangyiyun/main.dart';
+=======
+import 'package:neteast_cloud_music/main.dart';
+>>>>>>> new
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
