@@ -220,6 +220,7 @@ class PlaySongModel with ChangeNotifier {
   void getSongComment({int offset = 0}) async {
     _commentModel = await CommmonService()
         .getSongComment(_curList[_curIndex].id, offset: offset);
+    notifyListeners();
   }
 
   void save2sp() {

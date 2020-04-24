@@ -115,7 +115,7 @@ class _AudioPlayerScreenState extends State<AudioPlayerScreen>
                             image: AssetImage(
                       "${Config().prefixImg(_key[map.key])}",
                     ))),
-                    child: map.key == 3
+                    child: map.key == 3 && model.comment != null
                         ? Align(
                             alignment: model.comment.total < 100
                                 ? Alignment(0.5, -0.6)

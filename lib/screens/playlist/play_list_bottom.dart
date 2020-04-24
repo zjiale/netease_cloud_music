@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:netease_cloud_music/model/music_song_model.dart';
 import 'package:netease_cloud_music/model/play_list.detail.dart';
+import 'package:netease_cloud_music/netease_cloud_music_route.dart';
 import 'package:netease_cloud_music/screens/audio/audio_player_screen.dart';
 import 'package:netease_cloud_music/store/model/play_song_model.dart';
 
@@ -32,9 +33,7 @@ class PlayListBottom extends StatelessWidget implements PreferredSizeWidget {
           picUrl: detail.playlist.tracks[i].al.picUrl));
     }
     model.playMoreSong(list);
-    Navigator.push(context, MaterialPageRoute(builder: (context) {
-      return AudioPlayerScreen();
-    }));
+    Navigator.pushNamed(context, Routes.NETEASECLOUDMUSIC_AUDIOPLAYERSCREEN);
   }
 
   @override
