@@ -3,7 +3,14 @@
 第一次写比较复杂的flutter项目，就在这里记录下。
 
 ### 项目目录
+![image](https://github.com/zjiale/netease_cloud_music/blob/master/%E9%A1%B9%E7%9B%AE%E7%9B%AE%E5%BD%95.png)
 
+api------>接口相关文件
+model------>实体类文件
+screens------>软件页面
+store------>状态管理
+utils------>配置文件
+widgets------>公共widget
 
 ### 部分截图
 ![](https://media.giphy.com/media/Md4QEVfIpdNhHhkKBA/giphy.gif)
