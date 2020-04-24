@@ -43,10 +43,3 @@
 3. 在搜索输入框比如输入文字之后想要点击右侧的清除按钮，点击一次是清除了，但是按钮还是显示着需要再次点击才会消失。
 4. 适配问题还没有做，如果在其他手机上显示可能会出现超出区域限制提示。
 
-
-### 参考链接
-[网易云接口](https://binaryify.github.io/NeteaseCloudMusicApi/#/?id=neteasecloudmusicapi)
-
-[项目开始参考文章](https://juejin.im/post/5d9de9a2e51d4578282ce25a)
-
-[云村动态位置信息](https://juejin.im/post/5b6375f8e51d45190f4af4c2#heading-7)
