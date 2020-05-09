@@ -35,7 +35,6 @@ class _SearchScreensState extends State<SearchScreens>
   TabController _tabController;
   FocusNode _searchFocus = FocusNode();
 
-  int _code = Config.SUCCESS_CODE;
   List<SearchType> _searchType = Config.searchType;
 
   GlobalKey textFieldKey;
@@ -183,10 +182,14 @@ class _SearchScreensState extends State<SearchScreens>
                             color: Colors.black,
                           ),
                           onPressed: () {
-                            WidgetsBinding.instance.addPostFrameCallback(
-                                (_) => _searchController.clear());
-                            if (searchSuggest != null) removeOverlay();
-                            setState(() {});
+                            // WidgetsBinding.instance.addPostFrameCallback((_) {
+
+                            // });
+                            Future.delayed(Duration(microseconds: 20), () {
+                              _searchController.clear();
+                              _searchFocus.unfocus();
+                              if (searchSuggest != null) removeOverlay();
+                            });
                           },
                         ),
               focusedBorder: UnderlineInputBorder(
